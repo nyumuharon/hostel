@@ -17,23 +17,23 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure Express Session (equivalent to PHP session setup)
+// Configure Express Session
 app.use(session({
   name: 'HOSTELSESSID',
   secret: 'everest_university_hostel_secret_key_12345',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: false,
     httpOnly: true,
-    maxAge: 30 * 60 * 1000, // 30 minutes (matching PHP SESSION_TIMEOUT)
+    maxAge: 30 * 60 * 1000,
     sameSite: 'lax'
   }
 }));
 
-// Initialize database (JSON files and seeding)
-initializeDatabase().catch(err => {
-  console.error('Failed to initialize database:', err);
+// Health check endpoint — always available
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', db: global.dbReady ? 'connected' : 'not ready', time: new Date().toISOString() });
 });
 
 // Mount API routes
@@ -47,15 +47,30 @@ app.use('/api/reports', require('./routes/reports'));
 // Serve Frontend Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Fallback to index.html for undefined frontend routes
+// Fallback to index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(`🏫 Hostel Management System is running!`);
-  console.log(`👉 Access URL: http://localhost:${PORT}`);
-  console.log(`====================================================`);
-});
+// ── Start server AFTER DB is ready ──────────────────────────────────────────
+async function startServer() {
+  try {
+    console.log('====================================================');
+    console.log('🔌 Connecting to MongoDB Atlas...');
+    await initializeDatabase();
+    global.dbReady = true;
+
+    app.listen(PORT, () => {
+      console.log('====================================================');
+      console.log('🏫 Hostel Management System is running!');
+      console.log(`👉 Access URL: http://localhost:${PORT}`);
+      console.log('====================================================');
+    });
+  } catch (err) {
+    console.error('❌ Failed to connect to database:', err.message);
+    console.error('👉 Make sure MONGODB_URI environment variable is set correctly.');
+    process.exit(1);
+  }
+}
+
+startServer();
