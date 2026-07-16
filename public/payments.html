@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bed Payments | HMS</title>
+    <style>
+        *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#26354a}.top{background:#1e3c72;color:#fff;padding:17px 28px;font-size:22px;font-weight:700}.layout{display:flex;min-height:calc(100vh - 62px)}aside{width:225px;background:#fff;padding:18px 0;box-shadow:1px 0 8px #0001}aside a{display:block;padding:12px 22px;color:#4b5a6d;text-decoration:none}aside a:hover,aside a.active{background:#e8f0f7;color:#1e3c72;font-weight:600;border-left:4px solid #2a5298}.content{flex:1;padding:30px;max-width:1550px}.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}h1{margin:0;color:#1e3c72}p{color:#677386}.card{background:#fff;border-radius:10px;box-shadow:0 2px 10px #00000012;padding:22px;margin-bottom:22px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px}.field.wide{grid-column:span 3}label{font-size:13px;font-weight:600}input,select,textarea{border:1px solid #cdd5df;border-radius:6px;padding:10px;font:inherit;width:100%}textarea{resize:vertical}.rate{margin:0;padding:10px;border-radius:6px;background:#e8f0f7;color:#1e3c72;font-weight:700}.summary-grid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr)); gap:15px}.summary-box{background:#f8fafc;border:1px solid #e6ebf2;border-radius:10px;padding:16px}.summary-box strong{display:block;font-size:24px;color:#1e3c72;margin-top:6px}.preview-box{grid-column:span 3;background:#f7fbff;border:1px solid #d6e4f4;border-radius:8px;padding:12px 14px}.preview-box h4{margin:0 0 8px 0;color:#1f4f89;font-size:14px}.preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;font-size:13px;color:#425b78}.preview-amount{margin-top:10px;font-weight:700;color:#1f4f89}.btn{border:0;border-radius:6px;padding:10px 15px;font-weight:600;cursor:pointer}.primary{background:#2a5298;color:#fff}.secondary{background:#e8edf4;color:#29476f}.danger{background:#fff0f0;color:#bf3030}.filter{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.filter .field{min-width:180px}.message{padding:11px;border-radius:6px;margin-bottom:16px;display:none}.message.success{display:block;background:#dff5e6;color:#176a35}.message.error{display:block;background:#ffe5e5;color:#a42525}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1080px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e8edf2;font-size:14px}th{color:#5d6a7a;background:#f7f9fc;text-transform:uppercase;font-size:11px}.badge{padding:4px 9px;border-radius:12px;font-size:12px;font-weight:600}.completed{background:#daf4e3;color:#17733b}.pending{background:#fff1cf;color:#946400}.cancelled{background:#ffe0e0;color:#a52d2d}.empty{text-align:center;color:#778}@media(max-width:800px){aside{width:190px}.content{padding:18px}.grid{grid-template-columns:1fr}.field.wide{grid-column:span 1}.summary-grid{grid-template-columns:1fr}.preview-box{grid-column:span 1}.preview-grid{grid-template-columns:1fr}}@media(max-width:600px){.layout{display:block}aside{width:100%;display:flex;overflow:auto;padding:0}aside a{white-space:nowrap;padding:12px}.header{align-items:flex-start;flex-direction:column}}
+    </style>
+</head>
+<body>
+<div class="top" id="topNav">HMS • Bed Payments • Loading...</div>
+<div class="layout">
+    <aside>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="students.html">Students</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="allocations.html">Allocations</a>
+        <a class="active" href="payments.html">Bed Payments</a>
+        <a href="reports.html">Reports</a>
+    </aside>
+    <main class="content">
+        <div class="header">
+            <div>
+                <h1>Bed Payments</h1>
+                <p>Track monthly bed payments for Batian, Nelion and Lenana blocks.</p>
+            </div>
+            <button class="btn secondary" id="clearBtn" type="button">New payment</button>
+        </div>
+        <div id="message" class="message"></div>
+
+        <section class="card">
+            <div class="summary-grid">
+                <div class="summary-box">
+                    <div>Batian</div>
+                    <strong id="sumBatian">Ksh 0.00</strong>
+                    <div id="countBatian">0 records</div>
+                </div>
+                <div class="summary-box">
+                    <div>Nelion</div>
+                    <strong id="sumNelion">Ksh 0.00</strong>
+                    <div id="countNelion">0 records</div>
+                </div>
+                <div class="summary-box">
+                    <div>Lenana</div>
+                    <strong id="sumLenana">Ksh 0.00</strong>
+                    <div id="countLenana">0 records</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <form id="paymentForm">
+                <input type="hidden" name="payment_id" id="payment_id">
+                <div class="grid">
+                    <div class="field">
+                        <label for="student_id">Student *</label>
+                        <select id="student_id" name="student_id" required><option value="">Select student</option></select>
+                    </div>
+                    <div class="field">
+                        <label for="allocated_room">Allocated room</label>
+                        <input id="allocated_room" type="text" readonly value="Auto-filled from allocation">
+                    </div>
+                    <div class="field">
+                        <label for="allocated_bed">Allocated bed</label>
+                        <input id="allocated_bed" type="text" readonly value="Auto-filled from allocation">
+                    </div>
+                    <div class="field">
+                        <label for="hostel_block">Hostel block *</label>
+                        <select id="hostel_block" name="hostel_block" required>
+                            <option value="">Select block</option>
+                            <option value="Batian">Batian — Ksh 50,000 / bed / month</option>
+                            <option value="Nelion">Nelion — Ksh 30,000 / bed / month</option>
+                            <option value="Lenana">Lenana — Ksh 20,000 / bed / month</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Monthly charge</label>
+                        <p class="rate" id="rateDisplay">Choose a block</p>
+                    </div>
+                    <div class="field">
+                        <label for="fee_category">Fee category</label>
+                        <select id="fee_category" name="fee_category">
+                            <option value="Monthly Bed Payment">Monthly Bed Payment</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="billing_month">Billing month *</label>
+                        <input id="billing_month" name="billing_month" type="month" required>
+                    </div>
+                    <div class="field">
+                        <label for="due_date">Due date</label>
+                        <input id="due_date" name="due_date" type="date">
+                    </div>
+                    <div class="field">
+                        <label for="payment_date">Payment date *</label>
+                        <input id="payment_date" name="payment_date" type="date" required>
+                    </div>
+                    <div class="field">
+                        <label for="payment_method">Payment method</label>
+                        <select id="payment_method" name="payment_method">
+                            <option value="Cash">Cash</option>
+                            <option value="M-Pesa">M-Pesa</option>
+                            <option value="Bank transfer">Bank transfer</option>
+                            <option value="Card">Card</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="field wide">
+                        <label for="remarks">Remarks</label>
+                        <textarea id="remarks" name="remarks" rows="2" placeholder="Optional receipt number or note"></textarea>
+                    </div>
+                    <div class="preview-box" id="paymentPreview">
+                        <h4>Payment Preview</h4>
+                        <div class="preview-grid">
+                            <div><strong>Block:</strong> <span id="previewBlock">-</span></div>
+                            <div><strong>Charge Type:</strong> Monthly Bed Payment</div>
+                            <div><strong>Billing Month:</strong> <span id="previewMonth">-</span></div>
+                            <div><strong>Due Date:</strong> <span id="previewDueDate">Not set</span></div>
+                        </div>
+                        <div class="preview-amount">Payable Amount: <span id="previewAmount">Ksh 0.00</span></div>
+                    </div>
+                </div>
+                <p><button class="btn primary" id="saveBtn">Record bed payment</button></p>
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="filter">
+                <div class="field">
+                    <label>Student</label>
+                    <select id="filterStudent"><option value="">All students</option></select>
+                </div>
+                <div class="field">
+                    <label>Status</label>
+                    <select id="filterStatus">
+                        <option value="">All statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button class="btn secondary" id="filterBtn">Apply filters</button>
+            </div>
+        </section>
+
+        <section class="card table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Block</th>
+                        <th>Category</th>
+                        <th>Billing month</th>
+                        <th>Due date</th>
+                        <th>Paid date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsBody">
+                    <tr><td colspan="9" class="empty">Loading payments…</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+<script>
+const form = document.getElementById('paymentForm');
+const body = document.getElementById('paymentsBody');
+const message = document.getElementById('message');
+const filterStudent = document.getElementById('filterStudent');
+const filterStatus = document.getElementById('filterStatus');
+const block = document.getElementById('hostel_block');
+const rateDisplay = document.getElementById('rateDisplay');
+const studentSelect = document.getElementById('student_id');
+const allocatedRoom = document.getElementById('allocated_room');
+const allocatedBed = document.getElementById('allocated_bed');
+const saveBtn = document.getElementById('saveBtn');
+const paymentId = document.getElementById('payment_id');
+const paymentDate = document.getElementById('payment_date');
+const billingMonth = document.getElementById('billing_month');
+const dueDate = document.getElementById('due_date');
+const previewBlock = document.getElementById('previewBlock');
+const previewMonth = document.getElementById('previewMonth');
+const previewDueDate = document.getElementById('previewDueDate');
+const previewAmount = document.getElementById('previewAmount');
+let payments = [];
+let activeAllocationsByStudent = {};
+const rates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = v => 'Ksh ' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// Verify session status
+async function checkAuth() {
+    try {
+        const response = await fetch('/api/auth/me');
+        const data = await response.json();
+        
+        if (!data.success) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        document.getElementById('topNav').textContent = `HMS • Bed Payments • ${data.user.fullName}`;
+        
+        await Promise.all([loadStudents(), loadPayments()]);
+        reset();
+    } catch (err) {
+        window.location.href = 'index.html';
+    }
+}
+
+function notice(type, text) {
+    message.className = 'message ' + type;
+    message.textContent = text;
+    setTimeout(() => message.className = 'message', 5000);
+}
+
+function updateRate() {
+    rateDisplay.textContent = block.value ? money(rates[block.value]) + ' per bed / month' : 'Choose a block';
+    updatePreview();
+}
+
+function monthLabel(monthValue) {
+    if (!monthValue || !/^\d{4}-\d{2}$/.test(monthValue)) return '-';
+    const [year, month] = monthValue.split('-');
+    const d = new Date(Number(year), Number(month) - 1, 1);
+    return d.toLocaleString(undefined, { month: 'long', year: 'numeric' });
+}
+
+function updatePreview() {
+    const selectedBlock = block.value || '-';
+    const selectedMonth = monthLabel(billingMonth.value);
+    const selectedDueDate = dueDate.value || 'Not set';
+    const amount = block.value ? (rates[block.value] || 0) : 0;
+
+    previewBlock.textContent = selectedBlock;
+    previewMonth.textContent = selectedMonth;
+    previewDueDate.textContent = selectedDueDate;
+    previewAmount.textContent = money(amount);
+}
+
+function reset() {
+    form.reset();
+    paymentId.value = '';
+    paymentDate.value = new Date().toISOString().slice(0, 10);
+    billingMonth.value = new Date().toISOString().slice(0, 7);
+    allocatedRoom.value = 'Auto-filled from allocation';
+    allocatedBed.value = 'Auto-filled from allocation';
+    saveBtn.textContent = 'Record bed payment';
+    updateRate();
+    updatePreview();
+}
+
+function inferBlock(roomNumber) {
+    const text = String(roomNumber || '').toUpperCase();
+    if (text.startsWith('BAT-')) return 'Batian';
+    if (text.startsWith('NEL-')) return 'Nelion';
+    if (text.startsWith('LEN-')) return 'Lenana';
+    return '';
+}
+
+function updateFromSelectedStudent() {
+    const selected = activeAllocationsByStudent[String(studentSelect.value)];
+    if (!selected) {
+        allocatedRoom.value = 'Auto-filled from allocation';
+        allocatedBed.value = 'Auto-filled from allocation';
+        return;
+    }
+
+    allocatedRoom.value = selected.room_number || '-';
+    allocatedBed.value = selected.bed_label || '-';
+    if (selected.hostel_block) {
+        block.value = selected.hostel_block;
+    }
+    updateRate();
+}
+
+async function loadStudents() {
+    const response = await fetch('/api/allocations');
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+
+    const active = (data.data || []).filter(item => item.status === 'active');
+    const unique = {};
+
+    active.forEach(item => {
+        const key = String(item.student_id || '');
+        if (!key || unique[key]) return;
+
+        const bedNum = Number(item.bed_number || 0);
+        const sName = item.full_name || 'Unknown Student';
+        unique[key] = {
+            student_id: item.student_id,
+            student_name: sName,
+            admission_number: item.admission_number,
+            room_number: item.room_number || '-',
+            bed_label: bedNum > 0 ? 'Bed ' + String.fromCharCode(64 + bedNum) : '-',
+            hostel_block: inferBlock(item.room_number)
+        };
+    });
+
+    activeAllocationsByStudent = unique;
+    const list = Object.values(unique);
+    const options = list.map(student => `<option value="${student.student_id}">${esc(student.student_name)} (${esc(student.admission_number)})</option>`).join('');
+
+    studentSelect.innerHTML = '<option value="">Select student with active allocation</option>' + options;
+    filterStudent.innerHTML = '<option value="">All students</option>' + options;
+
+    if (!list.length) {
+        notice('error', 'No active allocations found. Allocate rooms first, then record bed payments.');
+    }
+}
+
+async function loadPayments() {
+    const query = new URLSearchParams();
+    if (filterStudent.value) query.set('student_id', filterStudent.value);
+    if (filterStatus.value) query.set('status', filterStatus.value);
+    
+    const response = await fetch('/api/payments?' + query);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+    
+    payments = data.data || [];
+    renderPaymentsSummary(payments);
+
+    body.innerHTML = payments.length ? payments.map(payment => {
+        const sName = payment.full_name || payment.student_name || 'Unknown Student';
+        const formattedBillingMonth = monthLabel(payment.billing_month ? payment.billing_month.slice(0,7) : '');
+        
+        return `
+        <tr>
+            <td>${esc(sName)}<br><small>${esc(payment.admission_number)}</small></td>
+            <td>${esc(payment.hostel_block || '-')}</td>
+            <td>${esc(payment.fee_category || '-')}</td>
+            <td>${esc(formattedBillingMonth)}</td>
+            <td>${esc(payment.due_date || '-')}</td>
+            <td>${esc(payment.payment_date || '-')}</td>
+            <td>${money(payment.amount || 0)}</td>
+            <td><span class="badge ${esc(payment.status)}">${esc(payment.status)}</span></td>
+            <td><button class="btn secondary" onclick="editPayment(${payment.payment_id})">Edit</button> <button class="btn danger" onclick="deletePayment(${payment.payment_id})">Delete</button></td>
+        </tr>
+    `;
+    }).join('') : '<tr><td colspan="9" class="empty">No bed payments found.</td></tr>';
+}
+
+function renderPaymentsSummary(allPayments) {
+    const summary = {
+        Batian: { total: 0, count: 0 },
+        Nelion: { total: 0, count: 0 },
+        Lenana: { total: 0, count: 0 }
+    };
+
+    allPayments.forEach(p => {
+        if (summary[p.hostel_block]) {
+            summary[p.hostel_block].count++;
+            if (p.status === 'completed') {
+                summary[p.hostel_block].total += Number(p.amount || 0);
+            }
+        }
+    });
+
+    document.getElementById('sumBatian').textContent = money(summary.Batian.total);
+    document.getElementById('countBatian').textContent = `${summary.Batian.count} records`;
+
+    document.getElementById('sumNelion').textContent = money(summary.Nelion.total);
+    document.getElementById('countNelion').textContent = `${summary.Nelion.count} records`;
+
+    document.getElementById('sumLenana').textContent = money(summary.Lenana.total);
+    document.getElementById('countLenana').textContent = `${summary.Lenana.count} records`;
+}
+
+form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    // Ensure billing_month is YYYY-MM-DD
+    if (billingMonth.value) {
+        data.billing_month = billingMonth.value + '-01';
+    }
+    
+    // Add the amount field based on block rate
+    if (rates[block.value]) {
+        data.amount = rates[block.value];
+    }
+    
+    const edit = !!data.payment_id;
+    try {
+        const response = await fetch('/api/payments', {
+            method: edit ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        notice('success', result.message);
+        reset();
+        await loadPayments();
+    } catch (error) {
+        notice('error', error.message);
+    }
+});
+
+function editPayment(id) {
+    const payment = payments.find(item => +item.payment_id === id);
+    if (!payment) return;
+    Object.entries(payment).forEach(([key, value]) => {
+        const element = form.elements[key];
+        if (element) element.value = value ?? '';
+    });
+    billingMonth.value = (payment.billing_month || '').slice(0, 7);
+    saveBtn.textContent = 'Update bed payment';
+    updateFromSelectedStudent();
+    updateRate();
+    updatePreview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deletePayment(id) {
+    if (!confirm('Are you sure you want to delete this bed payment?')) return;
+    try {
+        const response = await fetch(`/api/payments?payment_id=${id}`, {
+            method: 'DELETE'
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        notice('success', result.message);
+        await loadPayments();
+    } catch (error) {
+        notice('error', error.message);
+    }
+}
+
+block.onchange = updateRate;
+studentSelect.onchange = updateFromSelectedStudent;
+billingMonth.onchange = updatePreview;
+dueDate.onchange = updatePreview;
+document.getElementById('filterBtn').onclick = () => loadPayments().catch(error => notice('error', error.message));
+document.getElementById('clearBtn').onclick = reset;
+
+// Initialize check
+checkAuth();
+</script>
+</body>
+</html>

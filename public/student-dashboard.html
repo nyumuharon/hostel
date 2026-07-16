@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Everest University HMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .navbar-brand span {
+            font-size: 26px;
+        }
+
+        .navbar-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-pill {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #ff4757;
+            color: white;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-header {
+            margin-bottom: 25px;
+        }
+
+        .welcome-header h1 {
+            color: #1e3c72;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .welcome-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* ===== FLOATING TOAST ALERT (POP AND GO) ===== */
+        .confirmation-alert {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: #daf4e3;
+            border-left: 5px solid #17733b;
+            color: #17733b;
+            padding: 16px 20px;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 3000;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .confirmation-alert.show {
+            display: flex;
+        }
+
+        .confirmation-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .confirmation-icon {
+            font-size: 24px;
+        }
+
+        .confirmation-text strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .confirmation-text span {
+            font-size: 13px;
+        }
+
+        .btn-print {
+            background: #17733b;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-print:hover {
+            background: #11562b;
+        }
+
+        /* ===== GRID LAYOUT ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ===== BOOKING STATUS ===== */
+        .booking-status {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .no-booking-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .no-booking-text {
+            color: #778;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .booking-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px 25px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .reporting-code-badge {
+            background: #e8f0f7;
+            color: #1e3c72;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 15px;
+            border: 1px dashed #2a5298;
+            letter-spacing: 1px;
+        }
+
+        /* ===== LEDGER BILLING ===== */
+        .ledger-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f2f5;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .ledger-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-top: 10px;
+        }
+
+        .ledger-label {
+            color: #666;
+        }
+
+        .ledger-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ledger-balance {
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .balance-label {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .balance-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .balance-paid {
+            background: #daf4e3;
+            color: #17733b;
+        }
+
+        .balance-due {
+            background: #ffe0e0;
+            color: #a52d2d;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-pay:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(30, 60, 114, 0.2);
+        }
+
+        /* ===== ROOM SEARCH & TABLE ===== */
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: #1e3c72;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f7f9fc;
+            padding: 12px 16px;
+            text-align: left;
+            color: #666;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #eee;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #444;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge-block {
+            background: #e8f0f7;
+            color: #1e3c72;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .btn-book {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(30, 60, 114, 0.25);
+        }
+
+        .btn-action-small {
+            background: white;
+            color: #1e3c72;
+            border: 1px solid #1e3c72;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-action-small:hover {
+            background: #1e3c72;
+            color: white;
+        }
+
+        /* ===== BOOKING MODAL ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            animation: scaleUp 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: #1e3c72;
+            font-size: 18px;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            color: #666;
+        }
+
+        .modal-form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .modal-form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .modal-form-group input, .modal-form-group select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .payment-highlight {
+            background: #fff8eb;
+            border: 1px solid #ffe8cc;
+            border-radius: 8px;
+            padding: 15px;
+            color: #c77c02;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .payment-highlight strong {
+            display: block;
+            font-size: 14px;
+            color: #b25900;
+            margin-bottom: 4px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-btn-confirm {
+            flex: 1;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .modal-btn-confirm:hover {
+            box-shadow: 0 4px 10px rgba(30, 60, 114, 0.3);
+        }
+
+        .modal-btn-cancel {
+            background: #f0f2f5;
+            color: #555;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e4e6eb;
+        }
+
+        /* ===== PROGRESS SPINNER ===== */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1e3c72;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== PRINT STYLES MEDIA QUERY INTERFACES ===== */
+        #printReceiptPage, #printStatementPage {
+            display: none;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm 15mm;
+            }
+            body {
+                margin: 0;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+            body * {
+                display: none !important;
+            }
+            
+            /* Print receipt display rules */
+            body.print-receipt-mode #printReceiptPage {
+                display: block !important;
+                background: white !important;
+                color: #000 !important;
+                padding: 25px !important;
+                width: 100% !important;
+                max-width: 800px !important;
+                margin: 0 auto !important;
+                border: 2px solid #000 !important;
+                font-family: 'Segoe UI', Arial, sans-serif !important;
+                position: relative !important;
+                page-break-inside: avoid !important;
+            }
+            body.print-receipt-mode #printReceiptPage * {
+                display: initial !important;
+            }
+            body.print-receipt-mode #printReceiptPage div {
+                display: block !important;
+            }
+
+            /* Print statement display rules */
+            body.print-statement-mode #printStatementPage {
+                display: block !important;
+                background: white !important;
+                color: #000 !important;
+                padding: 25px !important;
+                width: 100% !important;
+                max-width: 800px !important;
+                margin: 0 auto !important;
+                border: 2px solid #000 !important;
+                font-family: 'Segoe UI', Arial, sans-serif !important;
+                position: relative !important;
+                page-break-inside: avoid !important;
+            }
+            body.print-statement-mode #printStatementPage * {
+                display: initial !important;
+            }
+            body.print-statement-mode #printStatementPage div {
+                display: block !important;
+            }
+
+            /* Shared inner display overrides for both print wrappers */
+            #printReceiptPage div, #printStatementPage div {
+                display: block !important;
+            }
+            #printReceiptPage .receipt-header, #printStatementPage .receipt-header,
+            #printReceiptPage .receipt-title, #printStatementPage .receipt-title,
+            #printReceiptPage .receipt-footer, #printStatementPage .receipt-footer {
+                text-align: center !important;
+            }
+            #printReceiptPage .receipt-grid, #printStatementPage .receipt-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+                font-size: 13px !important;
+            }
+            #printReceiptPage table, #printStatementPage table {
+                display: table !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin: 15px 0 !important;
+                font-size: 13px !important;
+            }
+            #printReceiptPage thead, #printStatementPage thead {
+                display: table-header-group !important;
+            }
+            #printReceiptPage tbody, #printStatementPage tbody {
+                display: table-row-group !important;
+            }
+            #printReceiptPage tr, #printStatementPage tr {
+                display: table-row !important;
+            }
+            #printReceiptPage th, #printStatementPage th {
+                display: table-cell !important;
+                background: #f0f0f0 !important;
+                border-top: 1px solid #000 !important;
+                border-bottom: 1px solid #000 !important;
+                padding: 8px !important;
+                font-weight: 700 !important;
+                text-align: left !important;
+            }
+            #printReceiptPage td, #printStatementPage td {
+                display: table-cell !important;
+                padding: 8px !important;
+                border-bottom: 1px solid #ccc !important;
+            }
+            #printReceiptPage .receipt-signatures, #printStatementPage .receipt-signatures {
+                display: flex !important;
+                justify-content: space-between !important;
+                margin-top: 30px !important;
+                font-size: 12px !important;
+            }
+
+            .receipt-header {
+                border-bottom: 2px dashed #000 !important;
+                padding-bottom: 12px !important;
+                margin-bottom: 15px !important;
+            }
+            .receipt-header h1 {
+                font-size: 22px !important;
+                font-weight: 800 !important;
+                margin: 0 0 4px 0 !important;
+                text-transform: uppercase !important;
+                color: #000 !important;
+            }
+            .receipt-header p {
+                font-size: 12px !important;
+                margin: 1px 0 !important;
+                color: #444 !important;
+            }
+            .receipt-title {
+                font-size: 16px !important;
+                font-weight: 700 !important;
+                margin: 10px 0 !important;
+                letter-spacing: 0.5px !important;
+                text-decoration: underline !important;
+            }
+            .receipt-grid div {
+                margin-bottom: 4px !important;
+            }
+            .receipt-grid strong {
+                display: inline-block !important;
+                width: 120px !important;
+                color: #333 !important;
+            }
+            .receipt-total-box {
+                text-align: right !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                margin-top: 10px !important;
+                border-top: 1px solid #000 !important;
+                padding-top: 8px !important;
+            }
+            .receipt-watermark {
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) rotate(-25deg) !important;
+                font-size: 70px !important;
+                font-weight: 900 !important;
+                color: rgba(46, 139, 87, 0.12) !important;
+                border: 6px double rgba(46, 139, 87, 0.12) !important;
+                padding: 5px 20px !important;
+                border-radius: 10px !important;
+                pointer-events: none !important;
+            }
+            .receipt-footer {
+                margin-top: 25px !important;
+                font-size: 11px !important;
+                color: #555 !important;
+                border-top: 1px dashed #ccc !important;
+                padding-top: 15px !important;
+            }
+            .receipt-sig-line {
+                width: 180px !important;
+                border-top: 1px solid #000 !important;
+                text-align: center !important;
+                padding-top: 3px !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>🎓</span>
+            <div>HMS Student Portal</div>
+        </div>
+        <div class="navbar-profile">
+            <div class="profile-pill" id="studentPill">👤 Loading...</div>
+            <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+        </div>
+    </nav>
+
+    <!-- FLOATING TOAST ALERT (POP AND GO) -->
+    <div class="confirmation-alert" id="confirmAlert">
+        <div class="confirmation-content">
+            <div class="confirmation-icon">🎉</div>
+            <div class="confirmation-text">
+                <strong>Booking Confirmed!</strong>
+                <span>Room is reserved. Code: <strong style="display:inline; color:#17733b;" id="confirmCode">BK-XXXXXX</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <!-- WELCOME HEADER -->
+        <div class="welcome-header">
+            <h1 id="welcomeTitle">Welcome, Student!</h1>
+            <p>Search rooms matching your gender, finalize bookings, and manage your billing ledger.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- LEFT COLUMN: BOOKING STATUS & ROOM SEARCH -->
+            <div class="left-column">
+                <!-- ACTIVE BOOKING CARD -->
+                <div class="card">
+                    <h2><span>🛏️</span> Current Hostel Booking</h2>
+                    <div id="bookingStatusSection" class="booking-status">
+                        <div class="no-booking-icon">❓</div>
+                        <div class="no-booking-text">You do not have any active room bookings.</div>
+                        <p style="color: #666; font-size:13px;">Find an available room in the table below, pay the initial fee, and secure your bed.</p>
+                    </div>
+                </div>
+
+                <!-- ROOM FINDER CARD -->
+                <div class="card" id="roomFinderCard">
+                    <h2><span>🔍</span> Find Available Bed</h2>
+                    <div class="filter-row">
+                        <select id="blockFilter" class="filter-select" onchange="loadAvailableRooms()">
+                            <option value="">All Hostel Blocks</option>
+                            <option value="Batian">Batian Block</option>
+                            <option value="Nelion">Nelion Block</option>
+                            <option value="Lenana">Lenana Block</option>
+                        </select>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Block</th>
+                                    <th>Type</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomsTableBody">
+                                <tr><td colspan="6" style="text-align:center; color:#999;">Loading rooms...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: BILLING & LEDGER -->
+            <div class="right-column">
+                <div class="card">
+                    <h2><span>💰</span> Billing & Payment Ledger</h2>
+                    <div class="ledger-row">
+                        <span class="ledger-label">Accrued Charges</span>
+                        <span class="ledger-value" id="ledgerCharged">Ksh 0.00</span>
+                    </div>
+                    <div class="ledger-row">
+                        <span class="ledger-label">Completed Payments</span>
+                        <span class="ledger-value" id="ledgerPaid">Ksh 0.00</span>
+                    </div>
+                    
+                    <!-- Dynamic Next Payment Due Date Row -->
+                    <div class="ledger-row" id="ledgerDueDateRow" style="display: none;">
+                        <span class="ledger-label" style="color:#b25900; font-weight:700;">Next Payment Due Date</span>
+                        <span class="ledger-value" id="ledgerDueDate" style="color:#b25900; font-weight:700;">-</span>
+                    </div>
+                    
+                    <div class="ledger-balance balance-paid" id="ledgerBalanceRow">
+                        <span class="balance-label">Balance Status</span>
+                        <span class="balance-value" id="ledgerBalance">Ksh 0.00</span>
+                    </div>
+                    
+                    <button class="btn-pay" id="btnPayBalance" onclick="openPaymentModal()" style="display: none;">Prepay Future Month</button>
+                </div>
+            </div>
+
+            <!-- FULL STATEMENT AND PAYMENT HISTORY SECTION (FULL WIDTH) -->
+            <div class="card" style="grid-column: 1 / -1; margin-top: 15px;">
+                <h2><span>📄</span> Payment History & Account Statement</h2>
+                
+                <!-- Period filtering panel -->
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:20px; flex-wrap:wrap; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <label for="statementStart" style="font-size:13px; font-weight:600; color:#555;">From:</label>
+                            <input type="date" id="statementStart" onchange="filterHistory()" style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <label for="statementEnd" style="font-size:13px; font-weight:600; color:#555;">To:</label>
+                            <input type="date" id="statementEnd" onchange="filterHistory()" style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                        </div>
+                        <button class="btn-action-small" onclick="clearStatementFilters()">Clear Filters</button>
+                    </div>
+                    <button class="btn-print" onclick="printStatement()" style="background:#1e3c72; padding:8px 14px; font-size:13px;">🖨️ Print Statement</button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Fee Description</th>
+                                <th>Method & Reference</th>
+                                <th style="text-align:right;">Amount (Ksh)</th>
+                                <th>Status</th>
+                                <th style="text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr><td colspan="6" style="text-align:center; color:#999;">Loading transaction statement...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING MODAL WITH WIZARD-BASED PAYMENT FLOW -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3 id="modalRoomTitle">Book Room NEL-001</h3>
+                <button class="btn-close" onclick="closeBookingModal()">&times;</button>
+            </div>
+            
+            <!-- STEP 1: Basic Booking Details -->
+            <div id="bookingStep1">
+                <div class="modal-form-group">
+                    <label for="modalDate">Allocation Date *</label>
+                    <input type="date" id="modalDate" required>
+                </div>
+                <div class="modal-form-group">
+                    <label for="modalPayMethod">Select Payment Method *</label>
+                    <select id="modalPayMethod" onchange="updatePaymentFields()" required>
+                        <option value="M-Pesa">M-Pesa (STK Push)</option>
+                        <option value="Bank transfer">Bank Deposit/Transfer</option>
+                        <option value="Card">Credit/Debit Card</option>
+                        <option value="None">None (Book with 5-Day grace period)</option>
+                    </select>
+                </div>
+                <div class="payment-highlight">
+                    <strong>💳 Initial Monthly Fee Payment</strong>
+                    To reserve this room, you must complete a payment of <strong style="display:inline;" id="modalRateAmount">Ksh 0</strong>.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn-confirm" onclick="goToPaymentStep2()">Proceed →</button>
+                    <button type="button" class="modal-btn-cancel" onclick="closeBookingModal()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Realistic Payment Gateways -->
+            <div id="bookingStep2" style="display: none;">
+                <input type="hidden" id="modalRoomId">
+                <input type="hidden" id="modalBlockName">
+                
+                <h4 style="color:#2a5298; margin-bottom:15px; font-size:15px; border-bottom:1px solid #eee; padding-bottom:8px;">
+                    💳 Step 2: Complete <span id="selectedMethodLabel">M-Pesa</span> Payment
+                </h4>
+
+                <!-- M-PESA CHECKOUT Form -->
+                <div id="mpesaCheckout" class="payment-details-section">
+                    <div class="modal-form-group">
+                        <label for="mpesaPhone">M-Pesa Registered Phone Number *</label>
+                        <input type="tel" id="mpesaPhone" placeholder="07XXXXXXXX or 01XXXXXXXX" pattern="[0-9]{10}" maxlength="10">
+                        <small style="color:#666;">Enter your M-Pesa number to receive the STK PIN Prompt.</small>
+                    </div>
+                    <button type="button" class="btn-pay" id="btnStkPush" onclick="simulateStkPush()">Send STK PIN Prompt</button>
+                    
+                    <div id="stkStatusBlock" style="display:none; background:#f0f9ff; border:1px solid #bae6fd; padding:15px; border-radius:8px; margin-top:15px; text-align:center;">
+                        <div style="font-weight:600; color:#0369a1; margin-bottom:5px;" id="stkStatusText">📱 Sending STK push...</div>
+                        <div id="stkCountdown" style="font-size:13px; color:#555; margin-bottom:10px;">Please confirm on your handset.</div>
+                        <a href="javascript:void(0)" onclick="switchToManualMpesa(event)" style="font-size:12px; color:#0284c7; font-weight:600; text-decoration:underline;">Having issues? Enter transaction code manually</a>
+                    </div>
+
+                    <div id="mpesaTxInputBlock" style="display:none; margin-top:20px;">
+                        <div class="modal-form-group">
+                            <label for="mpesaTxCode">Enter 10-Digit M-Pesa Transaction Code *</label>
+                            <input type="text" id="mpesaTxCode" placeholder="e.g. RG73JD82H8" maxlength="10" style="text-transform:uppercase; font-family:monospace; font-size:16px; letter-spacing:1px;">
+                            <small style="color:#22c55e; font-weight:600; margin-top:4px; display:block;">✓ PIN verified successfully! Please enter your transaction code to link.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BANK DEPOSIT CHECKOUT Form -->
+                <div id="bankCheckout" class="payment-details-section" style="display:none;">
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; font-size:13px; margin-bottom:15px; line-height:1.5;">
+                        <strong>🏦 University Bank Account Details</strong><br>
+                        Bank: <strong>Co-operative Bank of Kenya</strong><br>
+                        Account Name: <strong>Everest University Hostel</strong><br>
+                        Account Number: <strong>01129485736100</strong><br>
+                        Branch: <strong>Nairobi Corporate</strong>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="bankTxRef">Bank Slip Deposit Reference Code *</label>
+                        <input type="text" id="bankTxRef" placeholder="e.g. FT260716A981" style="text-transform:uppercase;">
+                        <small style="color:#666;">Enter the transaction/reference code from the deposit slip or bank app transfer.</small>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="bankSlipFile">Upload Copy of Deposit Slip *</label>
+                        <input type="file" id="bankSlipFile" accept="image/*,application/pdf">
+                    </div>
+                </div>
+
+                <!-- CARD CHECKOUT Form -->
+                <div id="cardCheckout" class="payment-details-section" style="display:none;">
+                    <div class="modal-form-group">
+                        <label for="cardholderName">Cardholder Name *</label>
+                        <input type="text" id="cardholderName" placeholder="Sandra Jenga">
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="cardNo">Card Number *</label>
+                        <input type="text" id="cardNo" placeholder="4111 2222 3333 4444" maxlength="19">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="modal-form-group">
+                            <label for="cardExp">Expiry Date *</label>
+                            <input type="text" id="cardExp" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="modal-form-group">
+                            <label for="cardCvv">CVV *</label>
+                            <input type="password" id="cardCvv" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEASE CHECKOUT (5-DAY GRACE PERIOD WARNING) -->
+                <div id="leaseCheckout" class="payment-details-section" style="display:none;">
+                    <div style="background:#eef2ff; border:1px solid #c7d2fe; padding:15px; border-radius:8px; font-size:13px; color:#3730a3; line-height:1.5;">
+                        <strong>⚠️ 5-Day Booking Grace Period Lease</strong><br>
+                        You are choosing to reserve this room without paying immediately. You will have exactly <strong>5 days</strong> to pay the initial Monthly Bed Fee of <strong id="leaseRateAmount">Ksh 20,000</strong>.<br><br>
+                        If payment is not completed within 5 days, this booking will be automatically cancelled and the room returned to the available rooms pool.
+                    </div>
+                </div>
+
+                <!-- Processing State Overlay (Simulated Payment Processing) -->
+                <div id="paymentProgressOverlay" style="display:none; text-align:center; padding:20px;">
+                    <div class="spinner" style="width:35px; height:35px; border-width:4px; margin-bottom:12px;"></div>
+                    <div style="font-weight:600; color:#1e3c72; font-size:15px;" id="paymentProgressMessage">Verifying transaction...</div>
+                </div>
+
+                <div class="modal-footer" id="paymentFooterButtons">
+                    <button type="button" class="modal-btn-confirm" id="btnSubmitBookingFinal" onclick="verifyAndSubmitBooking()">Verify Payment & Book Room</button>
+                    <button type="button" class="modal-btn-cancel" onclick="goBackToStep1()">← Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GENERAL PAYMENT MODAL (PAY OUTSTANDING / PREPAY FUTURE) -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3 id="paymentModalTitle">Make Ledger Payment</h3>
+                <button class="btn-close" onclick="closePaymentModal()">&times;</button>
+            </div>
+            
+            <!-- STEP 1: Amount & Method selection -->
+            <div id="genPayStep1">
+                <div class="modal-form-group">
+                    <label for="payAmount">Amount to Pay (Ksh) *</label>
+                    <input type="number" id="payAmount" min="1" required>
+                </div>
+                <div class="modal-form-group">
+                    <label for="payMethod">Select Payment Method *</label>
+                    <select id="payMethod" onchange="updateGenPaymentFields()" required>
+                        <option value="M-Pesa">M-Pesa (STK Push)</option>
+                        <option value="Bank transfer">Bank Deposit/Transfer</option>
+                        <option value="Card">Credit/Debit Card</option>
+                    </select>
+                </div>
+                <div class="payment-highlight" style="background: #eef2ff; border-color: #c7d2fe; color: #3730a3;">
+                    <strong>ℹ️ Ledger Prepayment Credit</strong>
+                    Any payment made here will be instantly added to your student account ledger balance as credit to cover future billing cycles.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn-confirm" onclick="goToGenPayStep2()">Proceed to Payment →</button>
+                    <button type="button" class="modal-btn-cancel" onclick="closePaymentModal()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Realistic Gateways -->
+            <div id="genPayStep2" style="display: none;">
+                <h4 style="color:#2a5298; margin-bottom:15px; font-size:15px; border-bottom:1px solid #eee; padding-bottom:8px;">
+                    💳 Step 2: Complete <span id="genSelectedMethodLabel">M-Pesa</span> Payment
+                </h4>
+
+                <!-- M-PESA CHECKOUT -->
+                <div id="genMpesaCheckout" class="payment-details-section">
+                    <div class="modal-form-group">
+                        <label for="genMpesaPhone">M-Pesa Registered Phone Number *</label>
+                        <input type="tel" id="genMpesaPhone" placeholder="07XXXXXXXX or 01XXXXXXXX" pattern="[0-9]{10}" maxlength="10">
+                        <small style="color:#666;">Enter your M-Pesa number to receive the STK PIN Prompt.</small>
+                    </div>
+                    <button type="button" class="btn-pay" id="btnGenStkPush" onclick="simulateGenStkPush()">Send STK PIN Prompt</button>
+                    
+                    <div id="genStkStatusBlock" style="display:none; background:#f0f9ff; border:1px solid #bae6fd; padding:15px; border-radius:8px; margin-top:15px; text-align:center;">
+                        <div style="font-weight:600; color:#0369a1; margin-bottom:5px;" id="genStkStatusText">📱 Sending STK push...</div>
+                        <div id="genStkCountdown" style="font-size:13px; color:#555; margin-bottom:10px;">Please confirm on your handset.</div>
+                        <a href="javascript:void(0)" onclick="switchToManualGenMpesa(event)" style="font-size:12px; color:#0284c7; font-weight:600; text-decoration:underline;">Having issues? Enter transaction code manually</a>
+                    </div>
+
+                    <div id="genMpesaTxInputBlock" style="display:none; margin-top:20px;">
+                        <div class="modal-form-group">
+                            <label for="genMpesaTxCode">Enter 10-Digit M-Pesa Transaction Code *</label>
+                            <input type="text" id="genMpesaTxCode" placeholder="e.g. RG73JD82H8" maxlength="10" style="text-transform:uppercase; font-family:monospace; font-size:16px; letter-spacing:1px;">
+                            <small style="color:#22c55e; font-weight:600; margin-top:4px; display:block;">✓ PIN verified successfully! Please enter your transaction code to link.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BANK DEPOSIT -->
+                <div id="genBankCheckout" class="payment-details-section" style="display:none;">
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; font-size:13px; margin-bottom:15px; line-height:1.5;">
+                        <strong>🏦 University Bank Account Details</strong><br>
+                        Bank: <strong>Co-operative Bank of Kenya</strong><br>
+                        Account Name: <strong>Everest University Hostel</strong><br>
+                        Account Number: <strong>01129485736100</strong><br>
+                        Branch: <strong>Nairobi Corporate</strong>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="genBankTxRef">Bank Slip Deposit Reference Code *</label>
+                        <input type="text" id="genBankTxRef" placeholder="e.g. FT260716A981" style="text-transform:uppercase;">
+                        <small style="color:#666;">Enter the transaction/reference code from the deposit slip or bank app transfer.</small>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="genBankSlipFile">Upload Copy of Deposit Slip *</label>
+                        <input type="file" id="genBankSlipFile" accept="image/*,application/pdf">
+                    </div>
+                </div>
+
+                <!-- CARD CHECKOUT -->
+                <div id="genCardCheckout" class="payment-details-section" style="display:none;">
+                    <div class="modal-form-group">
+                        <label for="genCardholderName">Cardholder Name *</label>
+                        <input type="text" id="genCardholderName" placeholder="Sandra Jenga">
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="genCardNo">Card Number *</label>
+                        <input type="text" id="genCardNo" placeholder="4111 2222 3333 4444" maxlength="19">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="modal-form-group">
+                            <label for="genCardExp">Expiry Date *</label>
+                            <input type="text" id="genCardExp" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="modal-form-group">
+                            <label for="genCardCvv">CVV *</label>
+                            <input type="password" id="genCardCvv" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing state spinner -->
+                <div id="genPaymentProgressOverlay" style="display:none; text-align:center; padding:20px;">
+                    <div class="spinner" style="width:35px; height:35px; border-width:4px; margin-bottom:12px;"></div>
+                    <div style="font-weight:600; color:#1e3c72; font-size:15px;" id="genPaymentProgressMessage">Verifying transaction...</div>
+                </div>
+
+                <div class="modal-footer" id="genPaymentFooterButtons">
+                    <button type="button" class="modal-btn-confirm" onclick="verifyAndSubmitGenPayment()">Verify Payment</button>
+                    <button type="button" class="modal-btn-cancel" onclick="goBackToGenStep1()">← Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM TRANSFER & SWAP MODAL -->
+    <div class="modal" id="transferSwapModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Room Transfer & Swap Manager</h3>
+                <button class="btn-close" onclick="closeTransferSwapModal()">&times;</button>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <label style="font-weight: 600; cursor: pointer; font-size: 14px;">
+                    <input type="radio" name="manageAction" value="transfer" checked onchange="toggleManageAction()"> Transfer to Free Room
+                </label>
+                <label style="font-weight: 600; cursor: pointer; font-size: 14px;">
+                    <input type="radio" name="manageAction" value="swap" onchange="toggleManageAction()"> Swap Rooms with Student
+                </label>
+            </div>
+
+            <!-- TRANSFER SECTION -->
+            <div id="transferSection">
+                <div class="modal-form-group">
+                    <label for="transferRoomSelect">Select New Room (Same Gender)</label>
+                    <select id="transferRoomSelect" required>
+                        <option value="">Loading available rooms...</option>
+                    </select>
+                </div>
+                <div class="payment-highlight" style="background:#eef2ff; border-color:#c7d2fe; color:#3730a3; margin-bottom: 0;">
+                    <strong>ℹ️ Room Rate Adjustments</strong>
+                    If you transfer to a room in a different block (with a different monthly rate), your future monthly billings will be dynamically updated based on the new block's rate.
+                </div>
+            </div>
+
+            <!-- SWAP SECTION -->
+            <div id="swapSection" style="display: none;">
+                <div class="modal-form-group">
+                    <label for="swapStudentSelect">Select Student to Swap With (Same Gender)</label>
+                    <select id="swapStudentSelect" required>
+                        <option value="">Loading eligible students...</option>
+                    </select>
+                </div>
+                <div class="payment-highlight" style="background:#fffbeb; border-color:#fde68a; color:#854d0e; margin-bottom: 0;">
+                    <strong>⚠️ Room Exchange Confirmation</strong>
+                    Swapping will trade your current room directly with the selected student. Both allocations will update immediately.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="modal-btn-confirm" onclick="submitTransferSwap()">Confirm Room Change</button>
+                <button type="button" class="modal-btn-cancel" onclick="closeTransferSwapModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== REAL PRINTABLE RECEIPT PAGE CONTAINER ===== -->
+    <div id="printReceiptPage">
+        <div class="receipt-watermark">PAID</div>
+        
+        <div class="receipt-header">
+            <h1>Everest University</h1>
+            <p>P.O. Box 24350-00100, Nairobi, Kenya</p>
+            <p>Tel: +254 712 345 678 | Email: hostel@everest.ac.ke</p>
+            <p><strong>OFFICIAL HOSTEL ALLOCATION RECEIPT</strong></p>
+        </div>
+
+        <div class="receipt-title">PAYMENT & BOOKING SLIP</div>
+
+        <div class="receipt-grid">
+            <div><strong>Student Name:</strong> <span id="printStudentName">-</span></div>
+            <div><strong>Date of Issue:</strong> <span id="printReceiptDate">-</span></div>
+            <div><strong>Admission No:</strong> <span id="printStudentAdm">-</span></div>
+            <div><strong>Reporting Ref:</strong> <span id="printReceiptCode" style="font-family:monospace; font-weight:700; letter-spacing:0.5px;">-</span></div>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Hostel Details</th>
+                    <th>Billing Month</th>
+                    <th>Payment Method</th>
+                    <th style="text-align: right;">Amount Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong style="font-weight:700;" id="printBlockRoom">-</strong><br>
+                        <span id="printBedLabel" style="font-size:12px; color:#555;">Room Allocation Secured</span>
+                    </td>
+                    <td id="printBillingMonth">-</td>
+                    <td id="printPayMethod">-</td>
+                    <td style="text-align: right; font-weight: 700;" id="printAmountPaid">Ksh 0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="receipt-total-box">
+            Total Amount Received: <span id="printTotalSum" style="font-size:18px;">Ksh 0.00</span>
+        </div>
+
+        <div class="receipt-signatures">
+            <div>
+                <p>Student Signature:</p>
+                <br>
+                <div class="receipt-sig-line">__________________________</div>
+            </div>
+            <div>
+                <p>Hostel Warden Approval:</p>
+                <br>
+                <div class="receipt-sig-line">Official Stamp & Signature</div>
+            </div>
+        </div>
+
+        <div class="receipt-footer">
+            <p>Thank you for booking with Everest University.</p>
+            <p><strong>Note:</strong> Present this receipt at the warden's office during reporting to pick up your key.</p>
+            <p>Computer Generated Receipt. Signature is valid upon verification of the reporting reference code.</p>
+        </div>
+    </div>
+
+    <!-- ===== REAL PRINTABLE STATEMENT PAGE CONTAINER ===== -->
+    <div id="printStatementPage">
+        <div class="receipt-header">
+            <h1>Everest University</h1>
+            <p>P.O. Box 24350-00100, Nairobi, Kenya</p>
+            <p>Tel: +254 712 345 678 | Email: hostel@everest.ac.ke</p>
+            <p><strong>OFFICIAL HOSTEL ACCOUNT STATEMENT</strong></p>
+        </div>
+
+        <div class="receipt-title">STATEMENT OF HOSTEL LEDGER</div>
+
+        <div class="receipt-grid">
+            <div><strong>Student Name:</strong> <span id="printStmtStudentName">-</span></div>
+            <div><strong>Date Generated:</strong> <span id="printStmtDate">-</span></div>
+            <div><strong>Admission No:</strong> <span id="printStmtStudentAdm">-</span></div>
+            <div><strong>Statement Period:</strong> <span id="printStmtPeriod">-</span></div>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Payment Date</th>
+                    <th>Fee Category</th>
+                    <th>Reference / Remarks</th>
+                    <th>Method</th>
+                    <th style="text-align: right;">Amount Paid</th>
+                </tr>
+            </thead>
+            <tbody id="printStmtTableBody">
+                <!-- Populated dynamically -->
+            </tbody>
+        </table>
+
+        <div style="margin-top:20px; border-top:2px solid #000; padding-top:10px; font-size:13px; line-height:1.6;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong>Total Accrued Charges:</strong>
+                <span id="printStmtTotalCharged">Ksh 0.00</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong>Total Payments Completed:</strong>
+                <span id="printStmtTotalPaid">Ksh 0.00</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700; border-top:1px dashed #000; padding-top:5px; margin-top:5px;">
+                <strong>Outstanding Balance Status:</strong>
+                <span id="printStmtBalance">Ksh 0.00</span>
+            </div>
+        </div>
+
+        <div class="receipt-signatures">
+            <div>
+                <p>Student Signature:</p>
+                <br>
+                <div class="receipt-sig-line">__________________________</div>
+            </div>
+            <div>
+                <p>Hostel Warden Approval:</p>
+                <br>
+                <div class="receipt-sig-line">Official Stamp & Signature</div>
+            </div>
+        </div>
+
+        <div class="receipt-footer">
+            <p>Everest University Finance Registry. Verified Online Statement.</p>
+            <p>Computer Generated Statement. Signature is valid upon verification of corresponding reporting references.</p>
+        </div>
+    </div>
+
+    <script>
+        let studentUser = null;
+        let activeBooking = null;
+        let selectedRoom = null;
+        let paymentHistoryList = []; // Cache list of completed payments
+        const blockRates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+
+        // Verify session status
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const data = await response.json();
+                
+                if (!data.success || data.user.role !== 'student') {
+                    window.location.href = 'student-login.html';
+                    return;
+                }
+                
+                studentUser = data.user;
+                document.getElementById('studentPill').textContent = `👤 ${studentUser.fullName}`;
+                document.getElementById('welcomeTitle').textContent = `Welcome, ${studentUser.fullName}!`;
+                document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
+                
+                await Promise.all([loadBookingDetails(), loadAvailableRooms(), loadLedger(), loadPaymentHistory()]);
+            } catch (err) {
+                window.location.href = 'student-login.html';
+            }
+        }
+
+        // Fetch student's booking
+        async function loadBookingDetails() {
+            try {
+                const response = await fetch('/api/allocations');
+                const data = await response.json();
+                
+                const statusSection = document.getElementById('bookingStatusSection');
+                
+                if (data.success && data.data.length > 0) {
+                    // Look for active booking OR pending lease bookings
+                    activeBooking = data.data.find(a => a.status === 'active' || a.status === 'pending_payment');
+                    
+                    if (activeBooking) {
+                        const rate = blockRates[activeBooking.block_name] || 0;
+                        let leaseWarningHtml = '';
+
+                        // Show lease warning if the booking is unpaid
+                        if (activeBooking.status === 'pending_payment') {
+                            leaseWarningHtml = `
+                                <div style="background:#fff5f5; border-left:4px solid #e53e3e; color:#c53030; padding:12px 16px; border-radius:6px; font-size:13px; margin-bottom:15px; text-align:left; line-height:1.5;">
+                                    <strong>⚠️ Unpaid Grace Period Lease</strong><br>
+                                    You have a temporary reservation. You must clear the monthly fee of <strong>Ksh ${rate.toLocaleString()}</strong> before <strong>${activeBooking.lease_expires_at}</strong>. If not paid, this booking will be automatically cancelled and returned to the pool.
+                                </div>
+                            `;
+                        }
+
+                        statusSection.innerHTML = `
+                            ${leaseWarningHtml}
+                            <div class="booking-details-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Hostel Block</span>
+                                    <span class="detail-value">${activeBooking.block_name}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Room Number</span>
+                                    <span class="detail-value">${activeBooking.room_number}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Allocation Date</span>
+                                    <span class="detail-value">${activeBooking.allocation_date}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Booking Status</span>
+                                    <span class="detail-value" style="color: ${activeBooking.status === 'active' ? '#17733b' : '#c53030'}; text-transform: capitalize;">
+                                        ${activeBooking.status.replace('_', ' ')}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="reporting-code-badge" style="margin-bottom: 20px;">
+                                <span style="display:block; font-size:11px; font-weight:700; color:#666; margin-bottom:4px; text-transform:uppercase;">Reporting Booking Code</span>
+                                <strong>${activeBooking.booking_code}</strong>
+                            </div>
+                            <div style="display:flex; gap:10px; margin-top:15px;">
+                                <button class="btn-print" onclick="printReceipt()" style="flex:1; display:flex; justify-content:center; align-items:center; padding:12px; font-weight:600; text-align:center; background:#17733b; color:white; border:none; border-radius:8px; cursor:pointer; transition:background 0.2s;">🖨️ Print Receipt</button>
+                                <button class="btn-action-small" onclick="openTransferSwapModal()" style="flex:1; padding:12px; font-weight:600; font-size:14px; border-radius:8px;">🔄 Transfer / Swap Room</button>
+                            </div>
+                        `;
+                        
+                        // Hide room finder since student already booked
+                        document.getElementById('roomFinderCard').style.display = 'none';
+                        return;
+                    }
+                }
+                
+                // If no active booking
+                activeBooking = null;
+                document.getElementById('roomFinderCard').style.display = 'block';
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Fetch rooms matching student's gender (Without showing gender column)
+        async function loadAvailableRooms() {
+            const blockSelect = document.getElementById('blockFilter').value;
+            const query = new URLSearchParams();
+            if (blockSelect) query.set('block_name', blockSelect);
+            
+            try {
+                const response = await fetch(`/api/rooms?${query}`);
+                const data = await response.json();
+                
+                const tableBody = document.getElementById('roomsTableBody');
+                
+                if (data.success) {
+                    const rooms = data.data || [];
+                    if (rooms.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">No rooms matching your gender constraint are currently available.</td></tr>';
+                        return;
+                    }
+
+                    tableBody.innerHTML = rooms.map(r => {
+                        const available = r.capacity - r.current_occupancy;
+                        const blockLabel = r.block_name ? `<span class="badge-block">${r.block_name}</span>` : '-';
+                        
+                        let actionHtml = '';
+                        if (available > 0) {
+                            actionHtml = `<button class="btn-book" onclick="openBookingModal(${r.room_id}, '${r.room_number}', '${r.block_name}')">Book Room</button>`;
+                        } else {
+                            actionHtml = `<span style="color:#ff4757; font-weight:600;">Full</span>`;
+                        }
+
+                        return `
+                            <tr>
+                                <td><strong>${r.room_number}</strong></td>
+                                <td>${blockLabel}</td>
+                                <td>${r.room_type}</td>
+                                <td>${r.capacity} beds total</td>
+                                <td>${available} beds available</td>
+                                <td>${actionHtml}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Calculate next payment due date dynamically
+        function calculateNextDueDate(allocationDateStr, totalPaid, rate) {
+            if (!allocationDateStr || !rate || rate <= 0) return 'N/A';
+            const monthsPaid = Math.floor(totalPaid / rate);
+            if (monthsPaid <= 0) return allocationDateStr; // Due immediately if zero payments
+            
+            const date = new Date(allocationDateStr);
+            date.setMonth(date.getMonth() + monthsPaid);
+            
+            // Format as readable date e.g. August 16, 2026
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Load Billing Ledger
+        async function loadLedger() {
+            try {
+                const response = await fetch('/api/payments/balance');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const ledger = data.data;
+                    document.getElementById('ledgerCharged').textContent = 'Ksh ' + ledger.total_charged.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    document.getElementById('ledgerPaid').textContent = 'Ksh ' + ledger.total_paid.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    
+                    // Display next payment due date if active booking exists
+                    const dueDateRow = document.getElementById('ledgerDueDateRow');
+                    const payBtn = document.getElementById('btnPayBalance');
+                    
+                    if (activeBooking) {
+                        const rate = blockRates[activeBooking.block_name] || 0;
+                        const nextDueStr = calculateNextDueDate(activeBooking.allocation_date, ledger.total_paid, rate);
+                        document.getElementById('ledgerDueDate').textContent = nextDueStr;
+                        dueDateRow.style.display = 'flex';
+                        
+                        // Pay button is always active if room is booked
+                        payBtn.style.display = 'block';
+
+                        const balanceRow = document.getElementById('ledgerBalanceRow');
+                        const balanceVal = document.getElementById('ledgerBalance');
+                        
+                        if (ledger.balance >= 0) {
+                            balanceRow.className = 'ledger-balance balance-paid';
+                            balanceVal.textContent = 'Ksh ' + ledger.balance.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                            document.querySelector('.balance-label').textContent = 'Prepaid Credit';
+                            payBtn.textContent = 'Prepay Future Month';
+                        } else {
+                            balanceRow.className = 'ledger-balance balance-due';
+                            balanceVal.textContent = 'Ksh ' + Math.abs(ledger.balance).toLocaleString(undefined, { minimumFractionDigits: 2 });
+                            document.querySelector('.balance-label').textContent = 'Outstanding Due';
+                            payBtn.textContent = 'Pay Outstanding Fee';
+                        }
+                    } else {
+                        dueDateRow.style.display = 'none';
+                        payBtn.style.display = 'none';
+                        
+                        // Default balance styling
+                        const balanceRow = document.getElementById('ledgerBalanceRow');
+                        balanceRow.className = 'ledger-balance balance-paid';
+                        document.getElementById('ledgerBalance').textContent = 'Ksh 0.00';
+                        document.querySelector('.balance-label').textContent = 'Prepaid Credit';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Fetch completed payment history records for statement list
+        async function loadPaymentHistory() {
+            try {
+                const response = await fetch('/api/payments');
+                const data = await response.json();
+                if (data.success) {
+                    paymentHistoryList = data.data || [];
+                    renderHistoryTable(paymentHistoryList);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderHistoryTable(payments) {
+            const tableBody = document.getElementById('historyTableBody');
+            if (payments.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">No transaction logs recorded.</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = payments.map(p => {
+                const formattedDate = new Date(p.payment_date).toLocaleDateString('en-US', { dateStyle: 'medium' });
+                return `
+                    <tr>
+                        <td><strong>${formattedDate}</strong></td>
+                        <td>${p.fee_category}</td>
+                        <td>
+                            <div style="font-size:13px; font-weight:500;">${p.remarks || '-'}</div>
+                        </td>
+                        <td style="text-align:right; font-weight:600;">Ksh ${p.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td><span style="background:#daf4e3; color:#17733b; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;">Completed</span></td>
+                        <td style="text-align:center;">
+                            <button class="btn-action-small" onclick="printSpecificReceipt(${p.payment_id})">Print Receipt</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Apply filters to payment logs list
+        function filterHistory() {
+            const startVal = document.getElementById('statementStart').value;
+            const endVal = document.getElementById('statementEnd').value;
+            
+            let filtered = paymentHistoryList;
+            if (startVal) {
+                filtered = filtered.filter(p => p.payment_date >= startVal);
+            }
+            if (endVal) {
+                filtered = filtered.filter(p => p.payment_date <= endVal);
+            }
+            renderHistoryTable(filtered);
+        }
+
+        // Reset statement period selectors
+        function clearStatementFilters() {
+            document.getElementById('statementStart').value = '';
+            document.getElementById('statementEnd').value = '';
+            renderHistoryTable(paymentHistoryList);
+        }
+
+        // Pop and go toast notification
+        function showBookingToast(bookingCode) {
+            const toast = document.getElementById('confirmAlert');
+            document.getElementById('confirmCode').textContent = bookingCode;
+            toast.style.display = 'flex';
+            toast.style.animation = 'slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutRight 0.5s ease-in forwards';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 500);
+            }, 5000);
+        }
+
+        // Booking Modal Operations (Without choosing bed)
+        function openBookingModal(roomId, roomNumber, blockName) {
+            document.getElementById('modalRoomId').value = roomId;
+            document.getElementById('modalBlockName').value = blockName;
+            document.getElementById('modalRoomTitle').textContent = `Book Room ${roomNumber}`;
+            
+            const rate = blockRates[blockName] || 0;
+            document.getElementById('modalRateAmount').textContent = 'Ksh ' + rate.toLocaleString();
+            document.getElementById('leaseRateAmount').textContent = 'Ksh ' + rate.toLocaleString();
+
+            // Reset modal wizard steps
+            goBackToStep1();
+            document.getElementById('bookingModal').classList.add('show');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.remove('show');
+            document.getElementById('bookingForm').reset();
+            document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Wizard navigation helpers
+        function goToPaymentStep2() {
+            const dateVal = document.getElementById('modalDate').value;
+            if (!dateVal) {
+                alert('Please select an allocation date.');
+                return;
+            }
+            
+            document.getElementById('bookingStep1').style.display = 'none';
+            document.getElementById('bookingStep2').style.display = 'block';
+            
+            updatePaymentFields();
+        }
+
+        function goBackToStep1() {
+            document.getElementById('bookingStep2').style.display = 'none';
+            document.getElementById('bookingStep1').style.display = 'block';
+        }
+
+        function updatePaymentFields() {
+            const method = document.getElementById('modalPayMethod').value;
+            document.getElementById('selectedMethodLabel').textContent = method === 'None' ? 'Lease Reservation' : method;
+
+            // Hide all checkout forms
+            document.getElementById('mpesaCheckout').style.display = 'none';
+            document.getElementById('bankCheckout').style.display = 'none';
+            document.getElementById('cardCheckout').style.display = 'none';
+            document.getElementById('leaseCheckout').style.display = 'none';
+
+            // Show selected checkout form
+            if (method === 'M-Pesa') {
+                document.getElementById('mpesaCheckout').style.display = 'block';
+                document.getElementById('btnSubmitBookingFinal').textContent = 'Verify Payment & Book Room';
+            } else if (method === 'Bank transfer') {
+                document.getElementById('bankCheckout').style.display = 'block';
+                document.getElementById('btnSubmitBookingFinal').textContent = 'Verify Payment & Book Room';
+            } else if (method === 'Card') {
+                document.getElementById('cardCheckout').style.display = 'block';
+                document.getElementById('btnSubmitBookingFinal').textContent = 'Verify Payment & Book Room';
+            } else if (method === 'None') {
+                document.getElementById('leaseCheckout').style.display = 'block';
+                document.getElementById('btnSubmitBookingFinal').textContent = 'Confirm 5-Day Grace Booking';
+            }
+        }
+
+        // M-Pesa STK push simulation
+        let stkCheckInterval = null;
+        function simulateStkPush() {
+            const phone = document.getElementById('mpesaPhone').value.trim();
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Please enter a valid 10-digit mobile number (e.g. 0712345678).');
+                return;
+            }
+
+            document.getElementById('btnStkPush').style.display = 'none';
+            document.getElementById('stkStatusBlock').style.display = 'block';
+            document.getElementById('paymentFooterButtons').style.display = 'none'; // Hide buttons during auto push
+
+            let seconds = 6;
+            document.getElementById('stkStatusText').innerHTML = `📱 STK PIN prompt sent to ${phone}...`;
+            document.getElementById('stkCountdown').innerHTML = `Please enter your PIN on your phone handset... (${seconds}s remaining)`;
+
+            stkCheckInterval = setInterval(async () => {
+                seconds--;
+                document.getElementById('stkCountdown').innerHTML = `Please enter your PIN on your phone handset... (${seconds}s remaining)`;
+                
+                if (seconds <= 0) {
+                    clearInterval(stkCheckInterval);
+                    stkCheckInterval = null;
+                    document.getElementById('stkStatusBlock').style.display = 'none';
+                    
+                    // Generate automatic transaction code
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    let code = 'S';
+                    for (let i = 0; i < 9; i++) {
+                        code += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    document.getElementById('mpesaTxCode').value = code;
+
+                    // Trigger toast notification for auto-confirmed STK Push
+                    alert(`📱 STK Push Payment Confirmed Automatically!\nTransaction Code: ${code}`);
+                    
+                    // Proceed to verify & book automatically!
+                    await verifyAndSubmitBooking();
+                }
+            }, 1000);
+        }
+
+        function switchToManualMpesa(event) {
+            if (event) event.preventDefault();
+            if (stkCheckInterval) {
+                clearInterval(stkCheckInterval);
+                stkCheckInterval = null;
+            }
+            document.getElementById('stkStatusBlock').style.display = 'none';
+            document.getElementById('mpesaTxInputBlock').style.display = 'block';
+            document.getElementById('paymentFooterButtons').style.display = 'flex'; // show Verify Payment buttons
+            document.getElementById('mpesaTxCode').value = ''; // clear out code for manual typing
+        }
+
+        // Verify checkout input and submit API calls
+        async function verifyAndSubmitBooking() {
+            const method = document.getElementById('modalPayMethod').value;
+            let transactionRef = '';
+            let amountVal = 0;
+
+            if (method === 'M-Pesa') {
+                transactionRef = document.getElementById('mpesaTxCode').value.trim();
+                if (!transactionRef) {
+                    alert('Please enter the M-Pesa Transaction Code.');
+                    return;
+                }
+            } else if (method === 'Bank transfer') {
+                transactionRef = document.getElementById('bankTxRef').value.trim();
+                const file = document.getElementById('bankSlipFile').files[0];
+                if (!transactionRef) {
+                    alert('Please enter the Bank slip reference number.');
+                    return;
+                }
+                if (!file) {
+                    alert('Please choose and upload a deposit slip image/receipt.');
+                    return;
+                }
+            } else if (method === 'Card') {
+                const holder = document.getElementById('cardholderName').value.trim();
+                const card = document.getElementById('cardNo').value.trim().replace(/\s+/g, '');
+                const exp = document.getElementById('cardExp').value.trim();
+                const cvv = document.getElementById('cardCvv').value.trim();
+                
+                if (!holder || card.length < 16 || exp.length < 5 || cvv.length < 3) {
+                    alert('Please fill out all Credit/Debit card details correctly.');
+                    return;
+                }
+                transactionRef = 'CRD-' + Math.floor(100000 + Math.random() * 900000);
+            }
+
+            // Hide form and show processing spinner
+            document.getElementById('mpesaCheckout').style.display = 'none';
+            document.getElementById('bankCheckout').style.display = 'none';
+            document.getElementById('cardCheckout').style.display = 'none';
+            document.getElementById('leaseCheckout').style.display = 'none';
+            document.getElementById('paymentFooterButtons').style.display = 'none';
+            document.getElementById('paymentProgressOverlay').style.display = 'block';
+
+            const progressMsg = document.getElementById('paymentProgressMessage');
+            progressMsg.textContent = method === 'None' ? 'Securing lease booking...' : 'Contacting payment processor gateway...';
+
+            setTimeout(async () => {
+                progressMsg.textContent = method === 'None' ? 'Registering lease duration...' : 'Verifying transaction ledger reference...';
+                
+                setTimeout(async () => {
+                    progressMsg.textContent = 'Completing room allocation...';
+                    
+                    try {
+                        const roomId = document.getElementById('modalRoomId').value;
+                        const blockName = document.getElementById('modalBlockName').value;
+                        const allocationDate = document.getElementById('modalDate').value;
+                        const firstMonthRate = blockRates[blockName] || 0;
+                        const billingMonth = allocationDate.slice(0, 7) + '-01'; // YYYY-MM-01
+
+                        // 1. Submit Room Booking (Lease fields will be parsed on backend)
+                        const allocResponse = await fetch('/api/allocations', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                room_id: roomId,
+                                allocation_date: allocationDate,
+                                payment_method: method !== 'None' ? method : '',
+                                payment_amount: method !== 'None' ? firstMonthRate : 0,
+                                payment_reference: method !== 'None' ? transactionRef : ''
+                            })
+                        });
+                        
+                        const allocData = await allocResponse.json();
+                        if (!allocData.success) {
+                            throw new Error(allocData.message || 'Room booking failed');
+                        }
+
+                        closeBookingModal();
+                        
+                        if (method === 'None') {
+                            alert(`🎉 Temporary Booking registered!\nYou have a 5-day grace period to pay. Your Reporting Code is: ${allocData.booking_code}`);
+                        } else {
+                            alert(`🎉 Booking confirmed!\nYour Reporting Code is: ${allocData.booking_code}\nPayment Code: ${transactionRef}\n\n✉️ Notification: Email receipt sent to student registration address and SMS confirmation sent to registered mobile number.`);
+                        }
+                        
+                        // Load active booking and stats
+                        await loadBookingDetails();
+                        await loadAvailableRooms();
+                        await loadLedger();
+                        await loadPaymentHistory(); // Refresh statement logs
+                        
+                        // Show floating toast alert (pop and go)
+                        showBookingToast(allocData.booking_code);
+                    } catch (error) {
+                        alert('Booking Error: ' + error.message);
+                        
+                        // Reset forms
+                        document.getElementById('paymentProgressOverlay').style.display = 'none';
+                        document.getElementById('paymentFooterButtons').style.display = 'flex';
+                        updatePaymentFields();
+                    }
+                }, 1000);
+            }, 1000);
+        }
+
+        // General Ledger Payment Modal (Pay outstanding balance / prepay next month)
+        function openPaymentModal() {
+            // Pre-populate amount with current monthly rate
+            if (activeBooking) {
+                const rate = blockRates[activeBooking.block_name] || 0;
+                document.getElementById('payAmount').value = rate;
+            }
+            
+            // Reset wizard steps
+            goBackToGenStep1();
+            document.getElementById('paymentModal').classList.add('show');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show');
+            document.getElementById('payAmount').value = '';
+            document.getElementById('payMethod').value = 'M-Pesa';
+        }
+
+        function goBackToGenStep1() {
+            document.getElementById('genPayStep2').style.display = 'none';
+            document.getElementById('genPayStep1').style.display = 'block';
+        }
+
+        function goToGenPayStep2() {
+            const amt = document.getElementById('payAmount').value;
+            if (!amt || amt <= 0) {
+                alert('Please enter a valid payment amount.');
+                return;
+            }
+            document.getElementById('genPayStep1').style.display = 'none';
+            document.getElementById('genPayStep2').style.display = 'block';
+            updateGenPaymentFields();
+        }
+
+        function updateGenPaymentFields() {
+            const method = document.getElementById('payMethod').value;
+            document.getElementById('genSelectedMethodLabel').textContent = method;
+
+            document.getElementById('genMpesaCheckout').style.display = 'none';
+            document.getElementById('genBankCheckout').style.display = 'none';
+            document.getElementById('genCardCheckout').style.display = 'none';
+
+            if (method === 'M-Pesa') {
+                document.getElementById('genMpesaCheckout').style.display = 'block';
+            } else if (method === 'Bank transfer') {
+                document.getElementById('genBankCheckout').style.display = 'block';
+            } else if (method === 'Card') {
+                document.getElementById('genCardCheckout').style.display = 'block';
+            }
+        }
+
+        // Gen M-Pesa STK simulation
+        let genStkInterval = null;
+        function simulateGenStkPush() {
+            const phone = document.getElementById('genMpesaPhone').value.trim();
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Please enter a valid 10-digit mobile number.');
+                return;
+            }
+
+            document.getElementById('btnGenStkPush').style.display = 'none';
+            document.getElementById('genStkStatusBlock').style.display = 'block';
+            document.getElementById('genPaymentFooterButtons').style.display = 'none'; // Hide buttons during auto push
+
+            let seconds = 6;
+            document.getElementById('genStkStatusText').innerHTML = `📱 STK PIN prompt sent to ${phone}...`;
+            document.getElementById('genStkCountdown').innerHTML = `Please enter your PIN on your phone handset... (${seconds}s remaining)`;
+
+            genStkInterval = setInterval(async () => {
+                seconds--;
+                document.getElementById('genStkCountdown').innerHTML = `Please enter your PIN on your phone handset... (${seconds}s remaining)`;
+                
+                if (seconds <= 0) {
+                    clearInterval(genStkInterval);
+                    genStkInterval = null;
+                    document.getElementById('genStkStatusBlock').style.display = 'none';
+                    
+                    // Generate automatic transaction code
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    let code = 'S';
+                    for (let i = 0; i < 9; i++) {
+                        code += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    document.getElementById('genMpesaTxCode').value = code;
+
+                    // Trigger alert for auto confirmation
+                    alert(`📱 STK Push Payment Confirmed Automatically!\nTransaction Code: ${code}`);
+
+                    // Proceed to verify & pay automatically!
+                    await verifyAndSubmitGenPayment();
+                }
+            }, 1000);
+        }
+
+        function switchToManualGenMpesa(event) {
+            if (event) event.preventDefault();
+            if (genStkInterval) {
+                clearInterval(genStkInterval);
+                genStkInterval = null;
+            }
+            document.getElementById('genStkStatusBlock').style.display = 'none';
+            document.getElementById('genMpesaTxInputBlock').style.display = 'block';
+            document.getElementById('genPaymentFooterButtons').style.display = 'flex'; // show Verify Payment buttons
+            document.getElementById('genMpesaTxCode').value = ''; // clear out code for manual entry
+        }
+
+        // Verify and submit general ledger payment
+        async function verifyAndSubmitGenPayment() {
+            const amt = document.getElementById('payAmount').value;
+            const method = document.getElementById('payMethod').value;
+            let transactionRef = '';
+
+            if (method === 'M-Pesa') {
+                transactionRef = document.getElementById('genMpesaTxCode').value.trim();
+                if (!transactionRef) {
+                    alert('Please enter the M-Pesa Transaction Code.');
+                    return;
+                }
+            } else if (method === 'Bank transfer') {
+                transactionRef = document.getElementById('genBankTxRef').value.trim();
+                const file = document.getElementById('genBankSlipFile').files[0];
+                if (!transactionRef) {
+                    alert('Please enter the Bank slip reference.');
+                    return;
+                }
+                if (!file) {
+                    alert('Please select the slip file copy.');
+                    return;
+                }
+            } else if (method === 'Card') {
+                const holder = document.getElementById('genCardholderName').value.trim();
+                const card = document.getElementById('genCardNo').value.trim().replace(/\s+/g, '');
+                const exp = document.getElementById('genCardExp').value.trim();
+                const cvv = document.getElementById('genCardCvv').value.trim();
+                
+                if (!holder || card.length < 16 || exp.length < 5 || cvv.length < 3) {
+                    alert('Please enter valid credit card details.');
+                    return;
+                }
+                transactionRef = 'CRD-' + Math.floor(100000 + Math.random() * 900000);
+            }
+
+            document.getElementById('genMpesaCheckout').style.display = 'none';
+            document.getElementById('genBankCheckout').style.display = 'none';
+            document.getElementById('genCardCheckout').style.display = 'none';
+            document.getElementById('genPaymentFooterButtons').style.display = 'none';
+            document.getElementById('genPaymentProgressOverlay').style.display = 'block';
+
+            const progressMsg = document.getElementById('genPaymentProgressMessage');
+            progressMsg.textContent = 'Contacting payment processor gateway...';
+
+            setTimeout(async () => {
+                progressMsg.textContent = 'Verifying transaction ledger reference...';
+                
+                setTimeout(async () => {
+                    progressMsg.textContent = 'Finalizing payment entry...';
+                    
+                    try {
+                        const today = new Date().toISOString().split('T')[0];
+                        const currentBillingMonth = today.slice(0, 7) + '-01';
+
+                        const response = await fetch('/api/payments', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                hostel_block: activeBooking.block_name,
+                                fee_category: 'Monthly Bed Payment',
+                                billing_month: currentBillingMonth,
+                                amount: parseFloat(amt),
+                                payment_date: today,
+                                status: 'completed',
+                                payment_method: method,
+                                remarks: `Ledger payment. Ref: ${activeBooking.booking_code}. Tx: ${transactionRef}`
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (!data.success) throw new Error(data.message || 'Failed to record payment');
+
+                        closePaymentModal();
+                        alert(`🎉 Payment of Ksh ${parseFloat(amt).toLocaleString()} completed successfully!\nReference: ${transactionRef}\n\n✉️ Notification: Email receipt sent to student registration address and SMS confirmation sent to registered mobile number.`);
+                        
+                        await loadBookingDetails(); // Refresh details in case it was a lease booking being activated!
+                        await loadLedger();
+                        await loadPaymentHistory();
+                    } catch (error) {
+                        alert('Payment Error: ' + error.message);
+                        document.getElementById('genPaymentProgressOverlay').style.display = 'none';
+                        document.getElementById('genPaymentFooterButtons').style.display = 'flex';
+                        updateGenPaymentFields();
+                    }
+                }, 1000);
+            }, 1000);
+        }
+
+        // Print real invoice receipt for active booking
+        async function printReceipt() {
+            if (!activeBooking) return;
+            
+            // Format billing month label
+            const dateObj = new Date(activeBooking.allocation_date);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const formattedMonth = `${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            const rate = blockRates[activeBooking.block_name] || 0;
+            
+            // Fetch transaction payments to find references
+            let payMethodText = activeBooking.status === 'pending_payment' ? 'Lease Booking - Payment Pending' : 'Completed';
+            
+            if (activeBooking.status !== 'pending_payment') {
+                try {
+                    const res = await fetch('/api/payments');
+                    const paymentsData = await res.json();
+                    if (paymentsData.success) {
+                        // Find payment linked to this booking code
+                        const matchingPay = paymentsData.data.find(p => p.remarks && p.remarks.includes(activeBooking.booking_code));
+                        if (matchingPay) {
+                            // Extract payment method and reference code
+                            const refCodeMatch = matchingPay.remarks.match(/Tx:\s*(\S+)/);
+                            const refCode = refCodeMatch ? refCodeMatch[1] : '';
+                            payMethodText = `Completed (${matchingPay.payment_method})${refCode ? ` - Ref: ${refCode}` : ''}`;
+                        }
+                    }
+                } catch(e) {
+                    console.error('Failed to resolve payment transaction details', e);
+                }
+            }
+
+            document.getElementById('printStudentName').textContent = studentUser.fullName;
+            document.getElementById('printStudentAdm').textContent = studentUser.username;
+            document.getElementById('printReceiptDate').textContent = new Date(activeBooking.allocation_date).toLocaleDateString('en-US', { dateStyle: 'medium' });
+            document.getElementById('printReceiptCode').textContent = activeBooking.booking_code;
+            
+            document.getElementById('printBlockRoom').textContent = `${activeBooking.block_name} Block - Room ${activeBooking.room_number}`;
+            document.getElementById('printBillingMonth').textContent = formattedMonth;
+            document.getElementById('printPayMethod').textContent = payMethodText;
+            
+            // If pending payment, show 0 paid on receipt, otherwise block rate
+            const printedPaid = activeBooking.status === 'pending_payment' ? 0 : rate;
+            document.getElementById('printAmountPaid').textContent = 'Ksh ' + printedPaid.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('printTotalSum').textContent = 'Ksh ' + printedPaid.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            
+            // Set receipt class and print
+            document.body.className = 'print-receipt-mode';
+            window.print();
+            document.body.className = '';
+        }
+
+        // Print receipt for a specific past payment from list
+        async function printSpecificReceipt(paymentId) {
+            const payment = paymentHistoryList.find(p => p.payment_id === paymentId);
+            if (!payment) return;
+            
+            const dateObj = new Date(payment.payment_date);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const formattedMonth = `${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            
+            // Extract references
+            const refCodeMatch = (payment.remarks || '').match(/Tx:\s*(\S+)/);
+            const refCode = refCodeMatch ? refCodeMatch[1] : (payment.remarks || 'Completed');
+            
+            const bookingMatch = (payment.remarks || '').match(/Ref:\s*(BK-\S+)/);
+            const bookingCode = bookingMatch ? bookingMatch[1] : 'BK-LEDGER';
+
+            document.getElementById('printStudentName').textContent = studentUser.fullName;
+            document.getElementById('printStudentAdm').textContent = studentUser.username;
+            document.getElementById('printReceiptDate').textContent = new Date(payment.payment_date).toLocaleDateString('en-US', { dateStyle: 'medium' });
+            document.getElementById('printReceiptCode').textContent = bookingCode;
+            
+            document.getElementById('printBlockRoom').textContent = `${payment.hostel_block} Block - Bed Space Fee`;
+            document.getElementById('printBillingMonth').textContent = formattedMonth;
+            document.getElementById('printPayMethod').textContent = `Completed (${payment.payment_method}) - Ref: ${refCode}`;
+            document.getElementById('printAmountPaid').textContent = 'Ksh ' + payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('printTotalSum').textContent = 'Ksh ' + payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            
+            // Set receipt class and print
+            document.body.className = 'print-receipt-mode';
+            window.print();
+            document.body.className = '';
+        }
+
+        // Print full/filtered Account Statement of history
+        function printStatement() {
+            const startVal = document.getElementById('statementStart').value;
+            const endVal = document.getElementById('statementEnd').value;
+            
+            let filtered = paymentHistoryList;
+            let periodText = 'Full History Ledger';
+            
+            if (startVal || endVal) {
+                if (startVal && endVal) {
+                    filtered = filtered.filter(p => p.payment_date >= startVal && p.payment_date <= endVal);
+                    periodText = `${new Date(startVal).toLocaleDateString()} to ${new Date(endVal).toLocaleDateString()}`;
+                } else if (startVal) {
+                    filtered = filtered.filter(p => p.payment_date >= startVal);
+                    periodText = `From ${new Date(startVal).toLocaleDateString()}`;
+                } else {
+                    filtered = filtered.filter(p => p.payment_date <= endVal);
+                    periodText = `Up to ${new Date(endVal).toLocaleDateString()}`;
+                }
+            }
+            
+            document.getElementById('printStmtStudentName').textContent = studentUser.fullName;
+            document.getElementById('printStmtStudentAdm').textContent = studentUser.username;
+            document.getElementById('printStmtDate').textContent = new Date().toLocaleDateString('en-US', { dateStyle: 'medium' });
+            document.getElementById('printStmtPeriod').textContent = periodText;
+            
+            const stmtTableBody = document.getElementById('printStmtTableBody');
+            if (filtered.length === 0) {
+                stmtTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No transaction logs recorded.</td></tr>';
+            } else {
+                stmtTableBody.innerHTML = filtered.map(p => {
+                    return `
+                        <tr>
+                            <td>${new Date(p.payment_date).toLocaleDateString()}</td>
+                            <td>${p.fee_category}</td>
+                            <td>${p.remarks || '-'}</td>
+                            <td>${p.payment_method}</td>
+                            <td style="text-align:right;">Ksh ${p.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            // Compute statement figures
+            const totalPaidVal = filtered.reduce((sum, p) => sum + p.amount, 0);
+            const chargedRawStr = document.getElementById('ledgerCharged').textContent.replace(/[Ksh,\s]/g, '');
+            const totalChargedVal = parseFloat(chargedRawStr) || 0;
+            const stmtBalance = totalPaidVal - totalChargedVal;
+            
+            document.getElementById('printStmtTotalCharged').textContent = document.getElementById('ledgerCharged').textContent;
+            document.getElementById('printStmtTotalPaid').textContent = 'Ksh ' + totalPaidVal.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            
+            const printStmtBalanceEl = document.getElementById('printStmtBalance');
+            if (stmtBalance >= 0) {
+                printStmtBalanceEl.textContent = 'Ksh ' + stmtBalance.toLocaleString(undefined, { minimumFractionDigits: 2 }) + ' (Prepaid Credit)';
+                printStmtBalanceEl.style.color = '#17733b';
+            } else {
+                printStmtBalanceEl.textContent = 'Ksh ' + Math.abs(stmtBalance).toLocaleString(undefined, { minimumFractionDigits: 2 }) + ' (Outstanding Due)';
+                printStmtBalanceEl.style.color = '#a52d2d';
+            }
+
+            // Set statement class and print
+            document.body.className = 'print-statement-mode';
+            window.print();
+            document.body.className = '';
+        }
+
+        // Room Transfer & Swap Modal operations
+        function openTransferSwapModal() {
+            document.getElementById('transferSwapModal').classList.add('show');
+            // reset radios
+            const radios = document.getElementsByName('manageAction');
+            radios[0].checked = true;
+            toggleManageAction();
+            
+            loadTransferRooms();
+            loadSwapCandidates();
+        }
+
+        function closeTransferSwapModal() {
+            document.getElementById('transferSwapModal').classList.remove('show');
+        }
+
+        function toggleManageAction() {
+            const action = document.querySelector('input[name="manageAction"]:checked').value;
+            if (action === 'transfer') {
+                document.getElementById('transferSection').style.display = 'block';
+                document.getElementById('swapSection').style.display = 'none';
+            } else {
+                document.getElementById('transferSection').style.display = 'none';
+                document.getElementById('swapSection').style.display = 'block';
+            }
+        }
+
+        async function loadTransferRooms() {
+            const roomSelect = document.getElementById('transferRoomSelect');
+            roomSelect.innerHTML = '<option value="">Loading available rooms...</option>';
+            try {
+                // Fetch rooms matching student's gender
+                const response = await fetch('/api/rooms');
+                const data = await response.json();
+                if (data.success) {
+                    // Filter to available rooms (except current room and full rooms)
+                    const currentRoomId = activeBooking ? activeBooking.room_id : null;
+                    const availableRooms = data.data.filter(r => r.room_id !== currentRoomId && r.current_occupancy < r.capacity);
+                    
+                    if (availableRooms.length === 0) {
+                        roomSelect.innerHTML = '<option value="">No other rooms matching your gender are currently available.</option>';
+                        return;
+                    }
+
+                    roomSelect.innerHTML = '<option value="">Select Target Room</option>' + availableRooms.map(r => {
+                        const blockText = r.block_name ? `Block ${r.block_name}` : 'Main';
+                        const bedsLeft = r.capacity - r.current_occupancy;
+                        const rate = blockRates[r.block_name] || 0;
+                        return `<option value="${r.room_id}">${r.room_number} (${blockText}) | ${r.room_type} | Ksh ${rate.toLocaleString()}/mo | ${bedsLeft} beds available</option>`;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+                roomSelect.innerHTML = '<option value="">Failed to load rooms.</option>';
+            }
+        }
+
+        async function loadSwapCandidates() {
+            const swapSelect = document.getElementById('swapStudentSelect');
+            swapSelect.innerHTML = '<option value="">Loading eligible students...</option>';
+            try {
+                const response = await fetch('/api/allocations/swap-candidates');
+                const data = await response.json();
+                if (data.success) {
+                    const candidates = data.data || [];
+                    if (candidates.length === 0) {
+                        swapSelect.innerHTML = '<option value="">No other students matching your gender have active bookings.</option>';
+                        return;
+                    }
+
+                    swapSelect.innerHTML = '<option value="">Select Student to Swap With</option>' + candidates.map(c => {
+                        return `<option value="${c.student_id}">${c.full_name} (${c.admission_number}) - Room ${c.room_number} (${c.block_name})</option>`;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+                swapSelect.innerHTML = '<option value="">Failed to load swap candidates.</option>';
+            }
+        }
+
+        async function submitTransferSwap() {
+            const action = document.querySelector('input[name="manageAction"]:checked').value;
+            const payload = {};
+
+            if (action === 'transfer') {
+                const roomId = document.getElementById('transferRoomSelect').value;
+                if (!roomId) {
+                    alert('Please select a target room to transfer to.');
+                    return;
+                }
+                payload.new_room_id = roomId;
+            } else {
+                const studentId = document.getElementById('swapStudentSelect').value;
+                if (!studentId) {
+                    alert('Please select a student to swap rooms with.');
+                    return;
+                }
+                payload.swap_student_id = studentId;
+            }
+
+            try {
+                const response = await fetch('/api/allocations/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Operation failed');
+                
+                alert(`🎉 Room change complete!\n${data.message}`);
+                closeTransferSwapModal();
+                
+                // Refresh dashboard components
+                await Promise.all([loadBookingDetails(), loadAvailableRooms(), loadLedger(), loadPaymentHistory()]);
+            } catch (err) {
+                alert('Transfer/Swap Error: ' + err.message);
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                fetch('/api/logout', { method: 'POST' })
+                    .then(() => {
+                        window.location.href = 'student-login.html';
+                    });
+            }
+        }
+
+        // Initialize check
+        checkAuth();
+    </script>
+</body>
+</html>

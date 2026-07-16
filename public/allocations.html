@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Allocations - Hostel Management System</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; }
+        .navbar { background:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color:white; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+        .navbar-brand { font-size:20px; font-weight:700; }
+        .profile-pill { background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:20px; }
+        .main-container { display:flex; min-height:calc(100vh - 70px); }
+        .sidebar { width:260px; background:white; border-right:1px solid #ddd; padding:20px 0; }
+        .sidebar-title { font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:0.8px; padding:0 20px; margin-bottom:10px; }
+        .sidebar a { display:flex; align-items:center; gap:12px; padding:12px 20px; color:#555; text-decoration:none; transition:all 0.3s; border-left:3px solid transparent; }
+        .sidebar a:hover, .sidebar a.active { background:#e8f0f7; color:#2a5298; border-left-color:#2a5298; }
+        .content { flex:1; padding:30px; }
+        .page-header { margin-bottom:25px; }
+        .page-title { font-size:28px; font-weight:700; color:#1e3c72; margin-bottom:8px; }
+        .page-subtitle { color:#666; font-size:14px; }
+        .card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px; }
+        .card h3 { color:#1e3c72; margin-bottom:15px; }
+        .form-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:15px; }
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-group label { font-size:13px; font-weight:600; color:#555; }
+        .form-group select, .form-group input { padding:11px 12px; border:1px solid #ddd; border-radius:8px; font-size:14px; }
+        .room-details { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px 14px; color:#475569; font-size:13px; line-height:1.5; }
+        .full-width { grid-column:1 / -1; }
+        .btn-row { display:flex; gap:10px; margin-top:12px; }
+        .btn-primary { background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
+        .btn-secondary { background:white; color:#2a5298; border:1px solid #2a5298; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
+        .alert { display:none; padding:12px 14px; border-radius:8px; margin-bottom:15px; font-size:14px; }
+        .alert.show { display:block; }
+        .alert-success { background:#d4edda; color:#155724; }
+        .alert-error { background:#f8d7da; color:#721c24; }
+        table { width:100%; border-collapse:collapse; }
+        th { background:#f5f7fa; padding:12px 14px; text-align:left; color:#666; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
+        td { padding:12px 14px; border-bottom:1px solid #f0f2f5; }
+        tr:hover { background:#fafbfc; }
+        .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+        .badge-active { background:#d4edda; color:#155724; }
+        .badge-inactive { background:#f8d7da; color:#721c24; }
+        .badge-ref { background:#e8f0f7; color:#1e3c72; padding:3px 6px; border-radius:4px; font-weight:700; font-size:11px; letter-spacing:0.5px; }
+        .delete-btn { color:#dc3545; background:none; border:none; cursor:pointer; font-weight:600; }
+        @media (max-width:768px){ .form-grid{grid-template-columns:1fr;} .sidebar{width:220px;} .content{padding:15px;} }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🏢 HMS - Room Allocations</div>
+        <div class="profile-pill" id="profilePill">👤 Loading User...</div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-title">Main</div>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="students.html">👥 Students</a>
+            <a href="rooms.html">🛏️ Rooms</a>
+            <a href="allocations.html" class="active">📋 Allocations</a>
+            <a href="payments.html">💰 Bed Payments</a>
+            <a href="reports.html">📈 Reports</a>
+        </aside>
+
+        <main class="content">
+            <div class="page-header">
+                <h1 class="page-title">Room Allocations</h1>
+                <p class="page-subtitle">Assign students to rooms and track occupancy.</p>
+            </div>
+
+            <div class="alert alert-success" id="successAlert"></div>
+            <div class="alert alert-error" id="errorAlert"></div>
+
+            <section class="card">
+                <h3>Allocate Room</h3>
+                <form id="allocationForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="student_id">Student</label>
+                            <select id="student_id" name="student_id" required><option value="">Select student</option></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="room_id">Room</label>
+                            <select id="room_id" name="room_id" required onchange="renderRoomDetails()"></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Room Details</label>
+                            <div id="roomDetails" class="room-details">Select a room to view its details.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="allocation_date">Allocation Date</label>
+                            <input id="allocation_date" name="allocation_date" type="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expected_checkout_date">Expected Checkout</label>
+                            <input id="expected_checkout_date" name="expected_checkout_date" type="date">
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_method">Initial Payment Method</label>
+                            <select id="payment_method" name="payment_method">
+                                <option value="">None (Pay Later)</option>
+                                <option value="Cash">Cash (Physical Receipt)</option>
+                                <option value="M-Pesa">M-Pesa STK</option>
+                                <option value="Bank transfer">Bank Deposit</option>
+                                <option value="Card">Credit/Debit Card</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_amount">Initial Payment Amount (Ksh)</label>
+                            <input type="number" id="payment_amount" name="payment_amount" placeholder="e.g. 20000">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="payment_reference">Payment Reference / Remarks</label>
+                            <input id="payment_reference" name="payment_reference" placeholder="e.g. Serial REC-108742 or transaction code">
+                        </div>
+                        <div class="form-group full-width" style="display: none;">
+                            <label for="status">Status</label>
+                            <select id="status" name="status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn-primary" type="submit">Allocate Room</button>
+                        <button class="btn-secondary" type="button" onclick="resetForm()">Clear</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card">
+                <h3>Allocation Records</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Admission</th>
+                                <th>Room</th>
+                                <th>Booking Code</th>
+                                <th>Allocation Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allocationTableBody">
+                            <tr><td colspan="7" style="text-align:center; color:#999;">Loading allocations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById('allocationForm');
+        const tableBody = document.getElementById('allocationTableBody');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        const studentSelect = document.getElementById('student_id');
+        const roomSelect = document.getElementById('room_id');
+        const roomDetails = document.getElementById('roomDetails');
+        let students = [];
+        let rooms = [];
+
+        // Verify session status
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const data = await response.json();
+                
+                if (!data.success || data.user.role !== 'admin') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
+                document.getElementById('allocation_date').value = new Date().toISOString().split('T')[0];
+                
+                await loadOptions();
+                await loadAllocations();
+            } catch (err) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function showMessage(type, message) {
+            if (type === 'success') {
+                successAlert.textContent = message;
+                successAlert.classList.add('show');
+                errorAlert.classList.remove('show');
+                setTimeout(() => successAlert.classList.remove('show'), 4000);
+            } else {
+                errorAlert.textContent = message;
+                errorAlert.classList.add('show');
+                successAlert.classList.remove('show');
+                setTimeout(() => errorAlert.classList.remove('show'), 4000);
+            }
+        }
+
+        function resetForm() {
+            form.reset();
+            document.getElementById('allocation_date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('status').value = 'active';
+            roomDetails.innerHTML = 'Select a room to view its details.';
+        }
+
+        async function loadOptions() {
+            try {
+                const [studentsRes, roomsRes] = await Promise.all([
+                    fetch('/api/students'),
+                    fetch('/api/rooms')
+                ]);
+                const studentsData = await studentsRes.json();
+                const roomsData = await roomsRes.json();
+                
+                if (!studentsData.success || !roomsData.success) {
+                    throw new Error(studentsData.message || roomsData.message || 'Could not load dropdown values');
+                }
+
+                students = studentsData.data || [];
+                rooms = (roomsData.data || []).filter(r => r.status === 'available' && Number(r.current_occupancy) < Number(r.capacity));
+
+                if (!students.length) {
+                    studentSelect.innerHTML = '<option value="">No students available</option>';
+                } else {
+                    studentSelect.innerHTML = '<option value="">Select student</option>' + students.map(s => `<option value="${s.student_id}">${s.full_name} (${s.admission_number}) - ${s.gender.toUpperCase()}</option>`).join('');
+                }
+
+                if (!rooms.length) {
+                    roomSelect.innerHTML = '<option value="">No rooms available</option>';
+                    roomDetails.innerHTML = 'No available rooms were found.';
+                } else {
+                    const roomsHtml = rooms.map(r => {
+                        const available = Number(r.capacity) - Number(r.current_occupancy);
+                        const blockLabel = r.block_name ? ` | Block ${r.block_name}` : '';
+                        return `<option value="${r.room_id}">${r.room_number}${blockLabel} | ${r.room_type} | ${r.gender_restriction.toUpperCase()} | ${available} beds available</option>`;
+                    }).join('');
+                    roomSelect.innerHTML = '<option value="">Select room</option>' + roomsHtml;
+                    renderRoomDetails();
+                }
+            } catch (error) {
+                console.error(error);
+                showMessage('error', 'Failed to load options: ' + error.message);
+            }
+        }
+
+        function renderRoomDetails() {
+            const room = rooms.find(r => String(r.room_id) === roomSelect.value);
+            if (!room) {
+                roomDetails.innerHTML = 'Select a room to view its details.';
+                document.getElementById('payment_amount').value = '';
+                return;
+            }
+
+            const blockRates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+            const rate = blockRates[room.block_name] || 0;
+            document.getElementById('payment_amount').value = rate;
+
+            const amenities = room.amenities ? room.amenities : 'No amenities listed';
+            const occupiedCount = Number(room.current_occupancy || 0);
+            const totalCapacity = Number(room.capacity || 0);
+            const availableBeds = totalCapacity - occupiedCount;
+            roomDetails.innerHTML = `
+                <strong>${room.room_number}</strong><br>
+                Block: ${room.block_name || 'Not set'} (${room.gender_restriction.toUpperCase()})<br>
+                Type: ${room.room_type || 'N/A'}<br>
+                Beds: ${totalCapacity} total | Occupied: ${occupiedCount} | Available: ${availableBeds}<br>
+                Amenities: ${amenities}
+            `;
+        }
+
+        async function loadAllocations() {
+            try {
+                const response = await fetch('/api/allocations');
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Unable to load allocations');
+                renderAllocations(data.data || []);
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#dc3545;">${error.message}</td></tr>`;
+            }
+        }
+
+        function renderAllocations(allocations) {
+            if (!allocations.length) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#999;">No allocations found.</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = allocations.map(item => {
+                const capacity = item.capacity || 0;
+                const occupancy = item.current_occupancy || 0;
+                const capText = `${occupancy}/${capacity}`;
+                const studentName = item.full_name || 'Unknown Student';
+                return `
+                <tr>
+                    <td><strong>${studentName}</strong></td>
+                    <td>${item.admission_number || '-'}</td>
+                    <td>${item.room_number || '-'}</td>
+                    <td><span class="badge-ref">${item.booking_code || '-'}</span></td>
+                    <td>${item.allocation_date || '-'}</td>
+                    <td><span class="badge ${item.status === 'inactive' ? 'badge-inactive' : 'badge-active'}">${item.status || 'active'}</span> (${capText})</td>
+                    <td><button class="delete-btn" onclick="deleteAllocation(${item.allocation_id})">Delete</button></td>
+                </tr>
+            `;
+            }).join('');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!studentSelect.value) {
+                showMessage('error', 'Please select a student.');
+                return;
+            }
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+            try {
+                const response = await fetch('/api/allocations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Allocation failed');
+                showMessage('success', `Room allocated successfully! Booking Code: ${data.booking_code}`);
+                resetForm();
+                await loadAllocations();
+                await loadOptions();
+            } catch (error) {
+                showMessage('error', error.message);
+            }
+        });
+
+        async function deleteAllocation(allocationId) {
+            if (!confirm('Are you sure you want to remove this allocation?')) return;
+            try {
+                const response = await fetch(`/api/allocations?allocation_id=${allocationId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Delete failed');
+                showMessage('success', 'Allocation removed successfully.');
+                await loadAllocations();
+                await loadOptions();
+            } catch (error) {
+                showMessage('error', error.message);
+            }
+        }
+
+        // Initialize check
+        checkAuth();
+    </script>
+</body>
+</html>
