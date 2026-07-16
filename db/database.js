@@ -1,389 +1,393 @@
-const fs = require('fs');
-const path = require('path');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const dataDir = path.resolve(__dirname, './data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+// ─── Schemas ──────────────────────────────────────────────────────────────────
+
+const counterSchema = new mongoose.Schema({
+  _id: String,
+  seq: { type: Number, default: 0 }
+});
+const Counter = mongoose.model('Counter', counterSchema);
+
+async function nextId(name) {
+  const doc = await Counter.findByIdAndUpdate(
+    name,
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return doc.seq;
 }
 
-const filePaths = {
-  users: path.join(dataDir, 'users.json'),
-  students: path.join(dataDir, 'students.json'),
-  rooms: path.join(dataDir, 'rooms.json'),
-  allocations: path.join(dataDir, 'allocations.json'),
-  fee_payments: path.join(dataDir, 'fee_payments.json'),
-  audit_logs: path.join(dataDir, 'audit_logs.json')
+// Users
+const userSchema = new mongoose.Schema({
+  user_id:    { type: Number, unique: true },
+  username:   { type: String, required: true, unique: true },
+  password:   { type: String, required: true },
+  email:      String,
+  full_name:  String,
+  role:       { type: String, default: 'admin' },
+  created_at: { type: String, default: () => new Date().toISOString() },
+  updated_at: { type: String, default: () => new Date().toISOString() }
+});
+const User = mongoose.model('User', userSchema);
+
+// Students
+const studentSchema = new mongoose.Schema({
+  student_id:        { type: Number, unique: true },
+  admission_number:  { type: String, required: true, unique: true },
+  password:          String,
+  gender:            String,
+  full_name:         String,
+  email:             String,
+  phone:             String,
+  course:            String,
+  date_of_admission: String,
+  next_of_kin_name:  String,
+  next_of_kin_phone: String,
+  status:            { type: String, default: 'active' },
+  created_at: { type: String, default: () => new Date().toISOString() },
+  updated_at: { type: String, default: () => new Date().toISOString() }
+});
+const Student = mongoose.model('Student', studentSchema);
+
+// Rooms
+const roomSchema = new mongoose.Schema({
+  room_id:           { type: Number, unique: true },
+  room_number:       { type: String, required: true, unique: true },
+  room_type:         String,
+  capacity:          { type: Number, default: 2 },
+  current_occupancy: { type: Number, default: 0 },
+  status:            { type: String, default: 'available' },
+  floor:             Number,
+  block_name:        String,
+  gender_restriction:String,
+  amenities:         String,
+  created_at: { type: String, default: () => new Date().toISOString() },
+  updated_at: { type: String, default: () => new Date().toISOString() }
+});
+const Room = mongoose.model('Room', roomSchema);
+
+// Allocations
+const allocationSchema = new mongoose.Schema({
+  allocation_id:         { type: Number, unique: true },
+  student_id:            Number,
+  room_id:               Number,
+  allocation_date:       String,
+  expected_checkout_date:String,
+  status:                { type: String, default: 'active' },
+  booking_code:          String,
+  lease_expires_at:      String,
+  created_at: { type: String, default: () => new Date().toISOString() },
+  updated_at: { type: String, default: () => new Date().toISOString() }
+});
+const Allocation = mongoose.model('Allocation', allocationSchema);
+
+// Payments
+const paymentSchema = new mongoose.Schema({
+  payment_id:     { type: Number, unique: true },
+  student_id:     Number,
+  hostel_block:   String,
+  fee_category:   String,
+  billing_month:  String,
+  due_date:       String,
+  amount:         Number,
+  payment_date:   String,
+  status:         { type: String, default: 'completed' },
+  payment_method: String,
+  remarks:        String,
+  created_at: { type: String, default: () => new Date().toISOString() }
+});
+const Payment = mongoose.model('Payment', paymentSchema);
+
+// Audit Logs
+const auditLogSchema = new mongoose.Schema({
+  log_id:     { type: Number, unique: true },
+  user_id:    mongoose.Schema.Types.Mixed,
+  action:     String,
+  table_name: String,
+  record_id:  Number,
+  details:    String,
+  created_at: { type: String, default: () => new Date().toISOString() }
+});
+const AuditLog = mongoose.model('AuditLog', auditLogSchema);
+
+// ─── In-memory cache (populated at startup) ───────────────────────────────────
+let cache = {
+  users: [],
+  students: [],
+  rooms: [],
+  allocations: [],
+  payments: [],
+  audit_logs: []
 };
 
-// Helper to read data from a file
-function readData(table) {
-  const filePath = filePaths[table];
-  if (!fs.existsSync(filePath)) {
-    return [];
-  }
-  try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(content || '[]');
-  } catch (error) {
-    console.error(`Error reading ${table} database:`, error);
-    return [];
-  }
+async function loadCache() {
+  cache.users       = (await User.find().lean()).map(mongoToPlain);
+  cache.students    = (await Student.find().lean()).map(mongoToPlain);
+  cache.rooms       = (await Room.find().lean()).map(mongoToPlain);
+  cache.allocations = (await Allocation.find().lean()).map(mongoToPlain);
+  cache.payments    = (await Payment.find().lean()).map(mongoToPlain);
+  cache.audit_logs  = (await AuditLog.find().lean()).map(mongoToPlain);
 }
 
-// Helper to write data to a file
-function writeData(table, data) {
-  const filePath = filePaths[table];
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-  } catch (error) {
-    console.error(`Error writing ${table} database:`, error);
-  }
+function mongoToPlain(doc) {
+  if (!doc) return null;
+  const { _id, __v, ...rest } = doc;
+  return rest;
 }
 
-// Database helper functions
+// ─── Async write helpers (fire-and-forget) ────────────────────────────────────
+
+function saveUser(data)       { User.findOneAndUpdate({ user_id: data.user_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveStudent(data)    { Student.findOneAndUpdate({ student_id: data.student_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveRoom(data)       { Room.findOneAndUpdate({ room_id: data.room_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveAllocation(data) { Allocation.findOneAndUpdate({ allocation_id: data.allocation_id }, data, { upsert: true }).exec().catch(console.error); }
+function savePayment(data)    { Payment.findOneAndUpdate({ payment_id: data.payment_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveAuditLog(data)   { AuditLog.findOneAndUpdate({ log_id: data.log_id }, data, { upsert: true }).exec().catch(console.error); }
+
+function deleteFromDB(Model, query) { Model.deleteOne(query).exec().catch(console.error); }
+
+// ─── Public db API (mirrors original JSON-file API, all sync) ─────────────────
+
 const db = {
-  // Users
   users: {
-    find: (filterFn) => readData('users').filter(filterFn),
-    findOne: (filterFn) => readData('users').find(filterFn),
-    insert: (user) => {
-      const users = readData('users');
-      const nextId = users.length > 0 ? Math.max(...users.map(u => u.user_id)) + 1 : 1;
-      const newUser = {
-        user_id: nextId,
-        ...user,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      users.push(newUser);
-      writeData('users', users);
-      return newUser;
+    find:    (fn) => fn ? cache.users.filter(fn) : cache.users,
+    findOne: (fn) => cache.users.find(fn) || null,
+    insert:  async (data) => {
+      const id = await nextId('user_id');
+      const obj = { user_id: id, ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      cache.users.push(obj);
+      saveUser(obj);
+      return obj;
     }
   },
 
-  // Students
   students: {
-    find: (filterFn) => {
-      const students = readData('students');
-      return filterFn ? students.filter(filterFn) : students;
-    },
-    findOne: (filterFn) => readData('students').find(filterFn),
-    insert: (student) => {
-      const students = readData('students');
-      const nextId = students.length > 0 ? Math.max(...students.map(s => s.student_id)) + 1 : 1;
-      const newStudent = {
-        student_id: nextId,
-        ...student,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      students.push(newStudent);
-      writeData('students', students);
-      return newStudent;
+    find:    (fn) => fn ? cache.students.filter(fn) : [...cache.students],
+    findOne: (fn) => cache.students.find(fn) || null,
+    insert:  async (data) => {
+      const id = await nextId('student_id');
+      const obj = { student_id: id, ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      cache.students.push(obj);
+      saveStudent(obj);
+      return obj;
     },
     update: (studentId, updates) => {
-      const students = readData('students');
-      const idx = students.findIndex(s => s.student_id === parseInt(studentId));
-      if (idx !== -1) {
-        students[idx] = {
-          ...students[idx],
-          ...updates,
-          updated_at: new Date().toISOString()
-        };
-        writeData('students', students);
-        return true;
-      }
-      return false;
+      const idx = cache.students.findIndex(s => s.student_id === parseInt(studentId));
+      if (idx === -1) return false;
+      cache.students[idx] = { ...cache.students[idx], ...updates, updated_at: new Date().toISOString() };
+      saveStudent(cache.students[idx]);
+      return true;
     },
     delete: (studentId) => {
-      let students = readData('students');
-      const initialLength = students.length;
-      students = students.filter(s => s.student_id !== parseInt(studentId));
-      writeData('students', students);
-      return students.length < initialLength;
+      const before = cache.students.length;
+      cache.students = cache.students.filter(s => s.student_id !== parseInt(studentId));
+      if (cache.students.length < before) {
+        deleteFromDB(Student, { student_id: parseInt(studentId) });
+        return true;
+      }
+      return false;
     }
   },
 
-  // Rooms
   rooms: {
-    find: (filterFn) => {
-      const rooms = readData('rooms');
-      return filterFn ? rooms.filter(filterFn) : rooms;
-    },
-    findOne: (filterFn) => readData('rooms').find(filterFn),
-    insert: (room) => {
-      const rooms = readData('rooms');
-      const nextId = rooms.length > 0 ? Math.max(...rooms.map(r => r.room_id)) + 1 : 1;
-      const newRoom = {
-        room_id: nextId,
-        ...room,
-        current_occupancy: parseInt(room.current_occupancy || 0),
-        capacity: parseInt(room.capacity || 1),
+    find:    (fn) => fn ? cache.rooms.filter(fn) : [...cache.rooms],
+    findOne: (fn) => cache.rooms.find(fn) || null,
+    insert:  async (data) => {
+      const id = await nextId('room_id');
+      const obj = {
+        room_id: id, ...data,
+        current_occupancy: parseInt(data.current_occupancy || 0),
+        capacity: parseInt(data.capacity || 2),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      rooms.push(newRoom);
-      writeData('rooms', rooms);
-      return newRoom;
+      cache.rooms.push(obj);
+      saveRoom(obj);
+      return obj;
     },
     update: (roomId, updates) => {
-      const rooms = readData('rooms');
-      const idx = rooms.findIndex(r => r.room_id === parseInt(roomId));
-      if (idx !== -1) {
-        rooms[idx] = {
-          ...rooms[idx],
-          ...updates,
-          current_occupancy: updates.current_occupancy !== undefined ? parseInt(updates.current_occupancy) : rooms[idx].current_occupancy,
-          capacity: updates.capacity !== undefined ? parseInt(updates.capacity) : rooms[idx].capacity,
-          updated_at: new Date().toISOString()
-        };
-        writeData('rooms', rooms);
-        return true;
-      }
-      return false;
-    },
-    delete: (roomId) => {
-      let rooms = readData('rooms');
-      const initialLength = rooms.length;
-      rooms = rooms.filter(r => r.room_id !== parseInt(roomId));
-      writeData('rooms', rooms);
-      return rooms.length < initialLength;
-    }
-  },
-
-  // Allocations
-  allocations: {
-    find: (filterFn) => {
-      const allocations = readData('allocations');
-      return filterFn ? allocations.filter(filterFn) : allocations;
-    },
-    findOne: (filterFn) => readData('allocations').find(filterFn),
-    insert: (allocation) => {
-      const allocations = readData('allocations');
-      const nextId = allocations.length > 0 ? Math.max(...allocations.map(a => a.allocation_id)) + 1 : 1;
-      const newAllocation = {
-        allocation_id: nextId,
-        ...allocation,
-        created_at: new Date().toISOString(),
+      const idx = cache.rooms.findIndex(r => r.room_id === parseInt(roomId));
+      if (idx === -1) return false;
+      cache.rooms[idx] = {
+        ...cache.rooms[idx], ...updates,
+        current_occupancy: updates.current_occupancy !== undefined ? parseInt(updates.current_occupancy) : cache.rooms[idx].current_occupancy,
+        capacity: updates.capacity !== undefined ? parseInt(updates.capacity) : cache.rooms[idx].capacity,
         updated_at: new Date().toISOString()
       };
-      allocations.push(newAllocation);
-      writeData('allocations', allocations);
-      return newAllocation;
+      saveRoom(cache.rooms[idx]);
+      return true;
     },
-    update: (allocationId, updates) => {
-      const allocations = readData('allocations');
-      const idx = allocations.findIndex(a => a.allocation_id === parseInt(allocationId));
-      if (idx !== -1) {
-        allocations[idx] = {
-          ...allocations[idx],
-          ...updates,
-          updated_at: new Date().toISOString()
-        };
-        writeData('allocations', allocations);
+    delete: (roomId) => {
+      const before = cache.rooms.length;
+      cache.rooms = cache.rooms.filter(r => r.room_id !== parseInt(roomId));
+      if (cache.rooms.length < before) {
+        deleteFromDB(Room, { room_id: parseInt(roomId) });
         return true;
       }
       return false;
-    },
-    delete: (allocationId) => {
-      let allocations = readData('allocations');
-      const initialLength = allocations.length;
-      allocations = allocations.filter(a => a.allocation_id !== parseInt(allocationId));
-      writeData('allocations', allocations);
-      return allocations.length < initialLength;
     }
   },
 
-  // Fee Payments
-  payments: {
-    find: (filterFn) => {
-      const payments = readData('fee_payments');
-      return filterFn ? payments.filter(filterFn) : payments;
+  allocations: {
+    find:    (fn) => fn ? cache.allocations.filter(fn) : [...cache.allocations],
+    findOne: (fn) => cache.allocations.find(fn) || null,
+    insert:  async (data) => {
+      const id = await nextId('allocation_id');
+      const obj = { allocation_id: id, ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      cache.allocations.push(obj);
+      saveAllocation(obj);
+      return obj;
     },
-    findOne: (filterFn) => readData('fee_payments').find(filterFn),
-    insert: (payment) => {
-      const payments = readData('fee_payments');
-      const nextId = payments.length > 0 ? Math.max(...payments.map(p => p.payment_id)) + 1 : 1;
-      const newPayment = {
-        payment_id: nextId,
-        ...payment,
-        amount: parseFloat(payment.amount),
-        created_at: new Date().toISOString()
-      };
-      payments.push(newPayment);
-      writeData('fee_payments', payments);
-      return newPayment;
+    update: (allocId, updates) => {
+      const idx = cache.allocations.findIndex(a => a.allocation_id === parseInt(allocId));
+      if (idx === -1) return false;
+      cache.allocations[idx] = { ...cache.allocations[idx], ...updates, updated_at: new Date().toISOString() };
+      saveAllocation(cache.allocations[idx]);
+      return true;
+    },
+    delete: (allocId) => {
+      const before = cache.allocations.length;
+      cache.allocations = cache.allocations.filter(a => a.allocation_id !== parseInt(allocId));
+      if (cache.allocations.length < before) {
+        deleteFromDB(Allocation, { allocation_id: parseInt(allocId) });
+        return true;
+      }
+      return false;
+    }
+  },
+
+  payments: {
+    find:    (fn) => fn ? cache.payments.filter(fn) : [...cache.payments],
+    findOne: (fn) => cache.payments.find(fn) || null,
+    insert:  async (data) => {
+      const id = await nextId('payment_id');
+      const obj = { payment_id: id, ...data, amount: parseFloat(data.amount), created_at: new Date().toISOString() };
+      cache.payments.push(obj);
+      savePayment(obj);
+      return obj;
     },
     update: (paymentId, updates) => {
-      const payments = readData('fee_payments');
-      const idx = payments.findIndex(p => p.payment_id === parseInt(paymentId));
-      if (idx !== -1) {
-        payments[idx] = {
-          ...payments[idx],
-          ...updates,
-          amount: updates.amount !== undefined ? parseFloat(updates.amount) : payments[idx].amount
-        };
-        writeData('fee_payments', payments);
+      const idx = cache.payments.findIndex(p => p.payment_id === parseInt(paymentId));
+      if (idx === -1) return false;
+      cache.payments[idx] = {
+        ...cache.payments[idx], ...updates,
+        amount: updates.amount !== undefined ? parseFloat(updates.amount) : cache.payments[idx].amount
+      };
+      savePayment(cache.payments[idx]);
+      return true;
+    },
+    delete: (paymentId) => {
+      const before = cache.payments.length;
+      cache.payments = cache.payments.filter(p => p.payment_id !== parseInt(paymentId));
+      if (cache.payments.length < before) {
+        deleteFromDB(Payment, { payment_id: parseInt(paymentId) });
         return true;
       }
       return false;
-    },
-    delete: (paymentId) => {
-      let payments = readData('fee_payments');
-      const initialLength = payments.length;
-      payments = payments.filter(p => p.payment_id !== parseInt(paymentId));
-      writeData('fee_payments', payments);
-      return payments.length < initialLength;
     }
   },
 
-  // Audit Logs
   auditLogs: {
-    find: (filterFn) => {
-      const logs = readData('audit_logs');
-      return filterFn ? logs.filter(filterFn) : logs;
-    },
-    insert: (log) => {
-      const logs = readData('audit_logs');
-      const nextId = logs.length > 0 ? Math.max(...logs.map(l => l.log_id)) + 1 : 1;
-      const newLog = {
-        log_id: nextId,
-        ...log,
-        created_at: new Date().toISOString()
-      };
-      logs.push(newLog);
-      writeData('audit_logs', logs);
-      return newLog;
+    find:   (fn) => fn ? cache.audit_logs.filter(fn) : [...cache.audit_logs],
+    insert: async (data) => {
+      const id = await nextId('log_id');
+      const obj = { log_id: id, ...data, created_at: new Date().toISOString() };
+      cache.audit_logs.push(obj);
+      saveAuditLog(obj);
+      return obj;
     }
   },
-  
-  checkAndExpireLeases: () => {
-    // Read databases directly
-    const allocations = readData('allocations');
-    const rooms = readData('rooms');
-    const auditLogs = readData('audit_logs');
-    
-    const nowStr = new Date().toISOString().split('T')[0];
-    let updatedAllocations = false;
-    let updatedRooms = false;
 
-    allocations.forEach(alloc => {
+  checkAndExpireLeases: () => {
+    const nowStr = new Date().toISOString().split('T')[0];
+    cache.allocations.forEach(alloc => {
       if (alloc.status === 'pending_payment' && alloc.lease_expires_at && nowStr > alloc.lease_expires_at) {
         alloc.status = 'cancelled';
         alloc.updated_at = new Date().toISOString();
-        updatedAllocations = true;
-        
-        // Decrement room occupancy
-        const roomIdx = rooms.findIndex(r => r.room_id === alloc.room_id);
+        saveAllocation(alloc);
+
+        const roomIdx = cache.rooms.findIndex(r => r.room_id === alloc.room_id);
         if (roomIdx !== -1) {
-          rooms[roomIdx].current_occupancy = Math.max(0, rooms[roomIdx].current_occupancy - 1);
-          rooms[roomIdx].status = 'available';
-          rooms[roomIdx].updated_at = new Date().toISOString();
-          updatedRooms = true;
+          cache.rooms[roomIdx].current_occupancy = Math.max(0, cache.rooms[roomIdx].current_occupancy - 1);
+          cache.rooms[roomIdx].status = 'available';
+          cache.rooms[roomIdx].updated_at = new Date().toISOString();
+          saveRoom(cache.rooms[roomIdx]);
         }
 
-        // Add audit log
-        auditLogs.push({
-          log_id: auditLogs.length > 0 ? Math.max(...auditLogs.map(l => l.log_id || l.audit_id || 1)) + 1 : 1,
-          user_id: null,
-          action: 'LEASE_EXPIRED',
-          table_name: 'allocations',
-          record_id: alloc.allocation_id,
-          details: `5-day unpaid lease expired for booking code ${alloc.booking_code}. Room released back to pool.`,
-          created_at: new Date().toISOString()
+        nextId('log_id').then(id => {
+          const log = {
+            log_id: id, user_id: null, action: 'LEASE_EXPIRED',
+            table_name: 'allocations', record_id: alloc.allocation_id,
+            details: `5-day unpaid lease expired for booking code ${alloc.booking_code}. Room released back to pool.`,
+            created_at: new Date().toISOString()
+          };
+          cache.audit_logs.push(log);
+          saveAuditLog(log);
         });
       }
     });
-
-    if (updatedAllocations) writeData('allocations', allocations);
-    if (updatedRooms) writeData('rooms', rooms);
-    if (updatedAllocations) writeData('audit_logs', auditLogs);
   }
 };
 
-// Database Initialization and Seeding
+// ─── Initialize & Seed ────────────────────────────────────────────────────────
+
 async function initializeDatabase() {
-  console.log('Initializing JSON File-Based Database...');
-
-  // Initialize empty files if they do not exist
-  for (const table of Object.keys(filePaths)) {
-    if (!fs.existsSync(filePaths[table])) {
-      writeData(table, []);
-    }
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI environment variable is not set!');
   }
 
-  // Seed default admin user
-  const adminExists = db.users.findOne(u => u.username === 'admin');
-  if (!adminExists) {
-    const adminPassword = 'admin123';
-    const adminHash = await bcrypt.hash(adminPassword, 10);
-    db.users.insert({
-      username: 'admin',
-      password: adminHash,
-      email: 'admin@hostel.com',
-      full_name: 'Administrator',
-      role: 'admin'
-    });
-    console.log('✓ Default admin user seeded (admin / admin123)');
+  console.log('Connecting to MongoDB Atlas...');
+  await mongoose.connect(mongoUri);
+  console.log('✓ Connected to MongoDB Atlas');
+
+  // Load all data into cache
+  await loadCache();
+  console.log('✓ Data loaded into memory cache');
+
+  // Seed admin user
+  if (!cache.users.find(u => u.username === 'admin')) {
+    const hash = await bcrypt.hash('admin123', 10);
+    await db.users.insert({ username: 'admin', password: hash, email: 'admin@hostel.com', full_name: 'Administrator', role: 'admin' });
+    console.log('✓ Default admin seeded (admin / admin123)');
   }
 
-  // Seed sample students
-  const students = db.students.find();
-  if (students.length === 0) {
-    const studentPassword = await bcrypt.hash('student123', 10);
-    const sampleStudents = [
-      { admission_number: 'ADM001', password: studentPassword, gender: 'male', full_name: 'John Kiprop', email: 'john@example.com', phone: '0712345678', course: 'Computer Science', date_of_admission: '2024-01-10', next_of_kin_name: 'Mary Kiprop', next_of_kin_phone: '0723456789', status: 'active' },
-      { admission_number: 'ADM002', password: studentPassword, gender: 'female', full_name: 'Grace Wambui', email: 'grace@example.com', phone: '0712345689', course: 'Business Studies', date_of_admission: '2024-02-15', next_of_kin_name: 'Joseph Wambui', next_of_kin_phone: '0734567890', status: 'active' },
-      { admission_number: 'ADM003', password: studentPassword, gender: 'male', full_name: 'Daniel Otieno', email: 'daniel@example.com', phone: '0712345690', course: 'Engineering', date_of_admission: '2024-03-20', next_of_kin_name: 'Rose Otieno', next_of_kin_phone: '0745678901', status: 'active' }
+  // Seed students
+  if (cache.students.length === 0) {
+    const studentHash = await bcrypt.hash('student123', 10);
+    const samples = [
+      { admission_number: 'ADM001', password: studentHash, gender: 'male',   full_name: 'John Kiprop',    email: 'john@example.com',   phone: '0712345678', course: 'Computer Science',  date_of_admission: '2024-01-10', next_of_kin_name: 'Mary Kiprop',    next_of_kin_phone: '0723456789', status: 'active' },
+      { admission_number: 'ADM002', password: studentHash, gender: 'female', full_name: 'Grace Wambui',   email: 'grace@example.com',  phone: '0712345689', course: 'Business Studies', date_of_admission: '2024-02-15', next_of_kin_name: 'Joseph Wambui',  next_of_kin_phone: '0734567890', status: 'active' },
+      { admission_number: 'ADM003', password: studentHash, gender: 'male',   full_name: 'Daniel Otieno',  email: 'daniel@example.com', phone: '0712345690', course: 'Engineering',       date_of_admission: '2024-03-20', next_of_kin_name: 'Rose Otieno',    next_of_kin_phone: '0745678901', status: 'active' }
     ];
-
-    for (const student of sampleStudents) {
-      db.students.insert(student);
-    }
-    console.log('✓ Sample students seeded with login credentials');
+    for (const s of samples) await db.students.insert(s);
+    console.log('✓ Sample students seeded');
   }
 
-  // Seed sample rooms
-  const rooms = db.rooms.find();
-  if (rooms.length === 0) {
-    // Batian = Male, Nelion = Female, Lenana = split (rooms 1-5 Male, 6-10 Female)
-    const blockDefinitions = [
-      ['Batian', 'Double', 2, 'available', 1, 'BAT-', 'male'],
-      ['Nelion', 'Double', 2, 'available', 1, 'NEL-', 'female'],
-      ['Lenana', 'Double', 2, 'available', 1, 'LEN-', 'split']
+  // Seed rooms
+  if (cache.rooms.length === 0) {
+    const blocks = [
+      ['Batian', 'Double', 2, 'BAT-', 'male'],
+      ['Nelion', 'Double', 2, 'NEL-', 'female'],
+      ['Lenana', 'Double', 2, 'LEN-', 'split']
     ];
-
-    for (const block of blockDefinitions) {
-      const [blockName, roomType, capacity, status, floor, prefix, genderPolicy] = block;
+    for (const [blockName, roomType, capacity, prefix, genderPolicy] of blocks) {
       for (let i = 1; i <= 10; i++) {
         const roomNumber = prefix + String(i).padStart(3, '0');
-        
-        let genderRestriction = genderPolicy;
-        if (genderPolicy === 'split') {
-          genderRestriction = i <= 5 ? 'male' : 'female';
-        }
-
-        db.rooms.insert({
-          room_number: roomNumber,
-          room_type: roomType,
-          capacity: parseInt(capacity),
-          current_occupancy: 0,
-          status: status,
-          floor: parseInt(floor),
-          block_name: blockName,
-          gender_restriction: genderRestriction,
+        const genderRestriction = genderPolicy === 'split' ? (i <= 5 ? 'male' : 'female') : genderPolicy;
+        await db.rooms.insert({
+          room_number: roomNumber, room_type: roomType, capacity,
+          current_occupancy: 0, status: 'available', floor: 1,
+          block_name: blockName, gender_restriction: genderRestriction,
           amenities: `${blockName} block hostel room (${genderRestriction} restriction)`
         });
       }
     }
-    console.log('✓ Sample rooms seeded for Batian (male), Nelion (female), and Lenana (split) blocks');
+    console.log('✓ Sample rooms seeded (Batian, Nelion, Lenana)');
   }
 
-  console.log('JSON database initialization complete.');
+  console.log('MongoDB database initialization complete.');
 }
 
-module.exports = {
-  db,
-  initializeDatabase
-};
+module.exports = { db, initializeDatabase };

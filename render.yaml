@@ -10,3 +10,5 @@ services:
         value: production
       - key: PORT
         value: 3000
+      - key: MONGODB_URI
+        sync: false   # You will paste this manually in Render dashboard
