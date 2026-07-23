@@ -1654,7 +1654,12 @@
 
         function closeBookingModal() {
             document.getElementById('bookingModal').classList.remove('show');
-            document.getElementById('bookingForm').reset();
+            const form = document.getElementById('bookingForm');
+            if (form) form.reset();
+            ['mpesaTxCode', 'mpesaPhone', 'bankTxRef', 'bankSlipFile', 'cardholderName', 'cardNo', 'cardExp', 'cardCvv'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
             document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
         }
 
