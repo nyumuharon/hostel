@@ -37,6 +37,14 @@
         .form-group input:focus, .form-group select:focus { outline:none; border-color:#2a5298; box-shadow:0 0 0 3px rgba(42,82,152,0.12); }
         .full-width { grid-column:1 / -1; }
         .btn-row { display:flex; gap:10px; margin-top:12px; }
+
+        /* Phone prefix wrapper */
+        .phone-wrap { display:flex; align-items:stretch; border:1px solid #ddd; border-radius:8px; overflow:hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+        .phone-wrap:focus-within { border-color:#2a5298; box-shadow:0 0 0 3px rgba(42,82,152,0.12); }
+        .phone-wrap.valid   { border-color:#28a745; }
+        .phone-wrap.invalid { border-color:#dc3545; }
+        .phone-prefix { background:#f0f4ff; color:#2a5298; font-weight:700; font-size:14px; padding:11px 10px; border-right:1px solid #ddd; white-space:nowrap; user-select:none; }
+        .phone-wrap input { border:none !important; box-shadow:none !important; border-radius:0 !important; flex:1; padding:11px 12px; font-size:14px; outline:none; }
         
         /* Buttons */
         .btn-primary { background:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color:white; border:none; padding:11px 20px; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px; transition:transform 0.2s; }
@@ -274,9 +282,12 @@
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number *</label>
-                        <input id="phone" name="phone" type="tel" inputmode="numeric"
-                               maxlength="10" required placeholder="0712345678"
-                               oninput="validatePhone(this)">
+                        <div class="phone-wrap" id="phoneWrap">
+                            <span class="phone-prefix">+254</span>
+                            <input id="phone" name="phone" type="tel" inputmode="numeric"
+                                   maxlength="9" required placeholder="712345678"
+                                   oninput="validatePhone(this)">
+                        </div>
                         <span id="phoneHint" style="font-size:11px; margin-top:2px;"></span>
                     </div>
                     <div class="form-group">
@@ -302,9 +313,12 @@
                     </div>
                     <div class="form-group">
                         <label for="next_of_kin_phone">Kin Phone Number</label>
-                        <input id="next_of_kin_phone" name="next_of_kin_phone"
-                               type="tel" inputmode="numeric" maxlength="10"
-                               placeholder="07XXXXXXXX" oninput="validateKinPhone(this)">
+                        <div class="phone-wrap" id="kinPhoneWrap">
+                            <span class="phone-prefix">+254</span>
+                            <input id="next_of_kin_phone" name="next_of_kin_phone"
+                                   type="tel" inputmode="numeric" maxlength="9"
+                                   placeholder="712345678" oninput="validateKinPhone(this)">
+                        </div>
                         <span id="kinPhoneHint" style="font-size:11px; margin-top:2px;"></span>
                     </div>
                     <div class="form-group full-width">
@@ -329,44 +343,44 @@
         const errorAlert = document.getElementById('errorAlert');
         let allStudentsList = [];
 
-        // Phone validation helper
+        // Phone validation helper — user enters 9 digits starting with 7 or 1
         function validatePhone(input) {
             const hint = document.getElementById('phoneHint');
-            const val = input.value.replace(/\D/g, ''); // Strip non-digits
-            input.value = val; // Auto-strip letters
+            const wrap = document.getElementById('phoneWrap');
+            const val  = input.value.replace(/\D/g, '');
+            input.value = val;
+            wrap.classList.remove('valid', 'invalid');
             if (val.length === 0) {
                 hint.textContent = '';
-                input.style.borderColor = '#ddd';
-            } else if (!/^0/.test(val)) {
-                hint.textContent = '⚠ Phone must start with 0 (e.g. 0712345678)';
+            } else if (!/^[71]/.test(val)) {
+                hint.textContent = '⚠ Must start with 7 or 1 (e.g. 712345678)';
                 hint.style.color = '#dc3545';
-                input.style.borderColor = '#dc3545';
-            } else if (val.length < 10) {
-                hint.textContent = `${val.length}/10 digits entered`;
+                wrap.classList.add('invalid');
+            } else if (val.length < 9) {
+                hint.textContent = `${val.length}/9 digits entered`;
                 hint.style.color = '#f0ad4e';
-                input.style.borderColor = '#f0ad4e';
-            } else if (val.length === 10) {
-                hint.textContent = '✓ Valid phone number';
+            } else {
+                hint.textContent = '✓ Valid  →  +254' + val;
                 hint.style.color = '#28a745';
-                input.style.borderColor = '#28a745';
+                wrap.classList.add('valid');
             }
         }
 
         function validateKinPhone(input) {
             const hint = document.getElementById('kinPhoneHint');
-            const val = input.value.replace(/\D/g, '');
+            const wrap = document.getElementById('kinPhoneWrap');
+            const val  = input.value.replace(/\D/g, '');
             input.value = val;
+            wrap.classList.remove('valid', 'invalid');
             if (val.length === 0) {
                 hint.textContent = '';
-                input.style.borderColor = '#ddd';
-            } else if (val.length === 10) {
-                hint.textContent = '✓ Valid';
+            } else if (val.length === 9) {
+                hint.textContent = '✓ Valid  →  +254' + val;
                 hint.style.color = '#28a745';
-                input.style.borderColor = '#28a745';
+                wrap.classList.add('valid');
             } else {
-                hint.textContent = `${val.length}/10 digits`;
+                hint.textContent = `${val.length}/9 digits`;
                 hint.style.color = '#f0ad4e';
-                input.style.borderColor = '#f0ad4e';
             }
         }
 
@@ -413,11 +427,7 @@
             document.getElementById('registerModal').classList.remove('show');
             form.reset();
             document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
-            // Reset phone validation hints
-            ['phone', 'next_of_kin_phone'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.borderColor = '#ddd';
-            });
+            ['phoneWrap','kinPhoneWrap'].forEach(id => document.getElementById(id).classList.remove('valid','invalid'));
             document.getElementById('phoneHint').textContent = '';
             document.getElementById('kinPhoneHint').textContent = '';
         }
@@ -545,16 +555,21 @@
             delete payload.second_name;
             delete payload.surname;
 
-            // Phone validation
-            const phone = (payload.phone || '').trim();
-            if (!phone) {
+            // Phone validation — prepend +254
+            const rawPhone = (payload.phone || '').replace(/\D/g, '');
+            if (!rawPhone) {
                 showMessage('error', 'Phone number is required.');
                 return;
             }
-            if (!/^0[0-9]{9}$/.test(phone)) {
-                showMessage('error', 'Phone number must be exactly 10 digits and start with 0 (e.g. 0712345678).');
+            if (!/^[71][0-9]{8}$/.test(rawPhone)) {
+                showMessage('error', 'Phone must be 9 digits starting with 7 or 1 (e.g. 712345678).');
                 return;
             }
+            payload.phone = '+254' + rawPhone;
+
+            // Kin phone (optional) — prepend +254 if provided
+            const rawKin = (payload.next_of_kin_phone || '').replace(/\D/g, '');
+            payload.next_of_kin_phone = rawKin ? '+254' + rawKin : '';
 
             try {
                 const response = await fetch('/api/students', {

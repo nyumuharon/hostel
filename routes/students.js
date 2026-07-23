@@ -74,8 +74,8 @@ router.post('/', requireAdmin, async (req, res) => {
   }
 
   const phoneStr = String(phone || '').trim();
-  if (phoneStr && !/^[0-9]{10}$/.test(phoneStr)) {
-    return res.status(400).json({ success: false, message: 'Phone number must contain exactly 10 digits.' });
+  if (phoneStr && !/^\+254[17][0-9]{8}$/.test(phoneStr)) {
+    return res.status(400).json({ success: false, message: 'Invalid phone number format.' });
   }
 
   try {
@@ -152,8 +152,8 @@ router.put('/', requireAdmin, async (req, res) => {
     if (email !== undefined) updates.email = (email || '').trim();
     if (phone !== undefined) {
       const phoneStr = String(phone || '').trim();
-      if (phoneStr && !/^[0-9]{10}$/.test(phoneStr)) {
-        return res.status(400).json({ success: false, message: 'Phone number must contain exactly 10 digits.' });
+      if (phoneStr && !/^\+254[17][0-9]{8}$/.test(phoneStr)) {
+        return res.status(400).json({ success: false, message: 'Invalid phone number format.' });
       }
       updates.phone = phoneStr;
     }
