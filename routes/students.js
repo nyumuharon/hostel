@@ -85,7 +85,7 @@ router.post('/', requireAdmin, async (req, res) => {
     }
 
     // Set a default password if admin didn't provide one
-    const pass = password || 'student123';
+    const pass = String(password || 'student123').trim();
     const hashedPassword = await bcrypt.hash(pass, 10);
     const today = new Date().toISOString().split('T')[0];
 
@@ -163,8 +163,8 @@ router.put('/', requireAdmin, async (req, res) => {
     if (next_of_kin_phone !== undefined) updates.next_of_kin_phone = (next_of_kin_phone || '').trim();
     if (status !== undefined) updates.status = status;
 
-    if (password && password.trim() !== '') {
-      updates.password = await bcrypt.hash(password, 10);
+    if (password && String(password).trim() !== '') {
+      updates.password = await bcrypt.hash(String(password).trim(), 10);
     }
 
     const success = db.students.update(student_id, updates);

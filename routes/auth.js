@@ -11,6 +11,8 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Username and password are required' });
   }
 
+  const cleanPassword = String(password).trim();
+
   try {
     const user = db.users.findOne(u => u.username === username.trim());
 
@@ -18,7 +20,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid username or password' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(cleanPassword, user.password);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid username or password' });
     }
@@ -62,6 +64,8 @@ router.post('/student/login', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Admission number and password are required' });
   }
 
+  const cleanPassword = String(password).trim();
+
   try {
     const student = db.students.findOne(s => s.admission_number.trim().toUpperCase() === admission_number.trim().toUpperCase());
 
@@ -69,7 +73,7 @@ router.post('/student/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials or inactive account' });
     }
 
-    const isMatch = await bcrypt.compare(password, student.password);
+    const isMatch = await bcrypt.compare(cleanPassword, student.password);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
@@ -125,6 +129,11 @@ router.post('/student/register', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Admission number, password, full name, course, and gender are required' });
   }
 
+  const cleanPassword = String(password).trim();
+  if (!cleanPassword) {
+    return res.status(400).json({ success: false, message: 'Password cannot be empty or only spaces.' });
+  }
+
   const phoneStr = String(phone || '').trim();
   if (phoneStr && !/^\+254[17][0-9]{8}$/.test(phoneStr)) {
     return res.status(400).json({ success: false, message: 'Invalid phone number format.' });
@@ -136,7 +145,7 @@ router.post('/student/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Admission number already exists.' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(cleanPassword, 10);
     const today = new Date().toISOString().split('T')[0];
     
     const newStudent = db.students.insert({

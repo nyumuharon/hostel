@@ -256,8 +256,8 @@
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const admission_number = document.getElementById('admission_number').value;
-            const password = document.getElementById('password').value;
+            const admission_number = document.getElementById('admission_number').value.trim();
+            const password = document.getElementById('password').value.trim();
 
             // Clear alerts
             alertError.classList.remove('show');

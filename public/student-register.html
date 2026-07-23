@@ -323,8 +323,14 @@
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirm_password').value.trim();
+
+            if (!password) {
+                alertError.textContent = 'Password cannot be empty or only spaces.';
+                alertError.classList.add('show');
+                return;
+            }
 
             if (password !== confirmPassword) {
                 alertError.textContent = 'Passwords do not match.';
@@ -351,7 +357,8 @@
                 alertError.classList.add('show');
                 return;
             }
-            payload.phone = '+254' + rawPhone;
+            payload.password = password;
+            delete payload.confirm_password;
 
             const rawKin = (payload.next_of_kin_phone || '').replace(/\D/g, '');
             payload.next_of_kin_phone = rawKin ? '+254' + rawKin : '';
