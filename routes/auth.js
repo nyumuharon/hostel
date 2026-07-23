@@ -126,8 +126,8 @@ router.post('/student/register', async (req, res) => {
   }
 
   const phoneStr = String(phone || '').trim();
-  if (phoneStr && !/^[0-9]{10}$/.test(phoneStr)) {
-    return res.status(400).json({ success: false, message: 'Phone number must contain exactly 10 digits.' });
+  if (phoneStr && !/^\+254[17][0-9]{8}$/.test(phoneStr)) {
+    return res.status(400).json({ success: false, message: 'Invalid phone number format.' });
   }
 
   try {

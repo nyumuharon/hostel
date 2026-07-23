@@ -152,6 +152,14 @@
             text-decoration: underline;
         }
 
+        /* Phone prefix wrapper */
+        .phone-wrap { display:flex; align-items:stretch; border:1px solid #ddd; border-radius:8px; overflow:hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+        .phone-wrap:focus-within { border-color:#1e3c72; box-shadow:0 0 0 3px rgba(30,60,114,0.12); }
+        .phone-wrap.valid   { border-color:#28a745; }
+        .phone-wrap.invalid { border-color:#dc3545; }
+        .phone-prefix { background:#f0f4ff; color:#1e3c72; font-weight:700; font-size:14px; padding:11px 10px; border-right:1px solid #ddd; white-space:nowrap; user-select:none; }
+        .phone-wrap input { border:none !important; box-shadow:none !important; border-radius:0 !important; flex:1; padding:11px 12px; font-size:14px; outline:none; }
+
         @media (max-width: 600px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -173,23 +181,23 @@
         <form id="registerForm">
             <div class="form-grid">
                 <div class="form-group">
+                    <label for="first_name">First Name *</label>
+                    <input type="text" id="first_name" name="first_name" required placeholder="e.g. John">
+                </div>
+
+                <div class="form-group">
+                    <label for="second_name">Second Name *</label>
+                    <input type="text" id="second_name" name="second_name" required placeholder="e.g. Kamau">
+                </div>
+
+                <div class="form-group">
+                    <label for="surname">Surname <span style="color:#999; font-weight:400;">(Optional)</span></label>
+                    <input type="text" id="surname" name="surname" placeholder="e.g. Mwangi">
+                </div>
+
+                <div class="form-group">
                     <label for="admission_number">Admission Number *</label>
                     <input type="text" id="admission_number" name="admission_number" required placeholder="e.g. ADM004">
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password *</label>
-                    <input type="password" id="password" name="password" required placeholder="Choose a password">
-                </div>
-
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password *</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
-                </div>
-
-                <div class="form-group">
-                    <label for="full_name">Full Name *</label>
-                    <input type="text" id="full_name" name="full_name" required placeholder="Enter full name">
                 </div>
 
                 <div class="form-group">
@@ -202,16 +210,20 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <div class="phone-wrap" id="phoneWrap">
+                        <span class="phone-prefix">+254</span>
+                        <input type="tel" id="phone" name="phone" inputmode="numeric" maxlength="9" required placeholder="712345678" oninput="validatePhone(this)">
+                    </div>
+                    <span id="phoneHint" style="font-size:11px; margin-top:2px;"></span>
+                </div>
+
+                <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="student@example.com">
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required placeholder="0712345678" pattern="[0-9]{10}" maxlength="10">
-                </div>
-
-                <div class="form-group full-width">
                     <label for="course">Course *</label>
                     <select id="course" name="course" required>
                         <option value="">Select course</option>
@@ -226,13 +238,27 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required placeholder="Choose a password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password *</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                </div>
+
+                <div class="form-group">
                     <label for="next_of_kin_name">Next of Kin Name</label>
-                    <input type="text" id="next_of_kin_name" name="next_of_kin_name">
+                    <input type="text" id="next_of_kin_name" name="next_of_kin_name" placeholder="Kin Name">
                 </div>
 
                 <div class="form-group">
                     <label for="next_of_kin_phone">Kin Phone Number</label>
-                    <input type="tel" id="next_of_kin_phone" name="next_of_kin_phone" placeholder="0712345678">
+                    <div class="phone-wrap" id="kinPhoneWrap">
+                        <span class="phone-prefix">+254</span>
+                        <input type="tel" id="next_of_kin_phone" name="next_of_kin_phone" inputmode="numeric" maxlength="9" placeholder="712345678" oninput="validateKinPhone(this)">
+                    </div>
+                    <span id="kinPhoneHint" style="font-size:11px; margin-top:2px;"></span>
                 </div>
             </div>
 
@@ -250,6 +276,50 @@
         const alertSuccess = document.getElementById('alertSuccess');
         const submitBtn = document.getElementById('submitBtn');
 
+        function validatePhone(input) {
+            const hint = document.getElementById('phoneHint');
+            const wrap = document.getElementById('phoneWrap');
+            let val = input.value.replace(/\D/g, '');
+            if (val.startsWith('0')) val = val.slice(1);
+            val = val.slice(0, 9);
+            input.value = val;
+            wrap.classList.remove('valid', 'invalid');
+            if (val.length === 0) {
+                hint.textContent = '';
+            } else if (!/^[71]/.test(val)) {
+                hint.textContent = '⚠ Must start with 7 or 1 (e.g. 712345678)';
+                hint.style.color = '#dc3545';
+                wrap.classList.add('invalid');
+            } else if (val.length < 9) {
+                hint.textContent = `${val.length}/9 digits entered`;
+                hint.style.color = '#f0ad4e';
+            } else {
+                hint.textContent = '✓ Valid  →  +254' + val;
+                hint.style.color = '#28a745';
+                wrap.classList.add('valid');
+            }
+        }
+
+        function validateKinPhone(input) {
+            const hint = document.getElementById('kinPhoneHint');
+            const wrap = document.getElementById('kinPhoneWrap');
+            let val = input.value.replace(/\D/g, '');
+            if (val.startsWith('0')) val = val.slice(1);
+            val = val.slice(0, 9);
+            input.value = val;
+            wrap.classList.remove('valid', 'invalid');
+            if (val.length === 0) {
+                hint.textContent = '';
+            } else if (val.length === 9) {
+                hint.textContent = '✓ Valid  →  +254' + val;
+                hint.style.color = '#28a745';
+                wrap.classList.add('valid');
+            } else {
+                hint.textContent = `${val.length}/9 digits`;
+                hint.style.color = '#f0ad4e';
+            }
+        }
+
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -265,6 +335,27 @@
             const formData = new FormData(registerForm);
             const payload = Object.fromEntries(formData.entries());
 
+            // Combine name fields
+            const first = (payload.first_name || '').trim();
+            const second = (payload.second_name || '').trim();
+            const sur = (payload.surname || '').trim();
+            payload.full_name = [first, second, sur].filter(Boolean).join(' ');
+            delete payload.first_name;
+            delete payload.second_name;
+            delete payload.surname;
+
+            // Format phone with +254
+            const rawPhone = (payload.phone || '').replace(/\D/g, '');
+            if (!rawPhone || !/^[71][0-9]{8}$/.test(rawPhone)) {
+                alertError.textContent = 'Phone must be 9 digits starting with 7 or 1 (e.g. 712345678).';
+                alertError.classList.add('show');
+                return;
+            }
+            payload.phone = '+254' + rawPhone;
+
+            const rawKin = (payload.next_of_kin_phone || '').replace(/\D/g, '');
+            payload.next_of_kin_phone = rawKin ? '+254' + rawKin : '';
+
             // Clear alerts
             alertError.classList.remove('show');
             alertSuccess.classList.remove('show');
@@ -273,9 +364,7 @@
             try {
                 const response = await fetch('/api/student/register', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
