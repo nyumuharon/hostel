@@ -245,8 +245,16 @@
                         <input id="admission_number" name="admission_number" required placeholder="e.g. ADM004">
                     </div>
                     <div class="form-group">
-                        <label for="full_name">Full Name *</label>
-                        <input id="full_name" name="full_name" required placeholder="Enter full name">
+                        <label for="first_name">First Name *</label>
+                        <input id="first_name" name="first_name" required placeholder="e.g. John">
+                    </div>
+                    <div class="form-group">
+                        <label for="second_name">Second Name *</label>
+                        <input id="second_name" name="second_name" required placeholder="e.g. Kamau">
+                    </div>
+                    <div class="form-group">
+                        <label for="surname">Surname <span style="color:#999; font-weight:400;">(Optional)</span></label>
+                        <input id="surname" name="surname" placeholder="e.g. Mwangi">
                     </div>
                     <div class="form-group">
                         <label for="gender">Gender *</label>
@@ -266,7 +274,10 @@
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number *</label>
-                        <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" required placeholder="0712345678" title="Enter exactly 10 digits">
+                        <input id="phone" name="phone" type="tel" inputmode="numeric"
+                               maxlength="10" required placeholder="0712345678"
+                               oninput="validatePhone(this)">
+                        <span id="phoneHint" style="font-size:11px; margin-top:2px;"></span>
                     </div>
                     <div class="form-group">
                         <label for="course">Course *</label>
@@ -291,7 +302,10 @@
                     </div>
                     <div class="form-group">
                         <label for="next_of_kin_phone">Kin Phone Number</label>
-                        <input id="next_of_kin_phone" name="next_of_kin_phone" placeholder="07XXXXXXXX">
+                        <input id="next_of_kin_phone" name="next_of_kin_phone"
+                               type="tel" inputmode="numeric" maxlength="10"
+                               placeholder="07XXXXXXXX" oninput="validateKinPhone(this)">
+                        <span id="kinPhoneHint" style="font-size:11px; margin-top:2px;"></span>
                     </div>
                     <div class="form-group full-width">
                         <label for="status">Initial Status</label>
@@ -313,7 +327,48 @@
         const tableBody = document.getElementById('studentTableBody');
         const successAlert = document.getElementById('successAlert');
         const errorAlert = document.getElementById('errorAlert');
-        let allStudentsList = []; // Local cache for filtering
+        let allStudentsList = [];
+
+        // Phone validation helper
+        function validatePhone(input) {
+            const hint = document.getElementById('phoneHint');
+            const val = input.value.replace(/\D/g, ''); // Strip non-digits
+            input.value = val; // Auto-strip letters
+            if (val.length === 0) {
+                hint.textContent = '';
+                input.style.borderColor = '#ddd';
+            } else if (!/^0/.test(val)) {
+                hint.textContent = '⚠ Phone must start with 0 (e.g. 0712345678)';
+                hint.style.color = '#dc3545';
+                input.style.borderColor = '#dc3545';
+            } else if (val.length < 10) {
+                hint.textContent = `${val.length}/10 digits entered`;
+                hint.style.color = '#f0ad4e';
+                input.style.borderColor = '#f0ad4e';
+            } else if (val.length === 10) {
+                hint.textContent = '✓ Valid phone number';
+                hint.style.color = '#28a745';
+                input.style.borderColor = '#28a745';
+            }
+        }
+
+        function validateKinPhone(input) {
+            const hint = document.getElementById('kinPhoneHint');
+            const val = input.value.replace(/\D/g, '');
+            input.value = val;
+            if (val.length === 0) {
+                hint.textContent = '';
+                input.style.borderColor = '#ddd';
+            } else if (val.length === 10) {
+                hint.textContent = '✓ Valid';
+                hint.style.color = '#28a745';
+                input.style.borderColor = '#28a745';
+            } else {
+                hint.textContent = `${val.length}/10 digits`;
+                hint.style.color = '#f0ad4e';
+                input.style.borderColor = '#f0ad4e';
+            }
+        }
 
         // Verify session status
         async function checkAuth() {
@@ -358,6 +413,13 @@
             document.getElementById('registerModal').classList.remove('show');
             form.reset();
             document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
+            // Reset phone validation hints
+            ['phone', 'next_of_kin_phone'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.borderColor = '#ddd';
+            });
+            document.getElementById('phoneHint').textContent = '';
+            document.getElementById('kinPhoneHint').textContent = '';
         }
 
         async function loadStudents() {
@@ -473,6 +535,26 @@
             e.preventDefault();
             const formData = new FormData(form);
             const payload = Object.fromEntries(formData.entries());
+
+            // Combine name fields into full_name
+            const first  = (payload.first_name  || '').trim();
+            const second = (payload.second_name || '').trim();
+            const sur    = (payload.surname      || '').trim();
+            payload.full_name = [first, second, sur].filter(Boolean).join(' ');
+            delete payload.first_name;
+            delete payload.second_name;
+            delete payload.surname;
+
+            // Phone validation
+            const phone = (payload.phone || '').trim();
+            if (!phone) {
+                showMessage('error', 'Phone number is required.');
+                return;
+            }
+            if (!/^0[0-9]{9}$/.test(phone)) {
+                showMessage('error', 'Phone number must be exactly 10 digits and start with 0 (e.g. 0712345678).');
+                return;
+            }
 
             try {
                 const response = await fetch('/api/students', {
