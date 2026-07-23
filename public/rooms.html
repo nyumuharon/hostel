@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label for="block_name">Hostel Block</label>
                             <select id="block_name" name="block_name">
-                                <option value="Batian">Batian Block (1 bed)</option>
+                                <option value="Batian">Batian Block (2 beds)</option>
                                 <option value="Nelion">Nelion Block (2 beds)</option>
 
                             </select>
@@ -193,7 +193,7 @@
 
         function applyBlockDefaults() {
             const presets = {
-                Batian: { type: 'Single', capacity: 1, prefix: 'BAT-' },
+                Batian: { type: 'Double', capacity: 2, prefix: 'BAT-' },
                 Nelion: { type: 'Double', capacity: 2, prefix: 'NEL-' }
             };
             const preset = presets[blockSelect.value] || presets.Batian;

@@ -373,25 +373,38 @@ async function initializeDatabase() {
     console.log('✓ Sample students seeded');
   }
 
-  // Seed rooms
-  if (cache.rooms.length === 0) {
-    const blocks = [
-      ['Batian', 'Double', 2, 'BAT-', 'male'],
-      ['Nelion', 'Double', 2, 'NEL-', 'female']
-    ];
-    for (const [blockName, roomType, capacity, prefix, genderPolicy] of blocks) {
-      for (let i = 1; i <= 10; i++) {
-        const roomNumber = prefix + String(i).padStart(3, '0');
-        const genderRestriction = genderPolicy === 'split' ? (i <= 5 ? 'male' : 'female') : genderPolicy;
+  // Seed & Ensure 50 rooms per block (Batian & Nelion, 2 beds each)
+  const blocksConfig = [
+    { blockName: 'Batian', prefix: 'BAT-', genderPolicy: 'male' },
+    { blockName: 'Nelion', prefix: 'NEL-', genderPolicy: 'female' }
+  ];
+
+  let roomsAdded = 0;
+  for (const { blockName, prefix, genderPolicy } of blocksConfig) {
+    for (let i = 1; i <= 50; i++) {
+      const roomNumber = prefix + String(i).padStart(3, '0');
+      const existing = cache.rooms.find(r => r.room_number === roomNumber);
+      if (!existing) {
         await db.rooms.insert({
-          room_number: roomNumber, room_type: roomType, capacity,
-          current_occupancy: 0, status: 'available', floor: 1,
-          block_name: blockName, gender_restriction: genderRestriction,
-          amenities: `${blockName} block hostel room (${genderRestriction} restriction)`
+          room_number: roomNumber,
+          room_type: 'Double',
+          capacity: 2,
+          current_occupancy: 0,
+          status: 'available',
+          floor: Math.ceil(i / 10),
+          block_name: blockName,
+          gender_restriction: genderPolicy,
+          amenities: `${blockName} block hostel room (${genderPolicy} restriction)`
         });
+        roomsAdded++;
+      } else if (existing.capacity !== 2 || existing.room_type !== 'Double') {
+        db.rooms.update(existing.room_id, { capacity: 2, room_type: 'Double' });
       }
     }
-    console.log('✓ Sample rooms seeded (Batian, Nelion)');
+  }
+  if (roomsAdded > 0) {
+    console.log(`✓ Seeded ${roomsAdded} new rooms to complete 50 rooms per block (Batian, Nelion - 2 beds each)`);
+    await loadCache();
   }
 
   console.log('MongoDB database initialization complete.');
