@@ -324,6 +324,26 @@
             }
         }
 
+        function formatDate(dateInput) {
+            if (!dateInput) return '-';
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            
+            const day = d.getDate();
+            let suffix = 'th';
+            if (day < 11 || day > 13) {
+                switch (day % 10) {
+                    case 1: suffix = 'st'; break;
+                    case 2: suffix = 'nd'; break;
+                    case 3: suffix = 'rd'; break;
+                }
+            }
+            const month = d.toLocaleString('en-GB', { month: 'long' });
+            const year = d.getFullYear();
+            
+            return `${day}<sup>${suffix}</sup> ${month} ${year}`;
+        }
+
         function renderAllocations(allocations) {
             if (!allocations.length) {
                 tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#999;">No allocations found.</td></tr>';
@@ -341,7 +361,7 @@
                     <td>${item.admission_number || '-'}</td>
                     <td>${item.room_number || '-'}</td>
                     <td><span class="badge-ref">${item.booking_code || '-'}</span></td>
-                    <td>${item.allocation_date || '-'}</td>
+                    <td>${formatDate(item.allocation_date)}</td>
                     <td><span class="badge ${item.status === 'inactive' ? 'badge-inactive' : 'badge-active'}">${item.status || 'active'}</span> (${capText})</td>
                     <td><button class="delete-btn" onclick="deleteAllocation(${item.allocation_id})">Delete</button></td>
                 </tr>

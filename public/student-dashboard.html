@@ -1338,9 +1338,23 @@
         const blockRates = { Batian: 50000, Nelion: 30000 };
 
         function formatDate(dateInput) {
+            if (!dateInput) return '-';
             const d = new Date(dateInput);
-            if (!dateInput || isNaN(d)) return '-';
-            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+            if (isNaN(d.getTime())) return String(dateInput);
+            
+            const day = d.getDate();
+            let suffix = 'th';
+            if (day < 11 || day > 13) {
+                switch (day % 10) {
+                    case 1: suffix = 'st'; break;
+                    case 2: suffix = 'nd'; break;
+                    case 3: suffix = 'rd'; break;
+                }
+            }
+            const month = d.toLocaleString('en-GB', { month: 'long' });
+            const year = d.getFullYear();
+            
+            return `${day}<sup>${suffix}</sup> ${month} ${year}`;
         }
 
         // Verify session status
@@ -1526,7 +1540,7 @@
                     if (activeBooking) {
                         const rate = blockRates[activeBooking.block_name] || 0;
                         const nextDueStr = calculateNextDueDate(activeBooking.allocation_date, ledger.total_paid, rate);
-                        document.getElementById('ledgerDueDate').textContent = nextDueStr;
+                        document.getElementById('ledgerDueDate').innerHTML = nextDueStr;
                         dueDateRow.style.display = 'flex';
                         
                         // Pay button is always active if room is booked

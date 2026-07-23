@@ -253,15 +253,35 @@ function monthLabel(monthValue) {
     return d.toLocaleString(undefined, { month: 'long', year: 'numeric' });
 }
 
+function formatDate(dateInput) {
+    if (!dateInput) return 'Not set';
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return String(dateInput);
+    
+    const day = d.getDate();
+    let suffix = 'th';
+    if (day < 11 || day > 13) {
+        switch (day % 10) {
+            case 1: suffix = 'st'; break;
+            case 2: suffix = 'nd'; break;
+            case 3: suffix = 'rd'; break;
+        }
+    }
+    const month = d.toLocaleString('en-GB', { month: 'long' });
+    const year = d.getFullYear();
+    
+    return `${day}<sup>${suffix}</sup> ${month} ${year}`;
+}
+
 function updatePreview() {
     const selectedBlock = block.value || '-';
     const selectedMonth = monthLabel(billingMonth.value);
-    const selectedDueDate = dueDate.value || 'Not set';
+    const selectedDueDate = dueDate.value ? formatDate(dueDate.value) : 'Not set';
     const amount = block.value ? (rates[block.value] || 0) : 0;
 
     previewBlock.textContent = selectedBlock;
     previewMonth.textContent = selectedMonth;
-    previewDueDate.textContent = selectedDueDate;
+    previewDueDate.innerHTML = selectedDueDate;
     previewAmount.textContent = money(amount);
 }
 
@@ -367,8 +387,8 @@ async function loadPayments() {
             <td>${esc(payment.hostel_block || '-')}</td>
             <td>${esc(payment.fee_category || '-')}</td>
             <td>${esc(formattedBillingMonth)}</td>
-            <td>${esc(payment.due_date || '-')}</td>
-            <td>${esc(payment.payment_date || '-')}</td>
+            <td>${payment.due_date ? formatDate(payment.due_date) : '-'}</td>
+            <td>${payment.payment_date ? formatDate(payment.payment_date) : '-'}</td>
             <td>${money(payment.amount || 0)}</td>
             <td><span class="badge ${esc(payment.status)}">${esc(payment.status)}</span></td>
             <td><button class="btn secondary" onclick="editPayment(${payment.payment_id})">Edit</button> <button class="btn danger" onclick="deletePayment(${payment.payment_id})">Delete</button></td>
