@@ -367,10 +367,13 @@
         }
 
         // Phone validation helper — user enters 9 digits starting with 7 or 1
+        // Auto-strips leading 0 so typing 0712345678 works same as 712345678
         function validatePhone(input) {
             const hint = document.getElementById('phoneHint');
             const wrap = document.getElementById('phoneWrap');
-            const val  = input.value.replace(/\D/g, '');
+            let val = input.value.replace(/\D/g, '');  // strip non-digits
+            if (val.startsWith('0')) val = val.slice(1); // strip leading 0
+            val = val.slice(0, 9);                       // cap at 9 digits
             input.value = val;
             wrap.classList.remove('valid', 'invalid');
             if (val.length === 0) {
@@ -392,7 +395,9 @@
         function validateKinPhone(input) {
             const hint = document.getElementById('kinPhoneHint');
             const wrap = document.getElementById('kinPhoneWrap');
-            const val  = input.value.replace(/\D/g, '');
+            let val = input.value.replace(/\D/g, '');
+            if (val.startsWith('0')) val = val.slice(1); // strip leading 0
+            val = val.slice(0, 9);                       // cap at 9 digits
             input.value = val;
             wrap.classList.remove('valid', 'invalid');
             if (val.length === 0) {
