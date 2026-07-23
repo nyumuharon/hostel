@@ -1337,17 +1337,10 @@
         let paymentHistoryList = []; // Cache list of completed payments
         const blockRates = { Batian: 50000, Nelion: 30000 };
 
-        // Ordinal date formatter → e.g. "23<sup>rd</sup> July 2026"
         function formatDate(dateInput) {
             const d = new Date(dateInput);
             if (!dateInput || isNaN(d)) return '-';
-            const day = d.getDate();
-            const suffix = [11,12,13].includes(day) ? 'th'
-                         : day % 10 === 1 ? 'st'
-                         : day % 10 === 2 ? 'nd'
-                         : day % 10 === 3 ? 'rd' : 'th';
-            const month = d.toLocaleDateString('en-GB', { month: 'long' });
-            return `${day}<sup>${suffix}</sup> ${month} ${d.getFullYear()}`;
+            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         // Verify session status
@@ -1365,7 +1358,15 @@
                 document.getElementById('studentPill').textContent = `👤 ${studentUser.fullName}`;
                 document.getElementById('welcomeTitle').textContent = `Welcome, ${studentUser.fullName}!`;
                 document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
-                
+
+                // Dynamically enforce gender restriction on hostel blocks
+                const blockFilterEl = document.getElementById('blockFilter');
+                if (studentUser.gender === 'male') {
+                    blockFilterEl.innerHTML = '<option value="Batian">Batian Block (Male)</option>';
+                } else if (studentUser.gender === 'female') {
+                    blockFilterEl.innerHTML = '<option value="Nelion">Nelion Block (Female)</option>';
+                }
+
                 await Promise.all([loadBookingDetails(), loadAvailableRooms(), loadLedger(), loadPaymentHistory()]);
             } catch (err) {
                 window.location.href = 'student-login.html';

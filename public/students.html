@@ -308,8 +308,7 @@
                     </div>
                     <div class="form-group">
                         <label for="date_of_admission">Date of Admission</label>
-                        <input id="date_of_admission" name="date_of_admission" type="date" onchange="updateDatePreview(this.value)">
-                        <span id="datePreview" style="font-size:12px; color:#2a5298; margin-top:3px; font-weight:500;"></span>
+                        <input id="date_of_admission" name="date_of_admission" type="date">
                     </div>
                     <div class="form-group">
                         <label for="next_of_kin_name">Next of Kin Name</label>
@@ -347,23 +346,11 @@
         const errorAlert = document.getElementById('errorAlert');
         let allStudentsList = [];
 
-        // Ordinal date formatter → e.g. 23<sup>rd</sup> July 2026
         function formatDate(dateInput) {
             if (!dateInput) return '-';
             const d = new Date(dateInput);
             if (isNaN(d)) return '-';
-            const day = d.getDate();
-            const suffix = [11,12,13].includes(day) ? 'th'
-                         : day % 10 === 1 ? 'st'
-                         : day % 10 === 2 ? 'nd'
-                         : day % 10 === 3 ? 'rd' : 'th';
-            const month = d.toLocaleDateString('en-GB', { month: 'long' });
-            return `${day}<sup>${suffix}</sup> ${month} ${d.getFullYear()}`;
-        }
-
-        function updateDatePreview(val) {
-            const el = document.getElementById('datePreview');
-            el.innerHTML = val ? '📅 ' + formatDate(val + 'T00:00:00') : '';
+            return d.toISOString().split('T')[0];
         }
 
         // Phone validation helper — user enters 9 digits starting with 7 or 1
@@ -424,9 +411,7 @@
                 }
                 
                 document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('date_of_admission').value = today;
-                updateDatePreview(today);
+                document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
                 
                 await loadStudents();
             } catch (err) {
@@ -457,7 +442,6 @@
             document.getElementById('registerModal').classList.remove('show');
             form.reset();
             document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
-            updateDatePreview(document.getElementById('date_of_admission').value);
             ['phoneWrap','kinPhoneWrap'].forEach(id => document.getElementById(id).classList.remove('valid','invalid'));
             document.getElementById('phoneHint').textContent = '';
             document.getElementById('kinPhoneHint').textContent = '';
