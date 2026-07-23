@@ -89,7 +89,7 @@
                         </div>
                         <div class="form-group">
                             <label for="allocation_date">Allocation Date</label>
-                            <input id="allocation_date" name="allocation_date" type="date" required>
+                            <input id="allocation_date" name="allocation_date" type="date" required onchange="updateCheckoutDate()">
                         </div>
                         <div class="form-group">
                             <label for="expected_checkout_date">Expected Checkout</label>
@@ -174,13 +174,23 @@
                     return;
                 }
                 
-                document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
-                document.getElementById('allocation_date').value = new Date().toISOString().split('T')[0];
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('allocation_date').value = today;
+                updateCheckoutDate();
                 
                 await loadOptions();
                 await loadAllocations();
             } catch (err) {
                 window.location.href = 'index.html';
+            }
+        }
+
+        function updateCheckoutDate() {
+            const allocVal = document.getElementById('allocation_date').value;
+            if (allocVal) {
+                const d = new Date(allocVal);
+                d.setFullYear(d.getFullYear() + 1);
+                document.getElementById('expected_checkout_date').value = d.toISOString().split('T')[0];
             }
         }
 
@@ -202,6 +212,7 @@
             form.reset();
             document.getElementById('allocation_date').value = new Date().toISOString().split('T')[0];
             document.getElementById('status').value = 'active';
+            updateCheckoutDate();
             filterRoomsByStudentGender();
         }
 

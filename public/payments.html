@@ -252,12 +252,20 @@ function reset() {
     paymentId.value = '';
     paymentDate.value = new Date().toISOString().slice(0, 10);
     billingMonth.value = new Date().toISOString().slice(0, 7);
+    dueDate.value = `${billingMonth.value}-05`;
     allocatedRoom.value = 'Auto-filled from allocation';
     allocatedBed.value = 'Auto-filled from allocation';
     saveBtn.textContent = 'Record bed payment';
     updateRate();
     updatePreview();
 }
+
+billingMonth.addEventListener('input', () => {
+    if (billingMonth.value) {
+        dueDate.value = `${billingMonth.value}-05`;
+    }
+    updatePreview();
+});
 
 function inferBlock(roomNumber) {
     const text = String(roomNumber || '').toUpperCase();

@@ -159,7 +159,7 @@ router.post('/', (req, res) => {
       hostel_block: hostel_block,
       fee_category: fee_category || 'Monthly Bed Payment',
       billing_month: billing_month,
-      due_date: due_date || null,
+      due_date: due_date || (billing_month ? `${billing_month}-05` : null),
       amount: numericAmount,
       payment_date: payment_date,
       status: status || 'completed',
