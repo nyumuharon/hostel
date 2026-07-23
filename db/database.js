@@ -346,6 +346,14 @@ async function initializeDatabase() {
   await loadCache();
   console.log('✓ Data loaded into memory cache');
 
+  // Automatic cleanup of legacy Lenana records from MongoDB Atlas
+  const deletedRooms = await Room.deleteMany({ $or: [{ block_name: /lenana/i }, { room_number: /^LEN-/i }] });
+  const deletedPayments = await Payment.deleteMany({ hostel_block: /lenana/i });
+  if (deletedRooms.deletedCount > 0 || deletedPayments.deletedCount > 0) {
+    console.log(`✓ Cleaned legacy Lenana records from MongoDB Atlas (${deletedRooms.deletedCount} rooms, ${deletedPayments.deletedCount} payments)`);
+    await loadCache();
+  }
+
   // Seed admin user
   if (!cache.users.find(u => u.username === 'admin')) {
     const hash = await bcrypt.hash('admin123', 10);
