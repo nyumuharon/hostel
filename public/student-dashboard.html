@@ -1488,7 +1488,7 @@
             date.setMonth(date.getMonth() + monthsPaid);
             
             // Format as readable date e.g. August 16, 2026
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         // Load Billing Ledger
@@ -1567,7 +1567,7 @@
             }
 
             tableBody.innerHTML = payments.map(p => {
-                const formattedDate = new Date(p.payment_date).toLocaleDateString('en-US', { dateStyle: 'medium' });
+                const formattedDate = new Date(p.payment_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
                 return `
                     <tr>
                         <td><strong>${formattedDate}</strong></td>
@@ -2080,7 +2080,7 @@
 
             document.getElementById('printStudentName').textContent = studentUser.fullName;
             document.getElementById('printStudentAdm').textContent = studentUser.username;
-            document.getElementById('printReceiptDate').textContent = new Date(activeBooking.allocation_date).toLocaleDateString('en-US', { dateStyle: 'medium' });
+            document.getElementById('printReceiptDate').textContent = new Date(activeBooking.allocation_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
             document.getElementById('printReceiptCode').textContent = activeBooking.booking_code;
             
             document.getElementById('printBlockRoom').textContent = `${activeBooking.block_name} Block - Room ${activeBooking.room_number}`;
@@ -2116,7 +2116,7 @@
 
             document.getElementById('printStudentName').textContent = studentUser.fullName;
             document.getElementById('printStudentAdm').textContent = studentUser.username;
-            document.getElementById('printReceiptDate').textContent = new Date(payment.payment_date).toLocaleDateString('en-US', { dateStyle: 'medium' });
+            document.getElementById('printReceiptDate').textContent = new Date(payment.payment_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
             document.getElementById('printReceiptCode').textContent = bookingCode;
             
             document.getElementById('printBlockRoom').textContent = `${payment.hostel_block} Block - Bed Space Fee`;
@@ -2142,19 +2142,19 @@
             if (startVal || endVal) {
                 if (startVal && endVal) {
                     filtered = filtered.filter(p => p.payment_date >= startVal && p.payment_date <= endVal);
-                    periodText = `${new Date(startVal).toLocaleDateString()} to ${new Date(endVal).toLocaleDateString()}`;
+                    periodText = `${new Date(startVal).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} to ${new Date(endVal).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
                 } else if (startVal) {
                     filtered = filtered.filter(p => p.payment_date >= startVal);
-                    periodText = `From ${new Date(startVal).toLocaleDateString()}`;
+                    periodText = `From ${new Date(startVal).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
                 } else {
                     filtered = filtered.filter(p => p.payment_date <= endVal);
-                    periodText = `Up to ${new Date(endVal).toLocaleDateString()}`;
+                    periodText = `Up to ${new Date(endVal).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
                 }
             }
             
             document.getElementById('printStmtStudentName').textContent = studentUser.fullName;
             document.getElementById('printStmtStudentAdm').textContent = studentUser.username;
-            document.getElementById('printStmtDate').textContent = new Date().toLocaleDateString('en-US', { dateStyle: 'medium' });
+            document.getElementById('printStmtDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
             document.getElementById('printStmtPeriod').textContent = periodText;
             
             const stmtTableBody = document.getElementById('printStmtTableBody');
@@ -2164,7 +2164,7 @@
                 stmtTableBody.innerHTML = filtered.map(p => {
                     return `
                         <tr>
-                            <td>${new Date(p.payment_date).toLocaleDateString()}</td>
+                            <td>${new Date(p.payment_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
                             <td>${p.fee_category}</td>
                             <td>${p.remarks || '-'}</td>
                             <td>${p.payment_method}</td>

@@ -743,7 +743,7 @@
                         studentsBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No students registered yet.</td></tr>';
                     } else {
                         studentsBody.innerHTML = data.recent_students.map(s => {
-                            const date = new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                            const date = new Date(s.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
                             const genderLabel = s.gender ? s.gender.charAt(0).toUpperCase() + s.gender.slice(1) : 'N/A';
                             return `
                                 <tr>
@@ -763,7 +763,7 @@
                         allocBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No allocations yet.</td></tr>';
                     } else {
                         allocBody.innerHTML = data.recent_allocations.map(a => {
-                            const date = new Date(a.allocation_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                            const date = new Date(a.allocation_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
                             return `
                                 <tr>
                                     <td><strong>${a.full_name}</strong></td>
