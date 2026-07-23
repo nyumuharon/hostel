@@ -1337,7 +1337,7 @@
         let paymentHistoryList = []; // Cache list of completed payments
         const blockRates = { Batian: 50000, Nelion: 30000 };
 
-        // Ordinal date formatter → e.g. "23rd July 2026"
+        // Ordinal date formatter → e.g. "23<sup>rd</sup> July 2026"
         function formatDate(dateInput) {
             const d = new Date(dateInput);
             if (!dateInput || isNaN(d)) return '-';
@@ -1347,7 +1347,7 @@
                          : day % 10 === 2 ? 'nd'
                          : day % 10 === 3 ? 'rd' : 'th';
             const month = d.toLocaleDateString('en-GB', { month: 'long' });
-            return `${day}${suffix} ${month} ${d.getFullYear()}`;
+            return `${day}<sup>${suffix}</sup> ${month} ${d.getFullYear()}`;
         }
 
         // Verify session status
@@ -2093,7 +2093,7 @@
 
             document.getElementById('printStudentName').textContent = studentUser.fullName;
             document.getElementById('printStudentAdm').textContent = studentUser.username;
-            document.getElementById('printReceiptDate').textContent = formatDate(activeBooking.allocation_date);
+            document.getElementById('printReceiptDate').innerHTML = formatDate(activeBooking.allocation_date);
             document.getElementById('printReceiptCode').textContent = activeBooking.booking_code;
             
             document.getElementById('printBlockRoom').textContent = `${activeBooking.block_name} Block - Room ${activeBooking.room_number}`;
@@ -2129,7 +2129,7 @@
 
             document.getElementById('printStudentName').textContent = studentUser.fullName;
             document.getElementById('printStudentAdm').textContent = studentUser.username;
-            document.getElementById('printReceiptDate').textContent = formatDate(payment.payment_date);
+            document.getElementById('printReceiptDate').innerHTML = formatDate(payment.payment_date);
             document.getElementById('printReceiptCode').textContent = bookingCode;
             
             document.getElementById('printBlockRoom').textContent = `${payment.hostel_block} Block - Bed Space Fee`;
@@ -2167,8 +2167,8 @@
             
             document.getElementById('printStmtStudentName').textContent = studentUser.fullName;
             document.getElementById('printStmtStudentAdm').textContent = studentUser.username;
-            document.getElementById('printStmtDate').textContent = formatDate(new Date());
-            document.getElementById('printStmtPeriod').textContent = periodText;
+            document.getElementById('printStmtDate').innerHTML = formatDate(new Date());
+            document.getElementById('printStmtPeriod').innerHTML = periodText;
             
             const stmtTableBody = document.getElementById('printStmtTableBody');
             if (filtered.length === 0) {
