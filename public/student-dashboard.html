@@ -1840,6 +1840,11 @@
                         });
                         
                         const allocData = await allocResponse.json();
+                        if (allocResponse.status === 401 || allocData.message === 'Unauthorized') {
+                            alert('🔒 Session Expired\nYour session has expired. Please log in again to complete your room booking.');
+                            window.location.href = 'student-login.html';
+                            return;
+                        }
                         if (!allocData.success) {
                             throw new Error(allocData.message || 'Room booking failed');
                         }

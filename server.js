@@ -23,10 +23,11 @@ app.use(session({
   secret: 'everest_university_hostel_secret_key_12345',
   resave: false,
   saveUninitialized: false,
+  rolling: true,
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 30 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours session
     sameSite: 'lax'
   }
 }));
