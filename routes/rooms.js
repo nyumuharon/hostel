@@ -68,8 +68,7 @@ router.post('/', requireAuth, requireAdmin, (req, res) => {
 
   const blockMap = {
     'Batian': { type: 'Double', capacity: 2, prefix: 'BAT-', gender: 'male' },
-    'Nelion': { type: 'Double', capacity: 2, prefix: 'NEL-', gender: 'female' },
-    'Lenana': { type: 'Double', capacity: 2, prefix: 'LEN-', gender: 'split' }
+    'Nelion': { type: 'Double', capacity: 2, prefix: 'NEL-', gender: 'female' }
   };
 
   if (blockMap[block_name]) {

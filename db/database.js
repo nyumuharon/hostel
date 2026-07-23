@@ -369,8 +369,7 @@ async function initializeDatabase() {
   if (cache.rooms.length === 0) {
     const blocks = [
       ['Batian', 'Double', 2, 'BAT-', 'male'],
-      ['Nelion', 'Double', 2, 'NEL-', 'female'],
-      ['Lenana', 'Double', 2, 'LEN-', 'split']
+      ['Nelion', 'Double', 2, 'NEL-', 'female']
     ];
     for (const [blockName, roomType, capacity, prefix, genderPolicy] of blocks) {
       for (let i = 1; i <= 10; i++) {
@@ -384,7 +383,7 @@ async function initializeDatabase() {
         });
       }
     }
-    console.log('✓ Sample rooms seeded (Batian, Nelion, Lenana)');
+    console.log('✓ Sample rooms seeded (Batian, Nelion)');
   }
 
   console.log('MongoDB database initialization complete.');

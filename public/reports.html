@@ -62,11 +62,7 @@
                         <div class="bar"><span style="width: 0%"></span></div>
                         <div>0 entries</div>
                     </div>
-                    <div class="bar-row">
-                        <div>Lenana</div>
-                        <div class="bar"><span style="width: 0%"></span></div>
-                        <div>0 entries</div>
-                    </div>
+
                 </div>
             </div>
             <div class="card">
@@ -169,8 +165,7 @@
             // 2. Group payments by block
             const blocks = {
                 Batian: { count: 0, total: 0 },
-                Nelion: { count: 0, total: 0 },
-                Lenana: { count: 0, total: 0 }
+                Nelion: { count: 0, total: 0 }
             };
             
             payments.forEach(p => {
@@ -181,7 +176,7 @@
             });
             
             const maxCount = Math.max(1, ...Object.values(blocks).map(b => b.count));
-            const blockList = ['Batian', 'Nelion', 'Lenana'];
+            const blockList = ['Batian', 'Nelion'];
             
             document.getElementById('blockBars').innerHTML = blockList.map(bName => {
                 const bData = blocks[bName];

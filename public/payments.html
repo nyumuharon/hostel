@@ -23,7 +23,7 @@
         <div class="header">
             <div>
                 <h1>Bed Payments</h1>
-                <p>Track monthly bed payments for Batian, Nelion and Lenana blocks.</p>
+                <p>Track monthly bed payments for Batian and Nelion blocks.</p>
             </div>
             <button class="btn secondary" id="clearBtn" type="button">New payment</button>
         </div>
@@ -41,11 +41,7 @@
                     <strong id="sumNelion">Ksh 0.00</strong>
                     <div id="countNelion">0 records</div>
                 </div>
-                <div class="summary-box">
-                    <div>Lenana</div>
-                    <strong id="sumLenana">Ksh 0.00</strong>
-                    <div id="countLenana">0 records</div>
-                </div>
+
             </div>
         </section>
 
@@ -71,7 +67,7 @@
                             <option value="">Select block</option>
                             <option value="Batian">Batian — Ksh 50,000 / bed / month</option>
                             <option value="Nelion">Nelion — Ksh 30,000 / bed / month</option>
-                            <option value="Lenana">Lenana — Ksh 20,000 / bed / month</option>
+
                         </select>
                     </div>
                     <div class="field">
@@ -197,7 +193,7 @@ const previewDueDate = document.getElementById('previewDueDate');
 const previewAmount = document.getElementById('previewAmount');
 let payments = [];
 let activeAllocationsByStudent = {};
-const rates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+const rates = { Batian: 50000, Nelion: 30000 };
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = v => 'Ksh ' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -267,7 +263,6 @@ function inferBlock(roomNumber) {
     const text = String(roomNumber || '').toUpperCase();
     if (text.startsWith('BAT-')) return 'Batian';
     if (text.startsWith('NEL-')) return 'Nelion';
-    if (text.startsWith('LEN-')) return 'Lenana';
     return '';
 }
 
@@ -358,8 +353,7 @@ async function loadPayments() {
 function renderPaymentsSummary(allPayments) {
     const summary = {
         Batian: { total: 0, count: 0 },
-        Nelion: { total: 0, count: 0 },
-        Lenana: { total: 0, count: 0 }
+        Nelion: { total: 0, count: 0 }
     };
 
     allPayments.forEach(p => {
@@ -377,8 +371,7 @@ function renderPaymentsSummary(allPayments) {
     document.getElementById('sumNelion').textContent = money(summary.Nelion.total);
     document.getElementById('countNelion').textContent = `${summary.Nelion.count} records`;
 
-    document.getElementById('sumLenana').textContent = money(summary.Lenana.total);
-    document.getElementById('countLenana').textContent = `${summary.Lenana.count} records`;
+
 }
 
 form.addEventListener('submit', async event => {

@@ -28,7 +28,7 @@ function getBillingMonths(startDateStr) {
   return Math.max(1, (yearsDiff * 12) + monthsDiff + 1);
 }
 
-const blockRates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+const blockRates = { Batian: 50000, Nelion: 30000 };
 
 // GET /api/reports - summary data, room occupancy list, and monthly payment stats
 router.get('/', (req, res) => {
@@ -154,8 +154,7 @@ router.get('/dashboard-stats', (req, res) => {
     // Calculate remaining beds by blocks
     const blocksStats = {
       Batian: { total: 0, occupied: 0, gender: 'male' },
-      Nelion: { total: 0, occupied: 0, gender: 'female' },
-      Lenana: { total: 0, occupied: 0, gender: 'split' }
+      Nelion: { total: 0, occupied: 0, gender: 'female' }
     };
     rooms.forEach(r => {
       if (blocksStats[r.block_name]) {

@@ -23,7 +23,7 @@ function getBillingMonths(startDateStr) {
 }
 
 // Helper to get block rates
-const blockRates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+const blockRates = { Batian: 50000, Nelion: 30000 };
 
 // GET /api/payments/balance (Returns ledger summary for the logged-in student or a query student_id)
 router.get('/balance', (req, res) => {

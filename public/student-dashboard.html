@@ -804,7 +804,7 @@
                             <option value="">All Hostel Blocks</option>
                             <option value="Batian">Batian Block</option>
                             <option value="Nelion">Nelion Block</option>
-                            <option value="Lenana">Lenana Block</option>
+
                         </select>
                     </div>
                     <div style="overflow-x: auto;">
@@ -1335,7 +1335,7 @@
         let activeBooking = null;
         let selectedRoom = null;
         let paymentHistoryList = []; // Cache list of completed payments
-        const blockRates = { Batian: 50000, Nelion: 30000, Lenana: 20000 };
+        const blockRates = { Batian: 50000, Nelion: 30000 };
 
         // Verify session status
         async function checkAuth() {
