@@ -288,7 +288,7 @@
                         <div class="phone-wrap" id="phoneWrap">
                             <span class="phone-prefix">+254</span>
                             <input id="phone" name="phone" type="tel" inputmode="numeric"
-                                   maxlength="9" required placeholder="712345678"
+                                   maxlength="10" required placeholder="0712345678"
                                    oninput="validatePhone(this)">
                         </div>
                         <span id="phoneHint" style="font-size:11px; margin-top:2px;"></span>
@@ -319,8 +319,8 @@
                         <div class="phone-wrap" id="kinPhoneWrap">
                             <span class="phone-prefix">+254</span>
                             <input id="next_of_kin_phone" name="next_of_kin_phone"
-                                   type="tel" inputmode="numeric" maxlength="9"
-                                   placeholder="712345678" oninput="validateKinPhone(this)">
+                                   type="tel" inputmode="numeric" maxlength="10"
+                                   placeholder="0712345678" oninput="validateKinPhone(this)">
                         </div>
                         <span id="kinPhoneHint" style="font-size:11px; margin-top:2px;"></span>
                     </div>
@@ -358,22 +358,23 @@
         function validatePhone(input) {
             const hint = document.getElementById('phoneHint');
             const wrap = document.getElementById('phoneWrap');
-            let val = input.value.replace(/\D/g, '');  // strip non-digits
-            if (val.startsWith('0')) val = val.slice(1); // strip leading 0
-            val = val.slice(0, 9);                       // cap at 9 digits
-            input.value = val;
+            let raw = input.value.replace(/\D/g, '').slice(0, 10);
+            input.value = raw;
             wrap.classList.remove('valid', 'invalid');
-            if (val.length === 0) {
+
+            let clean = raw.startsWith('0') ? raw.slice(1) : raw;
+
+            if (raw.length === 0) {
                 hint.textContent = '';
-            } else if (!/^[71]/.test(val)) {
-                hint.textContent = '⚠ Must start with 7 or 1 (e.g. 712345678)';
+            } else if (raw.startsWith('0') ? !/^0[71]/.test(raw) : !/^[71]/.test(raw)) {
+                hint.textContent = '⚠ Must start with 07, 01, 7 or 1';
                 hint.style.color = '#dc3545';
                 wrap.classList.add('invalid');
-            } else if (val.length < 9) {
-                hint.textContent = `${val.length}/9 digits entered`;
+            } else if (clean.length < 9) {
+                hint.textContent = `${raw.length}/${raw.startsWith('0') ? 10 : 9} digits entered`;
                 hint.style.color = '#f0ad4e';
             } else {
-                hint.textContent = '✓ Valid  →  +254' + val;
+                hint.textContent = '✓ Valid  →  +254' + clean;
                 hint.style.color = '#28a745';
                 wrap.classList.add('valid');
             }
@@ -382,19 +383,20 @@
         function validateKinPhone(input) {
             const hint = document.getElementById('kinPhoneHint');
             const wrap = document.getElementById('kinPhoneWrap');
-            let val = input.value.replace(/\D/g, '');
-            if (val.startsWith('0')) val = val.slice(1); // strip leading 0
-            val = val.slice(0, 9);                       // cap at 9 digits
-            input.value = val;
+            let raw = input.value.replace(/\D/g, '').slice(0, 10);
+            input.value = raw;
             wrap.classList.remove('valid', 'invalid');
-            if (val.length === 0) {
+
+            let clean = raw.startsWith('0') ? raw.slice(1) : raw;
+
+            if (raw.length === 0) {
                 hint.textContent = '';
-            } else if (val.length === 9) {
-                hint.textContent = '✓ Valid  →  +254' + val;
+            } else if (clean.length === 9) {
+                hint.textContent = '✓ Valid  →  +254' + clean;
                 hint.style.color = '#28a745';
                 wrap.classList.add('valid');
             } else {
-                hint.textContent = `${val.length}/9 digits`;
+                hint.textContent = `${raw.length}/${raw.startsWith('0') ? 10 : 9} digits`;
                 hint.style.color = '#f0ad4e';
             }
         }
@@ -570,19 +572,22 @@
             delete payload.surname;
 
             // Phone validation — prepend +254
-            const rawPhone = (payload.phone || '').replace(/\D/g, '');
+            let rawPhone = (payload.phone || '').replace(/\D/g, '');
+            if (rawPhone.startsWith('0')) rawPhone = rawPhone.slice(1);
+
             if (!rawPhone) {
                 showMessage('error', 'Phone number is required.');
                 return;
             }
             if (!/^[71][0-9]{8}$/.test(rawPhone)) {
-                showMessage('error', 'Phone must be 9 digits starting with 7 or 1 (e.g. 712345678).');
+                showMessage('error', 'Phone must be 9 digits (or 10 starting with 0) starting with 7 or 1.');
                 return;
             }
             payload.phone = '+254' + rawPhone;
 
             // Kin phone (optional) — prepend +254 if provided
-            const rawKin = (payload.next_of_kin_phone || '').replace(/\D/g, '');
+            let rawKin = (payload.next_of_kin_phone || '').replace(/\D/g, '');
+            if (rawKin.startsWith('0')) rawKin = rawKin.slice(1);
             payload.next_of_kin_phone = rawKin ? '+254' + rawKin : '';
 
             try {
