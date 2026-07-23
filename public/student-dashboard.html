@@ -1492,16 +1492,19 @@
             }
         }
 
-        // Calculate next payment due date dynamically
+        // Calculate expected move-out / paid-up due date dynamically
         function calculateNextDueDate(allocationDateStr, totalPaid, rate) {
             if (!allocationDateStr || !rate || rate <= 0) return 'N/A';
-            const monthsPaid = Math.floor(totalPaid / rate);
-            if (monthsPaid <= 0) return allocationDateStr; // Due immediately if zero payments
+            const dailyRate = rate / 30;
+            const daysPaid = Math.round(totalPaid / dailyRate);
             
             const date = new Date(allocationDateStr);
-            date.setMonth(date.getMonth() + monthsPaid);
+            if (daysPaid > 0) {
+                date.setDate(date.getDate() + daysPaid);
+            } else {
+                date.setDate(date.getDate() + 5); // 5-day grace period if 0 paid
+            }
             
-            // Format as readable date e.g. August 16, 2026
             return formatDate(date);
         }
 

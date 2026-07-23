@@ -107,7 +107,7 @@
                         </div>
                         <div class="form-group">
                             <label for="payment_amount">Initial Payment Amount (Ksh)</label>
-                            <input type="number" id="payment_amount" name="payment_amount" placeholder="e.g. 20000">
+                            <input type="number" id="payment_amount" name="payment_amount" placeholder="e.g. 20000" oninput="updateCheckoutDate()">
                         </div>
                         <div class="form-group full-width">
                             <label for="payment_reference">Payment Reference / Remarks</label>
@@ -187,11 +187,24 @@
 
         function updateCheckoutDate() {
             const allocVal = document.getElementById('allocation_date').value;
-            if (allocVal) {
-                const d = new Date(allocVal);
-                d.setFullYear(d.getFullYear() + 1);
-                document.getElementById('expected_checkout_date').value = d.toISOString().split('T')[0];
+            if (!allocVal) return;
+
+            const room = rooms.find(r => String(r.room_id) === roomSelect.value);
+            const blockRates = { Batian: 50000, Nelion: 30000 };
+            const monthlyRate = room ? (blockRates[room.block_name] || 50000) : 50000;
+            const initialPayment = Number(document.getElementById('payment_amount').value || 0);
+
+            const start = new Date(allocVal);
+            if (initialPayment > 0) {
+                const dailyRate = monthlyRate / 30;
+                const daysCovered = Math.round(initialPayment / dailyRate);
+                start.setDate(start.getDate() + daysCovered);
+            } else {
+                // 5-day grace period for unpaid lease reservation
+                start.setDate(start.getDate() + 5);
             }
+
+            document.getElementById('expected_checkout_date').value = start.toISOString().split('T')[0];
         }
 
         function showMessage(type, message) {

@@ -223,8 +223,26 @@ function notice(type, text) {
     setTimeout(() => message.className = 'message', 5000);
 }
 
+function autoCalculateDueDate() {
+    const selectedBlock = block.value;
+    const pDateVal = paymentDate.value;
+    const monthlyRate = rates[selectedBlock] || 0;
+    
+    if (!selectedBlock || !pDateVal || !monthlyRate) return;
+
+    const dailyRate = monthlyRate / 30;
+    const daysCovered = Math.round(monthlyRate / dailyRate); // 30 days for full month payment
+
+    const start = new Date(pDateVal);
+    start.setDate(start.getDate() + daysCovered);
+
+    dueDate.value = start.toISOString().split('T')[0];
+    updatePreview();
+}
+
 function updateRate() {
     rateDisplay.textContent = block.value ? money(rates[block.value]) + ' per bed / month' : 'Choose a block';
+    autoCalculateDueDate();
     updatePreview();
 }
 
@@ -252,19 +270,20 @@ function reset() {
     paymentId.value = '';
     paymentDate.value = new Date().toISOString().slice(0, 10);
     billingMonth.value = new Date().toISOString().slice(0, 7);
-    dueDate.value = `${billingMonth.value}-05`;
     allocatedRoom.value = 'Auto-filled from allocation';
     allocatedBed.value = 'Auto-filled from allocation';
     saveBtn.textContent = 'Record bed payment';
     updateRate();
+    autoCalculateDueDate();
     updatePreview();
 }
 
 billingMonth.addEventListener('input', () => {
-    if (billingMonth.value) {
-        dueDate.value = `${billingMonth.value}-05`;
-    }
     updatePreview();
+});
+
+paymentDate.addEventListener('change', () => {
+    autoCalculateDueDate();
 });
 
 function inferBlock(roomNumber) {
