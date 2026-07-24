@@ -327,7 +327,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             <!-- LEFT: Booking Card & Room Finder -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-6" id="leftCol">
                 
                 <!-- CURRENT BOOKING CARD -->
                 <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm space-y-4">
@@ -383,7 +383,7 @@
             </div>
 
             <!-- RIGHT: Ledger Balance & Statements -->
-            <div class="space-y-6">
+            <div class="space-y-6 lg:col-span-1" id="rightSidebarCol">
 
                 <!-- FINANCIAL LEDGER -->
                 <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm space-y-4">
@@ -987,11 +987,18 @@
 
         function filterRooms() {
             const roomFinderCard = document.getElementById('roomFinderCard');
+            const leftCol = document.getElementById('leftCol');
+            const rightCol = document.getElementById('rightSidebarCol');
+
             if (activeBooking) {
                 if (roomFinderCard) roomFinderCard.style.display = 'none';
+                if (leftCol) leftCol.className = 'lg:col-span-3 space-y-6';
+                if (rightCol) rightCol.className = 'grid grid-cols-1 md:grid-cols-2 gap-6 lg:col-span-3';
                 return;
             } else {
                 if (roomFinderCard) roomFinderCard.style.display = 'block';
+                if (leftCol) leftCol.className = 'lg:col-span-2 space-y-6';
+                if (rightCol) rightCol.className = 'space-y-6 lg:col-span-1';
             }
 
             const tableBody = document.getElementById('roomTableBody');
