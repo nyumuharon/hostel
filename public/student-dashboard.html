@@ -569,6 +569,9 @@
             
             <h3 class="text-lg font-bold text-primary mb-4">Complete Room Booking</h3>
             
+            <!-- Inline Modal Alert -->
+            <div id="bookingModalAlert" class="hidden p-3 rounded-lg border text-xs font-semibold mb-3"></div>
+
             <div id="bookingForm" class="space-y-4">
                 <input type="hidden" id="modalRoomId">
                 <input type="hidden" id="modalBlockName">
@@ -687,6 +690,9 @@
             
             <h3 class="text-lg font-bold text-primary mb-4">Record Ledger Payment</h3>
             
+            <!-- Inline Modal Alert -->
+            <div id="paymentModalAlert" class="hidden p-3 rounded-lg border text-xs font-semibold mb-3"></div>
+
             <div id="genPaymentForm" class="space-y-4">
                 
                 <!-- STEP 1: Enter payment details -->
@@ -1085,12 +1091,42 @@
         }
 
         // Room booking modal operations
+        function showBookingModalError(msg) {
+            const alertDiv = document.getElementById('bookingModalAlert');
+            if (msg) {
+                alertDiv.textContent = msg;
+                alertDiv.className = 'p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-semibold mb-3';
+                alertDiv.classList.remove('hidden');
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+        }
+
+        function showBookingModalSuccess(msg) {
+            const alertDiv = document.getElementById('bookingModalAlert');
+            if (msg) {
+                alertDiv.textContent = msg;
+                alertDiv.className = 'p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 text-xs font-semibold mb-3';
+                alertDiv.classList.remove('hidden');
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+        }
+
+        // Room booking modal operations
         function openBookingModal(roomId, roomNumber, blockName) {
+            showBookingModalError('');
+            
             if (activeBooking) {
-                alert('⚠️ Active Booking Detected!\nYou already have an active room allocation. Please vacate your current room first before reserving a new room.');
+                document.getElementById('bookingModal').classList.add('show');
+                document.getElementById('bookingForm').style.display = 'none';
+                document.getElementById('paymentFooterButtons').style.display = 'none';
+                showBookingModalError(`⚠️ Active Booking Detected! You already have an active room allocation (Room ${activeBooking.room_number}). To change rooms, please contact hostel administration.`);
                 return;
             }
             
+            document.getElementById('bookingForm').style.display = 'block';
+            document.getElementById('paymentFooterButtons').style.display = 'flex';
             document.getElementById('modalRoomId').value = roomId;
             document.getElementById('modalRoomNumber').textContent = roomNumber;
             document.getElementById('modalBlockName').value = blockName;
@@ -1113,6 +1149,7 @@
                 clearInterval(stkInterval);
                 stkInterval = null;
             }
+            showBookingModalError('');
             document.getElementById('bookingModal').classList.remove('show');
         }
 
@@ -1162,9 +1199,10 @@
         // STK simulation
         let stkInterval = null;
         function simulateStkPush() {
+            showBookingModalError('');
             const phone = document.getElementById('mpesaPhone').value.trim();
             if (!/^[0-9]{10}$/.test(phone)) {
-                alert('Please enter a valid 10-digit mobile number.');
+                showBookingModalError('Please enter a valid 10-digit mobile number.');
                 return;
             }
 
@@ -1193,9 +1231,6 @@
                     }
                     document.getElementById('mpesaTxCode').value = code;
 
-                    // Trigger alert for auto confirmation
-                    alert(`📱 STK Push Payment Confirmed Automatically!\nTransaction Code: ${code}`);
-
                     // Proceed to verify & book automatically!
                     await submitBookingPayment();
                 }
@@ -1216,24 +1251,25 @@
 
         // Booking submission
         async function submitBookingPayment() {
+            showBookingModalError('');
             const method = document.getElementById('bookingPaymentMethod').value;
             let transactionRef = '';
 
             if (method === 'M-Pesa') {
                 transactionRef = document.getElementById('mpesaTxCode').value.trim();
                 if (!transactionRef) {
-                    alert('Please enter the M-Pesa Transaction Code.');
+                    showBookingModalError('Please enter the M-Pesa Transaction Code.');
                     return;
                 }
             } else if (method === 'Bank transfer') {
                 transactionRef = document.getElementById('bankTxRef').value.trim();
                 const file = document.getElementById('bankSlipFile').files[0];
                 if (!transactionRef) {
-                    alert('Please enter the Bank slip reference.');
+                    showBookingModalError('Please enter the Bank slip reference.');
                     return;
                 }
                 if (!file) {
-                    alert('Please choose and upload a deposit slip image/receipt.');
+                    showBookingModalError('Please choose and upload a deposit slip image/receipt.');
                     return;
                 }
             } else if (method === 'Card') {
@@ -1243,7 +1279,7 @@
                 const cvv = document.getElementById('cardCvv').value.trim();
                 
                 if (!holder || card.length < 16 || exp.length < 5 || cvv.length < 3) {
-                    alert('Please fill out all Credit/Debit card details correctly.');
+                    showBookingModalError('Please fill out all Credit/Debit card details correctly.');
                     return;
                 }
                 transactionRef = 'CRD-' + Math.floor(100000 + Math.random() * 900000);
@@ -1287,8 +1323,8 @@
                         
                         const allocData = await allocResponse.json();
                         if (allocResponse.status === 401 || allocData.message === 'Unauthorized') {
-                            alert('🔒 Session Expired\nYour session has expired. Please log in again to complete your room booking.');
-                            window.location.href = 'student-login.html';
+                            showBookingModalError('🔒 Session Expired. Your session has expired. Please log in again.');
+                            setTimeout(() => { window.location.href = 'student-login.html'; }, 2000);
                             return;
                         }
                         if (!allocData.success) {
@@ -1296,12 +1332,6 @@
                         }
 
                         closeBookingModal();
-                        
-                        if (method === 'None') {
-                            alert(`🎉 Temporary Booking registered!\nYou have a 5-day grace period to pay. Your Reporting Code is: ${allocData.booking_code}`);
-                        } else {
-                            alert(`🎉 Booking confirmed!\nYour Reporting Code is: ${allocData.booking_code}\nPayment Code: ${transactionRef}\n\n✉️ Notification: Email receipt sent to student registration address and SMS confirmation sent to registered mobile number.`);
-                        }
                         
                         // Load active booking and stats
                         await loadBookingDetails();
@@ -1312,12 +1342,11 @@
                         // Show floating toast alert (pop and go)
                         showBookingToast(allocData.booking_code);
                     } catch (error) {
-                        alert('Booking Error: ' + error.message);
-                        
-                        // Reset forms
+                        // Reset forms and show error inside modal
                         document.getElementById('paymentProgressOverlay').style.display = 'none';
                         document.getElementById('paymentFooterButtons').style.display = 'flex';
                         updatePaymentFields();
+                        showBookingModalError(error.message);
                     }
                 }, 1000);
             }, 1000);
@@ -1375,12 +1404,24 @@
             }
         }
 
+        function showPaymentModalError(msg) {
+            const alertDiv = document.getElementById('paymentModalAlert');
+            if (msg) {
+                alertDiv.textContent = msg;
+                alertDiv.className = 'p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-semibold mb-3';
+                alertDiv.classList.remove('hidden');
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+        }
+
         // Gen M-Pesa STK simulation
         let genStkInterval = null;
         function simulateGenStkPush() {
+            showPaymentModalError('');
             const phone = document.getElementById('genMpesaPhone').value.trim();
             if (!/^[0-9]{10}$/.test(phone)) {
-                alert('Please enter a valid 10-digit mobile number.');
+                showPaymentModalError('Please enter a valid 10-digit mobile number.');
                 return;
             }
 
@@ -1409,9 +1450,6 @@
                     }
                     document.getElementById('genMpesaTxCode').value = code;
 
-                    // Trigger alert for auto confirmation
-                    alert(`📱 STK Push Payment Confirmed Automatically!\nTransaction Code: ${code}`);
-
                     // Proceed to verify & pay automatically!
                     await verifyAndSubmitGenPayment();
                 }
@@ -1432,6 +1470,7 @@
 
         // Verify and submit general ledger payment
         async function verifyAndSubmitGenPayment() {
+            showPaymentModalError('');
             const amt = document.getElementById('payAmount').value;
             const method = document.getElementById('payMethod').value;
             let transactionRef = '';
@@ -1439,18 +1478,18 @@
             if (method === 'M-Pesa') {
                 transactionRef = document.getElementById('genMpesaTxCode').value.trim();
                 if (!transactionRef) {
-                    alert('Please enter the M-Pesa Transaction Code.');
+                    showPaymentModalError('Please enter the M-Pesa Transaction Code.');
                     return;
                 }
             } else if (method === 'Bank transfer') {
                 transactionRef = document.getElementById('genBankTxRef').value.trim();
                 const file = document.getElementById('genBankSlipFile').files[0];
                 if (!transactionRef) {
-                    alert('Please enter the Bank slip reference.');
+                    showPaymentModalError('Please enter the Bank slip reference.');
                     return;
                 }
                 if (!file) {
-                    alert('Please select the slip file copy.');
+                    showPaymentModalError('Please select the slip file copy.');
                     return;
                 }
             } else if (method === 'Card') {
@@ -1460,7 +1499,7 @@
                 const cvv = document.getElementById('genCardCvv').value.trim();
                 
                 if (!holder || card.length < 16 || exp.length < 5 || cvv.length < 3) {
-                    alert('Please enter valid credit card details.');
+                    showPaymentModalError('Please enter valid credit card details.');
                     return;
                 }
                 transactionRef = 'CRD-' + Math.floor(100000 + Math.random() * 900000);
@@ -1504,16 +1543,15 @@
                         if (!data.success) throw new Error(data.message || 'Failed to record payment');
 
                         closePaymentModal();
-                        alert(`🎉 Payment of Ksh ${parseFloat(amt).toLocaleString()} completed successfully!\nReference: ${transactionRef}\n\n✉️ Notification: Email receipt sent to student registration address and SMS confirmation sent to registered mobile number.`);
                         
                         await loadBookingDetails(); // Refresh details in case it was a lease booking being activated!
                         await loadLedger();
                         await loadPaymentHistory();
                     } catch (error) {
-                        alert('Payment Error: ' + error.message);
                         document.getElementById('genPaymentProgressOverlay').style.display = 'none';
                         document.getElementById('genPaymentFooterButtons').style.display = 'flex';
                         updateGenPaymentFields();
+                        showPaymentModalError(error.message);
                     }
                 }, 1000);
             }, 1000);
