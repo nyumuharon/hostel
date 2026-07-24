@@ -806,6 +806,10 @@
                 <span class="material-symbols-outlined text-primary text-base">swap_horiz</span>
                 <span>Room Transfer / Swap Request</span>
             </h3>
+
+            <!-- Inline Alert for Transfer/Swap -->
+            <div id="transferModalAlert" class="hidden p-3 rounded-lg border text-xs font-semibold mb-3"></div>
+
             <div class="space-y-4">
                 <div class="bg-slate-50 p-2.5 rounded-lg flex gap-4 text-xs font-semibold">
                     <label class="flex items-center gap-1.5 cursor-pointer">
@@ -824,10 +828,16 @@
                     </select>
                 </div>
                 <div id="swapSection" class="hidden space-y-3">
-                    <label for="swapStudentSelect" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Select Student Partner to Swap *</label>
-                    <select id="swapStudentSelect" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none text-sm">
-                        <option value="">Select student partner</option>
-                    </select>
+                    <div>
+                        <label for="swapAdmission" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Target Student Admission Number *</label>
+                        <input type="text" id="swapAdmission" placeholder="e.g. ADM002" oninput="verifySwapTarget()" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm">
+                    </div>
+                    <div>
+                        <label for="swapRoomNumber" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Target Room Number *</label>
+                        <input type="text" id="swapRoomNumber" placeholder="e.g. BAT-002" oninput="verifySwapTarget()" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm">
+                    </div>
+                    <input type="hidden" id="swapStudentId">
+                    <div id="swapStatusBox" class="hidden p-3 rounded-lg border text-xs font-semibold leading-relaxed"></div>
                 </div>
                 <div class="pt-4 flex gap-3">
                     <button type="button" onclick="closeTransferSwapModal()" class="flex-1 py-2 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors text-center">Cancel</button>
@@ -1719,8 +1729,20 @@
             document.body.className = '';
         }
 
+        function showTransferModalError(msg) {
+            const alertDiv = document.getElementById('transferModalAlert');
+            if (msg) {
+                alertDiv.textContent = msg;
+                alertDiv.className = 'p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-semibold mb-3';
+                alertDiv.classList.remove('hidden');
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+        }
+
         // Room Transfer & Swap Modal operations
         function openTransferSwapModal() {
+            showTransferModalError('');
             document.getElementById('transferSwapModal').classList.add('show');
             const radios = document.getElementsByName('manageAction');
             radios[0].checked = true;
@@ -1730,10 +1752,12 @@
         }
 
         function closeTransferSwapModal() {
+            showTransferModalError('');
             document.getElementById('transferSwapModal').classList.remove('show');
         }
 
         function toggleManageAction() {
+            showTransferModalError('');
             const action = document.querySelector('input[name="manageAction"]:checked').value;
             if (action === 'transfer') {
                 document.getElementById('transferSection').style.display = 'block';
@@ -1752,7 +1776,12 @@
                 const data = await response.json();
                 if (data.success) {
                     const currentRoomId = activeBooking ? activeBooking.room_id : null;
-                    const availableRooms = data.data.filter(r => r.room_id !== currentRoomId && r.current_occupancy < r.capacity);
+                    const studentGender = (studentUser && studentUser.gender) ? studentUser.gender.toLowerCase() : '';
+                    const availableRooms = data.data.filter(r => 
+                        r.room_id !== currentRoomId && 
+                        r.current_occupancy < r.capacity &&
+                        (!studentGender || (r.gender_restriction || '').toLowerCase() === studentGender)
+                    );
                     if (availableRooms.length === 0) {
                         roomSelect.innerHTML = '<option value="">No rooms available for transfer.</option>';
                         return;
@@ -1769,38 +1798,66 @@
             }
         }
 
+        let swapCandidatesCache = [];
         async function loadSwapCandidates() {
-            const swapSelect = document.getElementById('swapStudentSelect');
-            swapSelect.innerHTML = '<option value="">Loading eligible students...</option>';
             try {
                 const response = await fetch('/api/allocations/swap-candidates');
                 const data = await response.json();
                 if (data.success) {
-                    const candidates = data.data || [];
-                    if (candidates.length === 0) {
-                        swapSelect.innerHTML = '<option value="">No eligible students available for swap.</option>';
-                        return;
-                    }
-                    swapSelect.innerHTML = '<option value="">Select Student to Swap With</option>' + candidates.map(c => {
-                        return `<option value="${c.student_id}">${c.full_name} (${c.admission_number}) - Room ${c.room_number} (${c.block_name})</option>`;
-                    }).join('');
+                    swapCandidatesCache = data.data || [];
+                    verifySwapTarget();
                 }
             } catch (err) {
                 console.error(err);
-                swapSelect.innerHTML = '<option value="">Failed to load swap candidates.</option>';
+            }
+        }
+
+        function verifySwapTarget() {
+            const adm = (document.getElementById('swapAdmission')?.value || '').trim().toLowerCase();
+            const roomNum = (document.getElementById('swapRoomNumber')?.value || '').trim().toLowerCase();
+            const statusBox = document.getElementById('swapStatusBox');
+            const studentIdHidden = document.getElementById('swapStudentId');
+
+            if (!statusBox || !studentIdHidden) return;
+
+            if (!adm || !roomNum) {
+                studentIdHidden.value = '';
+                statusBox.classList.add('hidden');
+                return;
+            }
+
+            const match = swapCandidatesCache.find(c => 
+                (c.admission_number || '').trim().toLowerCase() === adm &&
+                (c.room_number || '').trim().toLowerCase() === roomNum
+            );
+
+            if (match) {
+                studentIdHidden.value = match.student_id;
+                statusBox.textContent = `✓ Target Verified: ${match.full_name} (${match.admission_number}) in Room ${match.room_number} (${match.block_name}). Ready to swap!`;
+                statusBox.className = 'p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 text-xs font-semibold leading-relaxed';
+                statusBox.classList.remove('hidden');
+            } else {
+                studentIdHidden.value = '';
+                statusBox.textContent = `✗ Mismatch: No eligible student with Admission "${adm.toUpperCase()}" found in Room "${roomNum.toUpperCase()}".`;
+                statusBox.className = 'p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-semibold leading-relaxed';
+                statusBox.classList.remove('hidden');
             }
         }
 
         async function submitTransferSwap() {
+            showTransferModalError('');
             const action = document.querySelector('input[name="manageAction"]:checked').value;
             const payload = {};
             if (action === 'transfer') {
                 const roomId = document.getElementById('transferRoomSelect').value;
-                if (!roomId) { alert('Please select a target room.'); return; }
+                if (!roomId) { showTransferModalError('Please select a target room.'); return; }
                 payload.new_room_id = roomId;
             } else {
-                const studentId = document.getElementById('swapStudentSelect').value;
-                if (!studentId) { alert('Please select a student to swap with.'); return; }
+                const studentId = document.getElementById('swapStudentId').value;
+                if (!studentId) {
+                    showTransferModalError('Please enter a valid Target Student Admission Number and Room Number to verify swap target.');
+                    return;
+                }
                 payload.swap_student_id = studentId;
             }
             try {
@@ -1811,11 +1868,10 @@
                 });
                 const data = await response.json();
                 if (!data.success) throw new Error(data.message || 'Operation failed');
-                alert('Room change complete!\n' + data.message);
                 closeTransferSwapModal();
                 await Promise.all([loadBookingDetails(), loadAvailableRooms(), loadLedger(), loadPaymentHistory()]);
             } catch (err) {
-                alert('Error: ' + err.message);
+                showTransferModalError(err.message);
             }
         }
 
