@@ -188,11 +188,29 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <!-- Icons -->
-            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative">
-                <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
-            </button>
+            <!-- Admin Notification Bell -->
+            <div class="relative">
+                <button id="adminNotifBtn" onclick="toggleAdminNotifDropdown(event)" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative text-on-surface-variant focus:outline-none" title="Notifications">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span id="adminNotifRedDot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white animate-pulse"></span>
+                </button>
+
+                <!-- Admin Notifications Dropdown Menu -->
+                <div id="adminNotifDropdown" class="hidden absolute right-0 top-12 w-80 sm:w-96 bg-white border border-outline-variant rounded-2xl shadow-2xl z-50 overflow-hidden text-sm">
+                    <div class="p-3 bg-slate-50 border-b border-outline-variant/30 flex justify-between items-center">
+                        <span class="font-bold text-primary text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-base">notifications</span>
+                            Admin Notifications
+                        </span>
+                        <span id="adminNotifBadgeCount" class="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">0 unread</span>
+                    </div>
+
+                    <div id="adminNotifList" class="max-h-80 overflow-y-auto divide-y divide-outline-variant/20 p-1">
+                        <div class="p-4 text-center text-xs text-outline font-medium">No recent notifications</div>
+                    </div>
+                </div>
+            </div>
+
             <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
                 <span class="material-symbols-outlined text-on-surface-variant">help</span>
             </button>
@@ -511,10 +529,106 @@
                 document.getElementById('profileName').textContent = data.user.fullName;
                 document.getElementById('profileRole').textContent = data.user.role.charAt(0).toUpperCase() + data.user.role.slice(1) + ' Admin';
                 
-                await Promise.all([loadStudents(), loadPayments()]);
+                await Promise.all([loadStudents(), loadPayments(), loadAdminNotifications()]);
                 reset();
             } catch (err) {
                 window.location.href = 'index.html';
+            }
+        }
+
+        function toggleAdminNotifDropdown(e) {
+            if (e) e.stopPropagation();
+            const dd = document.getElementById('adminNotifDropdown');
+            if (dd) dd.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const dd = document.getElementById('adminNotifDropdown');
+            const btn = document.getElementById('adminNotifBtn');
+            if (dd && !dd.classList.contains('hidden') && !dd.contains(e.target) && (btn && !btn.contains(e.target))) {
+                dd.classList.add('hidden');
+            }
+        });
+
+        async function loadAdminNotifications() {
+            const redDot = document.getElementById('adminNotifRedDot');
+            const badgeCount = document.getElementById('adminNotifBadgeCount');
+            const notifList = document.getElementById('adminNotifList');
+            if (!notifList) return;
+
+            let items = [];
+
+            try {
+                const trRes = await fetch('/api/allocations/transfer-requests');
+                const trData = await trRes.json();
+                if (trData.success && trData.data) {
+                    const pending = trData.data.filter(r => r.status === 'pending');
+                    pending.forEach(req => {
+                        items.push({
+                            id: 'tr-' + req.request_id,
+                            title: 'Pending Room Transfer Request',
+                            body: `${req.student_name} (${req.admission_number}) requested transfer to Room ${req.target_room_number} (${req.target_block}).`,
+                            icon: 'swap_horiz',
+                            iconColor: 'text-amber-600 bg-amber-100',
+                            unread: true,
+                            link: 'allocations.html',
+                            date: req.created_at
+                        });
+                    });
+                }
+
+                const allocRes = await fetch('/api/allocations');
+                const allocData = await allocRes.json();
+                if (allocData.success && allocData.data) {
+                    const recent = allocData.data.slice(0, 3);
+                    recent.forEach(alloc => {
+                        items.push({
+                            id: 'alloc-' + alloc.allocation_id,
+                            title: 'Active Room Allocation',
+                            body: `${alloc.full_name || 'Student'} allocated to Room ${alloc.room_number || 'N/A'} (${alloc.block_name || ''}).`,
+                            icon: 'meeting_room',
+                            iconColor: 'text-blue-600 bg-blue-100',
+                            unread: false,
+                            link: 'allocations.html',
+                            date: alloc.allocation_date
+                        });
+                    });
+                }
+
+                const unreadCount = items.filter(i => i.unread).length;
+
+                if (redDot) {
+                    if (unreadCount > 0) redDot.classList.remove('hidden');
+                    else redDot.classList.add('hidden');
+                }
+
+                if (badgeCount) {
+                    badgeCount.textContent = `${unreadCount} unread`;
+                }
+
+                if (items.length === 0) {
+                    notifList.innerHTML = '<div class="p-6 text-center text-xs text-outline font-medium">No recent notifications</div>';
+                    return;
+                }
+
+                notifList.innerHTML = items.map(item => `
+                    <a href="${item.link}" class="p-3 hover:bg-slate-50 transition-colors flex items-start gap-3 block ${item.unread ? 'bg-amber-50/40' : ''}">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${item.iconColor}">
+                            <span class="material-symbols-outlined text-base">${item.icon}</span>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="font-bold text-xs text-on-surface truncate">${item.title}</span>
+                                ${item.unread ? '<span class="w-2 h-2 rounded-full bg-red-600 shrink-0"></span>' : ''}
+                            </div>
+                            <p class="text-xs text-outline mt-0.5 leading-relaxed">${item.body}</p>
+                            <span class="text-[10px] text-outline-variant block mt-1">${formatDate(item.date)}</span>
+                        </div>
+                    </a>
+                `).join('');
+
+            } catch (err) {
+                console.error('Error loading admin notifications:', err);
             }
         }
 
