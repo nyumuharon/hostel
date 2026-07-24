@@ -236,12 +236,12 @@
         <!-- Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- Pending Room Transfer & Swap Requests -->
+            <!-- Pending Room Transfer Requests -->
             <section id="pendingTransfersCard" class="bg-white p-6 rounded-2xl border border-amber-300 bg-amber-50/40 shadow-sm lg:col-span-3 space-y-4 hidden">
                 <div class="flex justify-between items-center">
                     <h3 class="font-bold text-amber-900 text-base flex items-center gap-2">
                         <span class="material-symbols-outlined text-amber-600">swap_horiz</span>
-                        <span>Pending Room Transfer & Swap Requests</span>
+                        <span>Pending Room Transfer Requests</span>
                         <span id="pendingTransferBadge" class="bg-amber-600 text-white text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </h3>
                 </div>
@@ -252,9 +252,9 @@
                             <tr class="border-b border-amber-200 text-xs font-semibold uppercase tracking-wider text-amber-800">
                                 <th class="py-2.5 px-2">Student</th>
                                 <th class="py-2.5 px-2">Admission</th>
-                                <th class="py-2.5 px-2">Request Type</th>
                                 <th class="py-2.5 px-2">Current Room</th>
-                                <th class="py-2.5 px-2">Target Room / Partner</th>
+                                <th class="py-2.5 px-2">Target Room</th>
+                                <th class="py-2.5 px-2">Reason</th>
                                 <th class="py-2.5 px-2">Date Requested</th>
                                 <th class="py-2.5 px-2 text-right">Actions</th>
                             </tr>
@@ -336,7 +336,7 @@
                     </div>
 
                     <div class="pt-2 flex gap-2">
-                        <button type="button" onclick="resetForm()" class="flex-1 py-2.5 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors text-center">Clear</button>
+                        <button type="button" onclick="resetForm()" class="flex-1 py-2 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors text-center">Clear</button>
                         <button type="submit" class="flex-1 py-2.5 bg-primary hover:bg-primary-container text-white font-semibold rounded-lg text-sm shadow-md transition-colors text-center">Allocate Room</button>
                     </div>
                 </form>
@@ -406,36 +406,18 @@
 
     <script>
         const form = document.getElementById('allocationForm');
+        const studentAdmInput = document.getElementById('student_adm');
+        const studentIdHidden = document.getElementById('student_id');
+        const roomSelect = document.getElementById('room_id');
+        const roomDetails = document.getElementById('roomDetails');
         const tableBody = document.getElementById('allocationTableBody');
         const successAlert = document.getElementById('successAlert');
         const errorAlert = document.getElementById('errorAlert');
-        const studentAdmInput = document.getElementById('student_adm');
-        const studentIdHidden = document.getElementById('student_id');
-        const studentSelect = studentIdHidden;
-        const roomSelect = document.getElementById('room_id');
-        const roomDetails = document.getElementById('roomDetails');
-        
+
         let students = [];
         let rooms = [];
         let allAllocations = [];
-
-        function syncSearch(val) {
-            filterAllocations(val);
-        }
-
-        function filterAllocations(searchVal = '') {
-            const query = (searchVal || document.getElementById('topSearchInput')?.value || '').toLowerCase().trim();
-            let filtered = allAllocations;
-            if (query) {
-                filtered = filtered.filter(item => 
-                    (item.full_name || '').toLowerCase().includes(query) ||
-                    (item.admission_number || '').toLowerCase().includes(query) ||
-                    (item.room_number || '').toLowerCase().includes(query) ||
-                    (item.booking_code || '').toLowerCase().includes(query)
-                );
-            }
-            renderAllocations(filtered);
-        }
+        let activeFilter = 'active';
 
         // Verify session status
         async function checkAuth() {
@@ -484,22 +466,13 @@
                     card.classList.remove('hidden');
 
                     tbody.innerHTML = pending.map(req => {
-                        const isSwap = req.request_type === 'swap';
-                        const targetDesc = isSwap 
-                            ? `<span class="font-bold text-amber-900">Swap with ${req.swap_student_name} (${req.swap_student_admission})</span>`
-                            : `<span class="font-bold text-amber-900">Room ${req.target_room_number} (${req.target_block})</span>`;
-
                         return `
                             <tr class="hover:bg-amber-100/40 transition-colors">
                                 <td class="py-3 px-2 font-bold text-on-surface">${req.student_name}</td>
                                 <td class="py-3 px-2 text-xs font-mono font-semibold text-outline-variant">${req.admission_number}</td>
-                                <td class="py-3 px-2">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${isSwap ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                                        ${req.request_type}
-                                    </span>
-                                </td>
                                 <td class="py-3 px-2 text-xs font-semibold">Room ${req.current_room_number} (${req.current_block})</td>
-                                <td class="py-3 px-2 text-xs">${targetDesc}</td>
+                                <td class="py-3 px-2 text-xs font-bold text-amber-900">Room ${req.target_room_number} (${req.target_block})</td>
+                                <td class="py-3 px-2 text-xs text-outline max-w-[150px] truncate">${req.reason || 'Room transfer'}</td>
                                 <td class="py-3 px-2 text-xs text-outline">${formatDate(req.created_at)}</td>
                                 <td class="py-3 px-2 text-right">
                                     <div class="flex justify-end gap-1.5">

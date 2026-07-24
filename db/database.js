@@ -120,6 +120,7 @@ const transferRequestSchema = new mongoose.Schema({
   target_room_id:   Number,
   swap_student_id:  Number,
   status:           { type: String, default: 'pending' },
+  student_read:     { type: Boolean, default: false },
   reason:           String,
   admin_remarks:    String,
   created_at: { type: String, default: () => new Date().toISOString() },
