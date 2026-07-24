@@ -1,151 +1,226 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Management - Hostel Management System</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Room Inventory - Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#000666",
+                        "primary-container": "#1a237e",
+                        secondary: "#006a60",
+                        "secondary-container": "#85f6e5",
+                        background: "#fbf8ff",
+                        surface: "#fbf8ff",
+                        "on-surface": "#1b1b21",
+                        outline: "#767683",
+                        "outline-variant": "#c6c5d4"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; }
-        .navbar { background:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color:white; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
-        .navbar-brand { font-size:20px; font-weight:700; }
-        .profile-pill { background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:20px; }
-        .main-container { display:flex; min-height:calc(100vh - 70px); }
-        .sidebar { width:260px; background:white; border-right:1px solid #ddd; padding:20px 0; }
-        .sidebar-title { font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:0.8px; padding:0 20px; margin-bottom:10px; }
-        .sidebar a { display:flex; align-items:center; gap:12px; padding:12px 20px; color:#555; text-decoration:none; transition:all 0.3s; border-left:3px solid transparent; }
-        .sidebar a:hover, .sidebar a.active { background:#e8f0f7; color:#2a5298; border-left-color:#2a5298; }
-        .content { flex:1; padding:30px; }
-        .page-header { margin-bottom:25px; }
-        .page-title { font-size:28px; font-weight:700; color:#1e3c72; margin-bottom:8px; }
-        .page-subtitle { color:#666; font-size:14px; }
-        .card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px; }
-        .card h3 { color:#1e3c72; margin-bottom:15px; }
-        .form-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:15px; }
-        .form-group { display:flex; flex-direction:column; gap:6px; }
-        .form-group label { font-size:13px; font-weight:600; color:#555; }
-        .form-group input, .form-group select, .form-group textarea { padding:11px 12px; border:1px solid #ddd; border-radius:8px; font-size:14px; }
-        .form-group textarea { min-height:80px; resize:vertical; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:#2a5298; box-shadow:0 0 0 3px rgba(42,82,152,0.12); }
-        .full-width { grid-column:1 / -1; }
-        .btn-row { display:flex; gap:10px; margin-top:12px; }
-        .btn-primary { background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
-        .btn-secondary { background:white; color:#2a5298; border:1px solid #2a5298; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
-        .alert { display:none; padding:12px 14px; border-radius:8px; margin-bottom:15px; font-size:14px; }
-        .alert.show { display:block; }
-        .alert-success { background:#d4edda; color:#155724; }
-        .alert-error { background:#f8d7da; color:#721c24; }
-        table { width:100%; border-collapse:collapse; }
-        th { background:#f5f7fa; padding:12px 14px; text-align:left; color:#666; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
-        td { padding:12px 14px; border-bottom:1px solid #f0f2f5; }
-        tr:hover { background:#fafbfc; }
-        .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-        .badge-available { background:#d4edda; color:#155724; }
-        .badge-maintenance { background:#fff3cd; color:#856404; }
-        .badge-occupied { background:#f8d7da; color:#721c24; }
-        .delete-btn { color:#dc3545; background:none; border:none; cursor:pointer; font-weight:600; }
-        @media (max-width:768px){ .form-grid{grid-template-columns:1fr;} .sidebar{width:220px;} .content{padding:15px;} }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .active-tab-indicator {
+            font-variation-settings: 'FILL' 1;
+        }
     </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="navbar-brand">🏢 HMS - Room Management</div>
-        <div class="profile-pill" id="profilePill">👤 Loading User...</div>
-    </nav>
+<body class="bg-background text-on-surface min-h-screen pb-24">
 
-    <div class="main-container">
-        <aside class="sidebar">
-            <div class="sidebar-title">Main</div>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="students.html">👥 Students</a>
-            <a href="rooms.html" class="active">🛏️ Rooms</a>
-            <a href="allocations.html">📋 Allocations</a>
-            <a href="payments.html">💰 Bed Payments</a>
-            <a href="reports.html">📈 Reports</a>
-        </aside>
+    <!-- Top Navigation Bar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
+        <div class="flex items-center gap-3">
+            <a href="dashboard.html" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">arrow_back</span>
+            </a>
+            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">Room Inventory</h1>
+        </div>
 
-        <main class="content">
-            <div class="page-header">
-                <h1 class="page-title">Room Management</h1>
-                <p class="page-subtitle">Create and manage hostel rooms and their occupancy status.</p>
+        <div class="flex items-center gap-2">
+            <span id="profilePill" class="text-xs font-semibold px-3 py-1.5 bg-primary/10 text-primary rounded-full">👤 Admin</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-6">
+
+        <!-- Notification Alerts -->
+        <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="successAlert"></div>
+        <div class="hidden p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" id="errorAlert"></div>
+
+        <!-- Block Summary Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Batian Block Stats -->
+            <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-primary text-base">Batian Block (Male)</h3>
+                    <p class="text-xs text-outline mt-1" id="batianDetails">Capacity: 100 beds</p>
+                </div>
+                <div class="text-right">
+                    <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full" id="batianBedsLeft">Loading...</span>
+                </div>
             </div>
 
-            <div class="alert alert-success" id="successAlert"></div>
-            <div class="alert alert-error" id="errorAlert"></div>
+            <!-- Nelion Block Stats -->
+            <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-secondary text-base">Nelion Block (Female)</h3>
+                    <p class="text-xs text-outline mt-1" id="nelionDetails">Capacity: 100 beds</p>
+                </div>
+                <div class="text-right">
+                    <span class="px-2.5 py-1 bg-teal-100 text-teal-800 text-xs font-bold rounded-full" id="nelionBedsLeft">Loading...</span>
+                </div>
+            </div>
+        </section>
 
-            <section class="card">
-                <h3>Add New Room</h3>
-                <form id="roomForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="block_name">Hostel Block</label>
-                            <select id="block_name" name="block_name">
-                                <option value="Batian">Batian Block (2 beds)</option>
-                                <option value="Nelion">Nelion Block (2 beds)</option>
-
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="room_number">Room Number</label>
-                            <input id="room_number" name="room_number" placeholder="BAT-001, NEL-001" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="room_type">Room Type</label>
-                            <input id="room_type" name="room_type" placeholder="Single / Double / Triple" required readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="capacity">Capacity</label>
-                            <input id="capacity" name="capacity" type="number" min="1" required readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="current_occupancy">Current Occupancy</label>
-                            <input id="current_occupancy" name="current_occupancy" type="number" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="status">Status</label>
-                            <select id="status" name="status">
-                                <option value="available">Available</option>
-                                <option value="occupied">Occupied</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="floor">Floor</label>
-                            <input id="floor" name="floor" type="number" min="1" value="1">
-                        </div>
-                        <div class="form-group full-width">
-                            <label for="amenities">Amenities</label>
-                            <textarea id="amenities" name="amenities" placeholder="Wi-Fi, bathroom, study desk..."></textarea>
-                        </div>
+        <!-- 2-Column Split Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Room Creator Form -->
+            <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm h-fit space-y-4">
+                <h3 class="font-bold text-primary text-lg">Create New Room</h3>
+                
+                <form id="roomForm" class="space-y-4">
+                    <div>
+                        <label for="block_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Hostel Block *</label>
+                        <select id="block_name" name="block_name" required
+                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                            <option value="Batian">Batian (Male)</option>
+                            <option value="Nelion">Nelion (Female)</option>
+                        </select>
                     </div>
-                    <div class="btn-row">
-                        <button class="btn-primary" type="submit">Save Room</button>
-                        <button class="btn-secondary" type="button" onclick="resetForm()">Clear</button>
+
+                    <div>
+                        <label for="room_number" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Number *</label>
+                        <input id="room_number" name="room_number" required type="text"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="BAT-001">
+                    </div>
+
+                    <div>
+                        <label for="room_type" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Type</label>
+                        <input id="room_type" name="room_type" type="text" readonly
+                               class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed">
+                    </div>
+
+                    <div>
+                        <label for="capacity" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Max Bed Capacity</label>
+                        <input id="capacity" name="capacity" type="number" readonly
+                               class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed">
+                    </div>
+
+                    <div>
+                        <label for="current_occupancy" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Current Occupancy</label>
+                        <input id="current_occupancy" name="current_occupancy" type="number" min="0" max="2" value="0"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                    </div>
+
+                    <div>
+                        <label for="status" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Initial Status</label>
+                        <select id="status" name="status"
+                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                            <option value="available">Available</option>
+                            <option value="occupied">Full</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="floor" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Building Floor</label>
+                        <input id="floor" name="floor" type="number" min="1" max="5" value="1"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                    </div>
+
+                    <div>
+                        <label for="amenities" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Amenities</label>
+                        <textarea id="amenities" name="amenities" rows="2"
+                                  class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="Wi-Fi, studying desks, lockers..."></textarea>
+                    </div>
+
+                    <div class="pt-2 flex gap-2">
+                        <button type="button" onclick="resetForm()" class="flex-1 py-2 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors text-center">Clear</button>
+                        <button type="submit" class="flex-1 py-2 bg-primary hover:bg-primary-container text-white font-semibold rounded-lg text-sm shadow-md transition-colors text-center">Save Room</button>
                     </div>
                 </form>
             </section>
 
-            <section class="card">
-                <h3>Available Rooms</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Room #</th>
-                            <th>Type</th>
-                            <th>Capacity</th>
-                            <th>Occupancy</th>
-                            <th>Status</th>
-                            <th>Floor</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="roomTableBody">
-                        <tr><td colspan="7" style="text-align:center; color:#999;">Loading rooms...</td></tr>
-                    </tbody>
-                </table>
+            <!-- Room Directory Table -->
+            <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm lg:col-span-2 space-y-4">
+                <h3 class="font-bold text-primary text-lg">Available Rooms</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-outline-variant/60 text-xs font-semibold uppercase tracking-wider text-outline">
+                                <th class="py-3 px-2">Room #</th>
+                                <th class="py-3 px-2">Type</th>
+                                <th class="py-3 px-2">Beds</th>
+                                <th class="py-3 px-2">Occupied</th>
+                                <th class="py-3 px-2">Status</th>
+                                <th class="py-3 px-2">Floor</th>
+                                <th class="py-3 px-2 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomTableBody" class="divide-y divide-outline-variant/30">
+                            <tr><td colspan="7" class="text-center py-6 text-outline">Loading rooms...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
-        </main>
-    </div>
+
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+        <!-- Dashboard -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="dashboard.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-label-sm">Dashboard</span>
+        </a>
+        <!-- Students -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="students.html">
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="text-label-sm">Students</span>
+        </a>
+        <!-- Rooms (ACTIVE) -->
+        <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1.5 transition-all duration-150 active:scale-90" href="rooms.html">
+            <span class="material-symbols-outlined active-tab-indicator" data-icon="bed">bed</span>
+            <span class="text-label-sm font-bold">Rooms</span>
+        </a>
+        <!-- Allocations -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="allocations.html">
+            <span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+            <span class="text-label-sm">Allocations</span>
+        </a>
+        <!-- Payments -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="payments.html">
+            <span class="material-symbols-outlined" data-icon="payments">payments</span>
+            <span class="text-label-sm">Payments</span>
+        </a>
+        <!-- Reports -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="reports.html">
+            <span class="material-symbols-outlined" data-icon="description">description</span>
+            <span class="text-label-sm">Reports</span>
+        </a>
+    </nav>
 
     <script>
         const form = document.getElementById('roomForm');
@@ -171,23 +246,42 @@
                 
                 document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
                 applyBlockDefaults();
-                loadRooms();
+                await Promise.all([loadStats(), loadRooms()]);
             } catch (err) {
                 window.location.href = 'index.html';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/reports/dashboard-stats');
+                const data = await res.json();
+                if (data.success && data.blocks_stats) {
+                    const updateBlockCard = (blockName, elementPrefix) => {
+                        const bData = data.blocks_stats[blockName] || { total: 0, occupied: 0 };
+                        const remaining = bData.total - bData.occupied;
+                        document.getElementById(`${elementPrefix}BedsLeft`).textContent = `${remaining} beds left`;
+                        document.getElementById(`${elementPrefix}Details`).textContent = `Total Beds: ${bData.total} | Occupied: ${bData.occupied}`;
+                    };
+                    updateBlockCard('Batian', 'batian');
+                    updateBlockCard('Nelion', 'nelion');
+                }
+            } catch (err) {
+                console.error(err);
             }
         }
 
         function showMessage(type, message) {
             if (type === 'success') {
                 successAlert.textContent = message;
-                successAlert.classList.add('show');
-                errorAlert.classList.remove('show');
-                setTimeout(() => successAlert.classList.remove('show'), 4000);
+                successAlert.classList.remove('hidden');
+                errorAlert.classList.add('hidden');
+                setTimeout(() => successAlert.classList.add('hidden'), 4000);
             } else {
                 errorAlert.textContent = message;
-                errorAlert.classList.add('show');
-                successAlert.classList.remove('show');
-                setTimeout(() => errorAlert.classList.remove('show'), 4000);
+                errorAlert.classList.remove('hidden');
+                successAlert.classList.add('hidden');
+                setTimeout(() => errorAlert.classList.add('hidden'), 4000);
             }
         }
 
@@ -217,27 +311,48 @@
                 if (!data.success) throw new Error(data.message || 'Unable to load rooms');
                 renderRooms(data.data || []);
             } catch (error) {
-                tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#dc3545;">${error.message}</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500 font-semibold">${error.message}</td></tr>`;
             }
         }
 
         function renderRooms(rooms) {
             if (!rooms.length) {
-                tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#999;">No rooms found.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-outline">No rooms found.</td></tr>';
                 return;
             }
 
-            tableBody.innerHTML = rooms.map(room => `
-                <tr>
-                    <td>${room.room_number || '-'}</td>
-                    <td>${room.room_type || '-'}</td>
-                    <td>${room.capacity || '-'}</td>
-                    <td>${room.current_occupancy || 0}</td>
-                    <td><span class="badge badge-${room.status || 'available'}">${room.status || 'available'}</span></td>
-                    <td>${room.floor || '-'}</td>
-                    <td><button class="delete-btn" onclick="deleteRoom(${room.room_id})">Delete</button></td>
-                </tr>
-            `).join('');
+            tableBody.innerHTML = rooms.map(room => {
+                let badgeClass = '';
+                let statusText = room.status || 'available';
+                
+                if (statusText === 'available') {
+                    badgeClass = 'bg-green-50 text-green-700 border-green-200';
+                } else if (statusText === 'full' || statusText === 'occupied') {
+                    badgeClass = 'bg-red-50 text-red-700 border-red-200';
+                } else {
+                    badgeClass = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+                }
+
+                return `
+                    <tr class="hover:bg-outline-variant/10 transition-colors">
+                        <td class="py-3 px-2 font-bold text-on-surface">${room.room_number || '-'}</td>
+                        <td class="py-3 px-2 text-xs text-outline">${room.room_type || '-'}</td>
+                        <td class="py-3 px-2 text-xs text-outline">${room.capacity || '-'}</td>
+                        <td class="py-3 px-2 font-semibold text-on-surface-variant">${room.current_occupancy || 0}</td>
+                        <td class="py-3 px-2">
+                            <span class="px-2 py-0.5 border rounded-full text-xs font-semibold uppercase tracking-wider ${badgeClass}">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td class="py-3 px-2 text-xs text-outline">${room.floor || '-'}</td>
+                        <td class="py-3 px-2 text-right">
+                            <button class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors active:scale-95 flex items-center justify-center inline-block" onclick="deleteRoom(${room.room_id})">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         form.addEventListener('submit', async (e) => {
@@ -254,7 +369,7 @@
                 if (!data.success) throw new Error(data.message || 'Room creation failed');
                 showMessage('success', 'Room saved successfully.');
                 resetForm();
-                await loadRooms();
+                await Promise.all([loadStats(), loadRooms()]);
             } catch (error) {
                 showMessage('error', error.message);
             }
@@ -269,7 +384,7 @@
                 const data = await response.json();
                 if (!data.success) throw new Error(data.message || 'Delete failed');
                 showMessage('success', 'Room deleted successfully.');
-                await loadRooms();
+                await Promise.all([loadStats(), loadRooms()]);
             } catch (error) {
                 showMessage('error', error.message);
             }

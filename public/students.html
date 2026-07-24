@@ -1,207 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students Registry - Hostel Management System</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Student Directory - Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#000666",
+                        "primary-container": "#1a237e",
+                        secondary: "#006a60",
+                        "secondary-container": "#85f6e5",
+                        background: "#fbf8ff",
+                        surface: "#fbf8ff",
+                        "on-surface": "#1b1b21",
+                        outline: "#767683",
+                        "outline-variant": "#c6c5d4"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; }
-        .navbar { background:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color:white; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
-        .navbar-brand { font-size:20px; font-weight:700; }
-        .profile-pill { background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:20px; }
-        .main-container { display:flex; min-height:calc(100vh - 70px); }
-        .sidebar { width:260px; background:white; border-right:1px solid #ddd; padding:20px 0; }
-        .sidebar-title { font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:0.8px; padding:0 20px; margin-bottom:10px; }
-        .sidebar a { display:flex; align-items:center; gap:12px; padding:12px 20px; color:#555; text-decoration:none; transition:all 0.3s; border-left:3px solid transparent; }
-        .sidebar a:hover, .sidebar a.active { background:#e8f0f7; color:#2a5298; border-left-color:#2a5298; }
-        .content { flex:1; padding:30px; }
-        
-        .page-header { 
-            margin-bottom:25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .page-title { font-size:28px; font-weight:700; color:#1e3c72; margin-bottom:8px; }
-        .page-subtitle { color:#666; font-size:14px; }
-        
-        .card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px; }
-        .card h3 { color:#1e3c72; margin-bottom:15px; }
-        
-        /* Form & Grid */
-        .form-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:15px; }
-        .form-group { display:flex; flex-direction:column; gap:6px; }
-        .form-group label { font-size:13px; font-weight:600; color:#555; }
-        .form-group input, .form-group select { padding:11px 12px; border:1px solid #ddd; border-radius:8px; font-size:14px; }
-        .form-group input:focus, .form-group select:focus { outline:none; border-color:#2a5298; box-shadow:0 0 0 3px rgba(42,82,152,0.12); }
-        .full-width { grid-column:1 / -1; }
-        .btn-row { display:flex; gap:10px; margin-top:12px; }
-
-        /* Phone prefix wrapper */
-        .phone-wrap { display:flex; align-items:stretch; border:1px solid #ddd; border-radius:8px; overflow:hidden; transition: border-color 0.2s, box-shadow 0.2s; }
-        .phone-wrap:focus-within { border-color:#2a5298; box-shadow:0 0 0 3px rgba(42,82,152,0.12); }
-        .phone-wrap.valid   { border-color:#28a745; }
-        .phone-wrap.invalid { border-color:#dc3545; }
-        .phone-prefix { background:#f0f4ff; color:#2a5298; font-weight:700; font-size:14px; padding:11px 10px; border-right:1px solid #ddd; white-space:nowrap; user-select:none; }
-        .phone-wrap input { border:none !important; box-shadow:none !important; border-radius:0 !important; flex:1; padding:11px 12px; font-size:14px; outline:none; }
-        
-        /* Buttons */
-        .btn-primary { background:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color:white; border:none; padding:11px 20px; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px; transition:transform 0.2s; }
-        .btn-primary:hover { transform:translateY(-1px); }
-        .btn-secondary { background:white; color:#2a5298; border:1px solid #2a5298; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
-        .delete-btn { color:#dc3545; background:none; border:none; cursor:pointer; font-weight:600; }
-        
-        /* Search and Filter panel */
-        .filter-panel {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
+        .active-tab-indicator {
+            font-variation-settings: 'FILL' 1;
         }
-        .search-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .filter-select {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            width: 180px;
-        }
-
-        .alert { display:none; padding:12px 14px; border-radius:8px; margin-bottom:15px; font-size:14px; }
-        .alert.show { display:block; }
-        .alert-success { background:#d4edda; color:#155724; }
-        .alert-error { background:#f8d7da; color:#721c24; }
-        
-        /* Tables */
-        table { width:100%; border-collapse:collapse; }
-        th { background:#f5f7fa; padding:12px 14px; text-align:left; color:#666; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
-        td { padding:12px 14px; border-bottom:1px solid #f0f2f5; vertical-align: middle; }
-        tr:hover { background:#fafbfc; }
-        
-        /* Status changer dropdown */
-        .status-select {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            outline: none;
-            width: 100px;
-        }
-        .status-select.active {
-            background: #daf4e3;
-            color: #17733b;
-            border: 1px solid #c3e6cb;
-        }
-        .status-select.inactive {
-            background: #ffe0e0;
-            color: #a52d2d;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* Modals */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: flex-start;
-            overflow-y: auto;
-            z-index: 2000;
-            padding: 20px;
-        }
-        .modal.show {
-            display: flex;
-        }
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 600px;
-            padding: 30px;
-            animation: scaleUp 0.3s ease-out;
-            margin: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-        }
-        .modal-header h3 {
-            color: #1e3c72;
-            font-size: 18px;
-        }
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: #999;
-            cursor: pointer;
-        }
-        .btn-close:hover {
-            color: #666;
-        }
-
-        @keyframes scaleUp {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        @media (max-width:768px){ .form-grid{grid-template-columns:1fr;} .sidebar{width:220px;} .content{padding:15px;} .filter-panel{flex-direction:column;} .filter-select{width:100%;} }
     </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="navbar-brand">🏢 HMS - Admin Panel</div>
-        <div class="profile-pill" id="profilePill">👤 Loading User...</div>
-    </nav>
+<body class="bg-background text-on-surface min-h-screen pb-24">
 
-    <div class="main-container">
-        <aside class="sidebar">
-            <div class="sidebar-title">Main</div>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="students.html" class="active">👥 Students</a>
-            <a href="rooms.html">🛏️ Rooms</a>
-            <a href="allocations.html">📋 Allocations</a>
-            <a href="payments.html">💰 Bed Payments</a>
-            <a href="reports.html">📈 Reports</a>
-        </aside>
+    <!-- Top Navigation Bar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
+        <div class="flex items-center gap-3">
+            <a href="dashboard.html" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">arrow_back</span>
+            </a>
+            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">Student Directory</h1>
+        </div>
 
-        <main class="content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Students Registry</h1>
-                    <p class="page-subtitle">Manage student registration details and portal access status.</p>
+        <div class="flex items-center gap-2">
+            <span id="profilePill" class="text-xs font-semibold px-3 py-1.5 bg-primary/10 text-primary rounded-full">👤 Admin</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-6">
+
+        <!-- Search and Filter Section -->
+        <section class="mt-4 sticky top-16 bg-background z-40 py-3 border-b border-outline-variant/20">
+            <div class="flex flex-col md:flex-row gap-3">
+                <div class="relative flex-grow">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+                    <input id="searchInput" oninput="filterStudents()" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline text-sm" placeholder="Search by Name, ADM no or Phone..." type="text"/>
                 </div>
-                <button class="btn-primary" onclick="openRegisterModal()">➕ Register Student</button>
-            </div>
-
-            <div class="alert alert-success" id="successAlert"></div>
-            <div class="alert alert-error" id="errorAlert"></div>
-
-            <!-- REGISTERED STUDENTS LIST (NOW ON TOP) -->
-            <section class="card">
-                <h3>Registered Students</h3>
-                
-                <!-- Search & Filters -->
-                <div class="filter-panel">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search by name, admission number or phone..." oninput="filterStudents()">
-                    
-                    <select id="courseFilter" class="filter-select" onchange="filterStudents()">
+                <div class="flex gap-2">
+                    <select id="courseFilter" onchange="filterStudents()" class="px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm min-w-[150px]">
                         <option value="">All Courses</option>
                         <option value="Software Engineering">Software Engineering</option>
                         <option value="IT">IT</option>
@@ -211,92 +79,153 @@
                         <option value="Psychology">Psychology</option>
                         <option value="Education Arts">Education Arts</option>
                     </select>
-
-                    <select id="genderFilter" class="filter-select" onchange="filterStudents()">
+                    <select id="genderFilter" onchange="filterStudents()" class="px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm min-w-[120px]">
                         <option value="">All Genders</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
                 </div>
-
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Admission #</th>
-                                <th>Full Name</th>
-                                <th>Gender</th>
-                                <th>Course</th>
-                                <th>Email/Phone</th>
-                                <th>Admitted</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentTableBody">
-                            <tr><td colspan="8" style="text-align:center; color:#999;">Loading students list...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- REGISTER STUDENT MODAL (HIDDEN BY DEFAULT) -->
-    <div class="modal" id="registerModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Register New Student Account</h3>
-                <button class="btn-close" onclick="closeRegisterModal()">&times;</button>
             </div>
-            <form id="studentForm" onsubmit="submitRegistration(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="first_name">First Name *</label>
-                        <input id="first_name" name="first_name" required placeholder="e.g. John">
+        </section>
+
+        <!-- Notification Alerts -->
+        <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="successAlert"></div>
+        <div class="hidden p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" id="errorAlert"></div>
+
+        <!-- Stats Overview Cards -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
+                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">Total Registered</p>
+                <p id="statStudents" class="text-2xl font-bold text-primary">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
+                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">In Residence</p>
+                <p id="statOccupied" class="text-2xl font-bold text-secondary">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
+                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">Available Beds</p>
+                <p id="statAvailable" class="text-2xl font-bold text-teal-600">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
+                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">Total Capacity</p>
+                <p id="statCapacity" class="text-2xl font-bold text-primary">200</p>
+            </div>
+        </section>
+
+        <!-- Student List Cards -->
+        <div id="studentTableBody" class="space-y-4">
+            <div class="text-center py-8 text-outline">Loading student directory...</div>
+        </div>
+
+    </main>
+
+    <!-- Floating Action Button -->
+    <button onclick="openRegisterModal()" class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group">
+        <span class="material-symbols-outlined text-3xl">add</span>
+        <span class="absolute right-16 bg-primary text-white px-3 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none">Add Student</span>
+    </button>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+        <!-- Dashboard -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="dashboard.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-label-sm">Dashboard</span>
+        </a>
+        <!-- Students (ACTIVE) -->
+        <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1.5 transition-all duration-150 active:scale-90" href="students.html">
+            <span class="material-symbols-outlined active-tab-indicator" data-icon="group">group</span>
+            <span class="text-label-sm font-bold">Students</span>
+        </a>
+        <!-- Rooms -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="rooms.html">
+            <span class="material-symbols-outlined" data-icon="bed">bed</span>
+            <span class="text-label-sm">Rooms</span>
+        </a>
+        <!-- Allocations -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="allocations.html">
+            <span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+            <span class="text-label-sm">Allocations</span>
+        </a>
+        <!-- Payments -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="payments.html">
+            <span class="material-symbols-outlined" data-icon="payments">payments</span>
+            <span class="text-label-sm">Payments</span>
+        </a>
+        <!-- Reports -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="reports.html">
+            <span class="material-symbols-outlined" data-icon="description">description</span>
+            <span class="text-label-sm">Reports</span>
+        </a>
+    </nav>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto scrollbar">
+            <button onclick="closeRegisterModal()" class="absolute right-4 top-4 p-1 hover:bg-slate-100 rounded-full transition-colors">
+                <span class="material-symbols-outlined text-outline">close</span>
+            </button>
+            
+            <h2 class="text-xl font-bold text-primary mb-4">Register Student Account</h2>
+            
+            <form id="studentForm" onsubmit="submitRegistration(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- First Name -->
+                    <div>
+                        <label for="first_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">First Name *</label>
+                        <input id="first_name" name="first_name" required type="text"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="John">
                     </div>
-                    <div class="form-group">
-                        <label for="second_name">Second Name *</label>
-                        <input id="second_name" name="second_name" required placeholder="e.g. Kamau">
+                    <!-- Second Name -->
+                    <div>
+                        <label for="second_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Second Name *</label>
+                        <input id="second_name" name="second_name" required type="text"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="Kamau">
                     </div>
-                    <div class="form-group">
-                        <label for="surname">Surname <span style="color:#999; font-weight:400;">(Optional)</span></label>
-                        <input id="surname" name="surname" placeholder="e.g. Mwangi">
+                    <!-- Surname -->
+                    <div class="md:col-span-2">
+                        <label for="surname" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Surname (Optional)</label>
+                        <input id="surname" name="surname" type="text"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="Mwangi">
                     </div>
-                    <div class="form-group">
-                        <label for="admission_number">Admission Number *</label>
-                        <input id="admission_number" name="admission_number" required placeholder="e.g. ADM004">
+                    <!-- Admission -->
+                    <div>
+                        <label for="admission_number" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Admission Number *</label>
+                        <input id="admission_number" name="admission_number" required type="text"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="ADM001">
                     </div>
-                    <div class="form-group">
-                        <label for="gender">Gender *</label>
-                        <select id="gender" name="gender" required>
-                            <option value="">Select gender</option>
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Gender *</label>
+                        <select id="gender" name="gender" required
+                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                            <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="password">Portal Password (Optional)</label>
-                        <input id="password" name="password" type="password" placeholder="Default: student123">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input id="email" name="email" type="email" placeholder="student@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone Number *</label>
-                        <div class="phone-wrap" id="phoneWrap">
-                            <span class="phone-prefix">+254</span>
-                            <input id="phone" name="phone" type="tel" inputmode="numeric"
-                                   maxlength="10" required placeholder="0712345678"
-                                   oninput="validatePhone(this)">
+                    <!-- Phone -->
+                    <div>
+                        <label for="phone" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Phone Number *</label>
+                        <div class="flex rounded-lg border border-outline-variant overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all" id="phoneWrap">
+                            <span class="bg-slate-50 border-r border-outline-variant px-3 py-2 text-sm font-bold text-primary select-none">+254</span>
+                            <input id="phone" name="phone" required type="tel" inputmode="numeric" maxlength="10"
+                                   class="w-full px-3 border-0 focus:ring-0 outline-none text-sm placeholder:text-outline/40" placeholder="0712345678" oninput="validatePhone(this)">
                         </div>
-                        <span id="phoneHint" style="font-size:11px; margin-top:2px;"></span>
+                        <span id="phoneHint" class="block text-[10px] mt-0.5"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="course">Course *</label>
-                        <select id="course" name="course" required>
-                            <option value="">Select a course</option>
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Email</label>
+                        <input id="email" name="email" type="email"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="john.kamau@example.com">
+                    </div>
+                    <!-- Course -->
+                    <div>
+                        <label for="course" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Course *</label>
+                        <select id="course" name="course" required
+                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                            <option value="">Select Course</option>
                             <option value="Software Engineering">Software Engineering</option>
                             <option value="IT">IT</option>
                             <option value="Medicine and Surgery">Medicine and Surgery</option>
@@ -306,34 +235,42 @@
                             <option value="Education Arts">Education Arts</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="date_of_admission">Date of Admission</label>
-                        <input id="date_of_admission" name="date_of_admission" type="date">
+                    <!-- Date of Admission -->
+                    <div>
+                        <label for="date_of_admission" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Date of Admission</label>
+                        <input id="date_of_admission" name="date_of_admission" type="date"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
                     </div>
-                    <div class="form-group">
-                        <label for="next_of_kin_name">Next of Kin Name</label>
-                        <input id="next_of_kin_name" name="next_of_kin_name" placeholder="Kin Name">
+                    <!-- Kin Name -->
+                    <div>
+                        <label for="next_of_kin_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Next of Kin Name</label>
+                        <input id="next_of_kin_name" name="next_of_kin_name" type="text"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="Mary Kiprop">
                     </div>
-                    <div class="form-group">
-                        <label for="next_of_kin_phone">Kin Phone Number</label>
-                        <div class="phone-wrap" id="kinPhoneWrap">
-                            <span class="phone-prefix">+254</span>
-                            <input id="next_of_kin_phone" name="next_of_kin_phone"
-                                   type="tel" inputmode="numeric" maxlength="10"
-                                   placeholder="0712345678" oninput="validateKinPhone(this)">
+                    <!-- Kin Phone -->
+                    <div>
+                        <label for="next_of_kin_phone" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Kin Phone Number</label>
+                        <div class="flex rounded-lg border border-outline-variant overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all" id="kinPhoneWrap">
+                            <span class="bg-slate-50 border-r border-outline-variant px-3 py-2 text-sm font-bold text-primary select-none">+254</span>
+                            <input id="next_of_kin_phone" name="next_of_kin_phone" type="tel" inputmode="numeric" maxlength="10"
+                                   class="w-full px-3 border-0 focus:ring-0 outline-none text-sm placeholder:text-outline/40" placeholder="0723456789" oninput="validateKinPhone(this)">
                         </div>
-                        <span id="kinPhoneHint" style="font-size:11px; margin-top:2px;"></span>
+                        <span id="kinPhoneHint" class="block text-[10px] mt-0.5"></span>
                     </div>
-                    <div class="form-group full-width">
-                        <label for="status">Initial Status</label>
-                        <select id="status" name="status">
+                    <!-- Status -->
+                    <div class="md:col-span-2">
+                        <label for="status" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Initial Status</label>
+                        <select id="status" name="status"
+                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
                     </div>
                 </div>
-                <div class="btn-row">
-                    <button class="btn-primary" type="submit" style="width: 100%; justify-content: center;">Register Account</button>
+
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="closeRegisterModal()" class="flex-1 py-2.5 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-center transition-all duration-150 text-sm">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-primary hover:bg-primary-container text-white font-semibold rounded-lg text-center transition-all duration-150 text-sm shadow-md">Register Account</button>
                 </div>
             </form>
         </div>
@@ -360,10 +297,10 @@
                     case 3: suffix = 'rd'; break;
                 }
             }
-            const month = d.toLocaleString('en-GB', { month: 'long' });
+            const month = d.toLocaleString('en-GB', { month: 'short' });
             const year = d.getFullYear();
             
-            return `${day}<sup>${suffix}</sup> ${month} ${year}`;
+            return `${day} ${month} ${year}`;
         }
 
         // Phone validation helper — user enters 9 digits starting with 7 or 1
@@ -373,7 +310,9 @@
             const wrap = document.getElementById('phoneWrap');
             let raw = input.value.replace(/\D/g, '').slice(0, 10);
             input.value = raw;
-            wrap.classList.remove('valid', 'invalid');
+            
+            wrap.classList.remove('border-green-500', 'border-red-500', 'border-yellow-500');
+            wrap.classList.add('border-outline-variant');
 
             let clean = raw.startsWith('0') ? raw.slice(1) : raw;
 
@@ -381,15 +320,19 @@
                 hint.textContent = '';
             } else if (raw.startsWith('0') ? !/^0[71]/.test(raw) : !/^[71]/.test(raw)) {
                 hint.textContent = '⚠ Must start with 07, 01, 7 or 1';
-                hint.style.color = '#dc3545';
-                wrap.classList.add('invalid');
+                hint.style.color = '#ba1a1a';
+                wrap.classList.remove('border-outline-variant');
+                wrap.classList.add('border-red-500');
             } else if (clean.length < 9) {
                 hint.textContent = `${raw.length}/${raw.startsWith('0') ? 10 : 9} digits entered`;
-                hint.style.color = '#f0ad4e';
+                hint.style.color = '#b8860b';
+                wrap.classList.remove('border-outline-variant');
+                wrap.classList.add('border-yellow-500');
             } else {
                 hint.textContent = '✓ Valid  →  +254' + clean;
-                hint.style.color = '#28a745';
-                wrap.classList.add('valid');
+                hint.style.color = '#006a60';
+                wrap.classList.remove('border-outline-variant');
+                wrap.classList.add('border-green-500');
             }
         }
 
@@ -398,7 +341,9 @@
             const wrap = document.getElementById('kinPhoneWrap');
             let raw = input.value.replace(/\D/g, '').slice(0, 10);
             input.value = raw;
-            wrap.classList.remove('valid', 'invalid');
+            
+            wrap.classList.remove('border-green-500', 'border-red-500', 'border-yellow-500');
+            wrap.classList.add('border-outline-variant');
 
             let clean = raw.startsWith('0') ? raw.slice(1) : raw;
 
@@ -406,11 +351,14 @@
                 hint.textContent = '';
             } else if (clean.length === 9) {
                 hint.textContent = '✓ Valid  →  +254' + clean;
-                hint.style.color = '#28a745';
-                wrap.classList.add('valid');
+                hint.style.color = '#006a60';
+                wrap.classList.remove('border-outline-variant');
+                wrap.classList.add('border-green-500');
             } else {
                 hint.textContent = `${raw.length}/${raw.startsWith('0') ? 10 : 9} digits`;
-                hint.style.color = '#f0ad4e';
+                hint.style.color = '#b8860b';
+                wrap.classList.remove('border-outline-variant');
+                wrap.classList.add('border-yellow-500');
             }
         }
 
@@ -428,36 +376,55 @@
                 document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
                 document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
                 
-                await loadStudents();
+                await Promise.all([loadStats(), loadStudents()]);
             } catch (err) {
                 window.location.href = 'index.html';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/reports/dashboard-stats');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('statStudents').textContent = data.stats.total_students;
+                    document.getElementById('statOccupied').textContent = data.stats.occupied_beds;
+                    document.getElementById('statAvailable').textContent = data.stats.available_beds;
+                    document.getElementById('statCapacity').textContent = data.stats.total_beds;
+                }
+            } catch (err) {
+                console.error(err);
             }
         }
 
         function showMessage(type, message) {
             if (type === 'success') {
                 successAlert.textContent = message;
-                successAlert.classList.add('show');
-                errorAlert.classList.remove('show');
-                setTimeout(() => successAlert.classList.remove('show'), 4000);
+                successAlert.classList.remove('hidden');
+                errorAlert.classList.add('hidden');
+                setTimeout(() => successAlert.classList.add('hidden'), 4000);
             } else {
                 errorAlert.textContent = message;
-                errorAlert.classList.add('show');
-                successAlert.classList.remove('show');
-                setTimeout(() => errorAlert.classList.remove('show'), 4000);
+                errorAlert.classList.remove('hidden');
+                successAlert.classList.add('hidden');
+                setTimeout(() => errorAlert.classList.add('hidden'), 4000);
             }
         }
 
         // Modal triggers
         function openRegisterModal() {
-            document.getElementById('registerModal').classList.add('show');
+            document.getElementById('registerModal').classList.remove('hidden');
         }
 
         function closeRegisterModal() {
-            document.getElementById('registerModal').classList.remove('show');
+            document.getElementById('registerModal').classList.add('hidden');
             form.reset();
             document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
-            ['phoneWrap','kinPhoneWrap'].forEach(id => document.getElementById(id).classList.remove('valid','invalid'));
+            ['phoneWrap','kinPhoneWrap'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('border-green-500','border-red-500','border-yellow-500');
+                el.classList.add('border-outline-variant');
+            });
             document.getElementById('phoneHint').textContent = '';
             document.getElementById('kinPhoneHint').textContent = '';
         }
@@ -474,39 +441,70 @@
                 allStudentsList = data.data || [];
                 renderStudents(allStudentsList);
             } catch (error) {
-                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#dc3545;">${error.message}</td></tr>`;
+                tableBody.innerHTML = `<div class="text-center py-8 text-red-500 font-semibold">${error.message}</div>`;
             }
         }
 
         function renderStudents(students) {
             if (!students.length) {
-                tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#999;">No matching students found.</td></tr>';;
+                tableBody.innerHTML = '<div class="text-center py-12 text-outline bg-white border border-outline-variant rounded-2xl shadow-sm">No matching students found.</div>';
                 return;
             }
 
             tableBody.innerHTML = students.map(student => {
                 const genderLabel = student.gender ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1) : 'N/A';
-                const selectClass = student.status === 'inactive' ? 'status-select inactive' : 'status-select active';
+                const statusBg = student.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-800';
+                
+                // Set active select color
+                const selectStyle = student.status === 'active' 
+                    ? 'bg-green-50 text-green-700 border-green-300' 
+                    : 'bg-slate-50 text-slate-700 border-slate-300';
+
+                // Initial for profile pic fallback
+                const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : 'S';
 
                 return `
-                    <tr>
-                        <td><strong>${student.admission_number || '-'}</strong></td>
-                        <td>${student.full_name || '-'}</td>
-                        <td>${genderLabel}</td>
-                        <td>${student.course || '-'}</td>
-                        <td>
-                            <div style="font-size:13px; font-weight:500;">${student.email || '-'}</div>
-                            <div style="font-size:11px; color:#777; margin-top:2px;">📞 ${student.phone || '-'}</div>
-                        </td>
-                        <td style="font-size:13px; white-space:nowrap;">${formatDate(student.date_of_admission + 'T00:00:00')}</td>
-                        <td>
-                            <select class="${selectClass}" onchange="changeStudentStatus(${student.student_id}, this.value)">
-                                <option value="active" ${student.status === 'active' ? 'selected' : ''}>Active</option>
-                                <option value="inactive" ${student.status === 'inactive' ? 'selected' : ''}>Inactive</option>
-                            </select>
-                        </td>
-                        <td><button class="delete-btn" onclick="deleteStudent(${student.student_id})">Delete</button></td>
-                    </tr>
+                    <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-all duration-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="flex items-start md:items-center gap-4 flex-grow">
+                            <div class="w-12 h-12 rounded-xl bg-primary-container text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+                                ${initial}
+                            </div>
+                            <div class="flex-grow min-w-0">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h3 class="font-bold text-on-surface truncate max-w-[200px] md:max-w-xs">${student.full_name || '-'}</h3>
+                                    <span class="px-2 py-0.5 bg-slate-100 text-on-surface-variant font-mono text-xs font-semibold rounded">${student.admission_number || '-'}</span>
+                                    <span class="text-xs text-outline">•</span>
+                                    <span class="text-xs text-outline-variant font-medium">${genderLabel}</span>
+                                </div>
+                                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-xs text-outline">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm">school</span>
+                                        <span class="truncate">${student.course || '-'}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm">call</span>
+                                        <span>${student.phone || '-'}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 md:col-span-2 mt-0.5 text-[11px] text-outline-variant">
+                                        <span class="material-symbols-outlined text-xs">calendar_today</span>
+                                        <span>Admitted on: ${formatDate(student.date_of_admission + 'T00:00:00')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t border-outline-variant/30 md:border-0 pt-3 md:pt-0">
+                            <div>
+                                <select class="text-xs font-bold rounded-lg py-1 px-2 border focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all cursor-pointer ${selectStyle}" onchange="changeStudentStatus(${student.student_id}, this.value)">
+                                    <option value="active" ${student.status === 'active' ? 'selected' : ''}>Active</option>
+                                    <option value="inactive" ${student.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                                </select>
+                            </div>
+                            <button onclick="deleteStudent(${student.student_id})" class="p-2 text-red-600 hover:bg-red-50 active:scale-95 rounded-lg transition-colors flex items-center justify-center" title="Delete Account">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </div>
+                    </div>
                 `;
             }).join('');
         }
@@ -617,7 +615,7 @@
 
                 showMessage('success', 'Student registered successfully.');
                 closeRegisterModal();
-                await loadStudents();
+                await Promise.all([loadStats(), loadStudents()]);
             } catch (error) {
                 showMessage('error', error.message);
             }
@@ -636,7 +634,7 @@
                 }
 
                 showMessage('success', 'Student deleted successfully.');
-                await loadStudents();
+                await Promise.all([loadStats(), loadStudents()]);
             } catch (error) {
                 showMessage('error', error.message);
             }

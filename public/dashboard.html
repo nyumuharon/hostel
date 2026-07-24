@@ -1,688 +1,237 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Everest University Hostel Management System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fa;
-            color: #333;
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            height: 70px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 100%;
-            padding: 0 30px;
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .navbar-brand span {
-            font-size: 28px;
-        }
-
-        .navbar-menu {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .navbar-search {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            font-size: 14px;
-            width: 250px;
-            outline: none;
-            transition: width 0.3s, background 0.3s;
-        }
-
-        .navbar-search::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .navbar-search:focus {
-            width: 300px;
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .navbar-icons {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .navbar-icon-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ff4757;
-            color: white;
-            font-size: 10px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background 0.3s;
-            position: relative;
-        }
-
-        .profile-section:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .profile-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            border: 2px solid white;
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-
-        .profile-name {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .profile-role {
-            font-size: 11px;
-            opacity: 0.85;
-        }
-
-        /* ===== DROPDOWN MENU ===== */
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            min-width: 200px;
-            margin-top: 8px;
-            display: none;
-            z-index: 1001;
-            overflow: hidden;
-        }
-
-        .dropdown-menu.show {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 12px 16px;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 14px;
-            border: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .dropdown-item:hover {
-            background: #f0f2f5;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: #eee;
-            margin: 5px 0;
-        }
-
-        .dropdown-item.logout {
-            color: #ff4757;
-        }
-
-        .dropdown-item.logout:hover {
-            background: #ffe5e5;
-        }
-
-        /* ===== MAIN CONTAINER ===== */
-        .main-container {
-            display: flex;
-            min-height: calc(100vh - 70px);
-        }
-
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            width: 260px;
-            background: white;
-            border-right: 1px solid #ddd;
-            padding: 20px 0;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-            overflow-y: auto;
-        }
-
-        .sidebar-section {
-            margin-bottom: 25px;
-        }
-
-        .sidebar-title {
-            padding: 0 20px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-        }
-
-        .sidebar-menu li {
-            margin: 0;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            color: #555;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 14px;
-            border-left: 3px solid transparent;
-        }
-
-        .sidebar-link:hover {
-            background: #f5f7fa;
-            border-left-color: #2a5298;
-            color: #2a5298;
-        }
-
-        .sidebar-link.active {
-            background: #e8f0f7;
-            border-left-color: #2a5298;
-            color: #2a5298;
-            font-weight: 600;
-        }
-
-        .sidebar-icon {
-            font-size: 18px;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        /* ===== CONTENT AREA ===== */
-        .content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .page-header {
-            margin-bottom: 30px;
-        }
-
-        .page-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1e3c72;
-            margin-bottom: 8px;
-        }
-
-        .page-subtitle {
-            color: #666;
-            font-size: 14px;
-        }
-
-        /* ===== STATS CARDS ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s;
-            border-left: 4px solid;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .stat-card.students { border-left-color: #667eea; }
-        .stat-card.rooms { border-left-color: #f093fb; }
-        .stat-card.occupied { border-left-color: #4facfe; }
-        .stat-card.available { border-left-color: #43e97b; }
-
-        .stat-card-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
-
-        .stat-card-label {
-            color: #666;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .stat-card-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: #1e3c72;
-        }
-
-        .stat-card-footer {
-            margin-top: 12px;
-            font-size: 12px;
-            color: #999;
-        }
-
-        /* ===== BLOCK REMAINING CARD ===== */
-        .block-cap-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .block-cap-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border-top: 4px solid #1e3c72;
-        }
-
-        .block-cap-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1e3c72;
-            margin-bottom: 8px;
-        }
-
-        .block-cap-details {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .block-cap-beds {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2a5298;
-            margin: 10px 0;
-        }
-
-        /* ===== ACTION CARDS ===== */
-        .action-section {
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e3c72;
-            margin-bottom: 15px;
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-        }
-
-        .btn-action {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(30, 60, 114, 0.3);
-        }
-
-        .btn-action.secondary {
-            background: white;
-            color: #2a5298;
-            border: 2px solid #2a5298;
-        }
-
-        .btn-action.secondary:hover {
-            background: #e8f0f7;
-        }
-
-        /* ===== TABLES ===== */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        .table-header {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1e3c72;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f5f7fa;
-            padding: 14px 20px;
-            text-align: left;
-            color: #666;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #eee;
-        }
-
-        td {
-            padding: 14px 20px;
-            border-bottom: 1px solid #f0f2f5;
-            color: #555;
-            font-size: 13px;
-        }
-
-        tr:hover {
-            background: #fafbfc;
-        }
-
-        .badge-ref {
-            background: #e8f0f7;
-            color: #1e3c72;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-
-        #adminSidebar {
-            display: none;
-        }
-
-        @media (max-width: 900px) {
-            .block-cap-grid {
-                grid-template-columns: 1fr;
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Dashboard - Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#000666",
+                        "primary-container": "#1a237e",
+                        secondary: "#006a60",
+                        "secondary-container": "#85f6e5",
+                        background: "#fbf8ff",
+                        surface: "#fbf8ff",
+                        "on-surface": "#1b1b21",
+                        outline: "#767683",
+                        "outline-variant": "#c6c5d4"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
             }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .active-tab-indicator {
+            font-variation-settings: 'FILL' 1;
         }
     </style>
 </head>
-<body>
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="navbar-brand">
-                <span>🏢</span>
-                <div>HMS Admin</div>
+<body class="bg-background text-on-surface min-h-screen pb-24">
+
+    <!-- Top Navigation Bar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-lg">⛰️</div>
+            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">Everest University</h1>
+        </div>
+
+        <div class="flex items-center gap-4 relative">
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-outline" data-icon="notifications">notifications</span>
+            </button>
+            
+            <!-- Profile Pill -->
+            <button id="profileBtn" class="flex items-center gap-2 p-1.5 hover:bg-outline-variant/20 rounded-full transition-colors active:scale-98">
+                <div id="avatarLetter" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">A</div>
+                <div class="hidden md:flex flex-col items-start text-left text-xs leading-tight pr-2">
+                    <span id="profileName" class="font-bold text-on-surface">Admin</span>
+                    <span id="profileRole" class="text-outline">System Admin</span>
+                </div>
+                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div id="profileMenu" class="hidden absolute right-0 top-14 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 animate-fade-in text-sm text-on-surface">
+                <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
+                    <span class="material-symbols-outlined text-sm">settings</span>
+                    <span>System Settings</span>
+                </a>
+                <hr class="border-outline-variant/30 my-1">
+                <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
+                    <span class="material-symbols-outlined text-sm">logout</span>
+                    <span>Log Out</span>
+                </button>
             </div>
+        </div>
+    </header>
 
-            <div class="navbar-menu">
-                <div class="navbar-icons">
-                    <div style="position: relative;">
-                        <div class="profile-section" id="profileBtn">
-                            <div class="profile-avatar" id="avatarLetter">A</div>
-                            <div class="profile-info">
-                                <div class="profile-name" id="profileName">Loading...</div>
-                                <div class="profile-role" id="profileRole">Staff</div>
-                            </div>
-                            <span style="font-size: 16px; margin-left: 5px;">▼</span>
-                        </div>
+    <!-- Main Container -->
+    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-8">
+        
+        <!-- Welcome Section -->
+        <section class="mt-4">
+            <h2 id="welcomeMessage" class="text-headline-md font-bold text-primary">Welcome back, Administrator!</h2>
+            <p class="text-body-md text-outline mt-1">Here is the current hostel occupancy status and recent activities.</p>
+        </section>
 
-                        <div class="dropdown-menu" id="profileMenu">
-                            <button class="dropdown-item logout" onclick="logout()">🚪 Logout</button>
-                        </div>
+        <!-- Stats Grid -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">Total Registered</p>
+                <p id="statStudents" class="text-3xl font-bold text-primary">0</p>
+                <p class="text-[11px] text-outline mt-1">Active Students</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">System Capacity</p>
+                <p id="statBeds" class="text-3xl font-bold text-primary">200</p>
+                <p class="text-[11px] text-outline mt-1">Total Bed Spaces</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">Occupied Beds</p>
+                <p id="statOccupied" class="text-3xl font-bold text-secondary">0</p>
+                <p class="text-[11px] text-outline mt-1">Current Bookings</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">Available Beds</p>
+                <p id="statAvailable" class="text-3xl font-bold text-teal-600">0</p>
+                <p class="text-[11px] text-outline mt-1">Ready for Allocation</p>
+            </div>
+        </section>
+
+        <!-- Block Progress Indicators -->
+        <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm space-y-6">
+            <h3 class="text-lg font-bold text-primary">Hostel Block Allocations</h3>
+            
+            <div class="space-y-4">
+                <!-- Batian Block -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="font-semibold text-on-surface">Batian Block (Male Hostel)</span>
+                        <span id="batianCap" class="text-xs font-bold text-primary">Loading beds...</span>
                     </div>
+                    <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="batianProgressBar" class="h-full bg-gradient-to-r from-blue-600 to-indigo-800 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="batianDetails" class="text-xs text-outline">Total Capacity: 100 beds</p>
+                </div>
+
+                <!-- Nelion Block -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="font-semibold text-on-surface">Nelion Block (Female Hostel)</span>
+                        <span id="nelionCap" class="text-xs font-bold text-secondary">Loading beds...</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="nelionProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-700 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="nelionDetails" class="text-xs text-outline">Total Capacity: 100 beds</p>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Lists Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Recent Students -->
+            <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-primary">Recently Registered</h3>
+                    <a href="students.html" class="text-xs text-secondary hover:underline font-semibold flex items-center gap-1">
+                        Directory <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="border-b border-outline-variant/50 text-xs font-semibold uppercase tracking-wider text-outline">
+                                <th class="py-2.5">Student</th>
+                                <th class="py-2.5">Admission</th>
+                                <th class="py-2.5">Course</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentStudentsTable">
+                            <tr><td colspan="3" class="text-center py-4 text-outline">Loading records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Allocations -->
+            <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-primary">Recent Allocations</h3>
+                    <a href="allocations.html" class="text-xs text-secondary hover:underline font-semibold flex items-center gap-1">
+                        Manage <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="border-b border-outline-variant/50 text-xs font-semibold uppercase tracking-wider text-outline">
+                                <th class="py-2.5">Student</th>
+                                <th class="py-2.5">Room</th>
+                                <th class="py-2.5">Code</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentAllocationsTable">
+                            <tr><td colspan="3" class="text-center py-4 text-outline">Loading allocations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+        <!-- Dashboard (ACTIVE) -->
+        <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1.5 transition-all duration-150 active:scale-90" href="dashboard.html">
+            <span class="material-symbols-outlined active-tab-indicator" data-icon="dashboard">dashboard</span>
+            <span class="text-label-sm font-bold">Dashboard</span>
+        </a>
+        <!-- Students -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="students.html">
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="text-label-sm">Students</span>
+        </a>
+        <!-- Rooms -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="rooms.html">
+            <span class="material-symbols-outlined" data-icon="bed">bed</span>
+            <span class="text-label-sm">Rooms</span>
+        </a>
+        <!-- Allocations -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="allocations.html">
+            <span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+            <span class="text-label-sm">Allocations</span>
+        </a>
+        <!-- Payments -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="payments.html">
+            <span class="material-symbols-outlined" data-icon="payments">payments</span>
+            <span class="text-label-sm">Payments</span>
+        </a>
+        <!-- Reports -->
+        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="reports.html">
+            <span class="material-symbols-outlined" data-icon="description">description</span>
+            <span class="text-label-sm">Reports</span>
+        </a>
     </nav>
-
-    <!-- MAIN CONTAINER -->
-    <div class="main-container">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-title">Main</div>
-                <ul class="sidebar-menu">
-                    <li><a href="dashboard.html" class="sidebar-link active"><span class="sidebar-icon">📊</span> Dashboard</a></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">Management</div>
-                <ul class="sidebar-menu">
-                    <li><a href="students.html" class="sidebar-link"><span class="sidebar-icon">👥</span> Students</a></li>
-                    <li><a href="rooms.html" class="sidebar-link"><span class="sidebar-icon">🛏️</span> Rooms</a></li>
-                    <li><a href="allocations.html" class="sidebar-link"><span class="sidebar-icon">📋</span> Allocations</a></li>
-                    <li><a href="payments.html" class="sidebar-link"><span class="sidebar-icon">💰</span> Bed Payments</a></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">Reports</div>
-                <ul class="sidebar-menu">
-                    <li><a href="reports.html" class="sidebar-link"><span class="sidebar-icon">📈</span> Reports</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- CONTENT -->
-        <div class="content">
-            <!-- PAGE HEADER -->
-            <div class="page-header">
-                <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle" id="welcomeMessage">Welcome back! Here's your hostel overview.</p>
-            </div>
-
-            <!-- STATISTICS CARDS -->
-            <div class="stats-grid">
-                <div class="stat-card students" onclick="window.location.href='students.html'">
-                    <div class="stat-card-icon">👥</div>
-                    <div class="stat-card-label">Total Registered Students</div>
-                    <div class="stat-card-value" id="statStudents">0</div>
-                    <div class="stat-card-footer">Active residents</div>
-                </div>
-
-                <div class="stat-card rooms" onclick="window.location.href='rooms.html'">
-                    <div class="stat-card-icon">🛏️</div>
-                    <div class="stat-card-label">Total Beds</div>
-                    <div class="stat-card-value" id="statBeds">0</div>
-                    <div class="stat-card-footer">Capacity across all rooms</div>
-                </div>
-
-                <div class="stat-card occupied" onclick="window.location.href='allocations.html'">
-                    <div class="stat-card-icon">✅</div>
-                    <div class="stat-card-label">Occupied Beds</div>
-                    <div class="stat-card-value" id="statOccupied">0</div>
-                    <div class="stat-card-footer">Currently occupied</div>
-                </div>
-
-                <div class="stat-card available" onclick="window.location.href='rooms.html'">
-                    <div class="stat-card-icon">📉</div>
-                    <div class="stat-card-label">Available Beds</div>
-                    <div class="stat-card-value" id="statAvailable">0</div>
-                    <div class="stat-card-footer">Ready for allocation</div>
-                </div>
-            </div>
-
-            <!-- REMAINING BEDS BY BLOCK -->
-            <h2 class="section-title">Remaining Bed Inventory</h2>
-            <div class="block-cap-grid" id="blockCapGrid">
-                <!-- Batian -->
-                <div class="block-cap-card">
-                    <div class="block-cap-name">Batian Block (Male)</div>
-                    <div class="block-cap-beds" id="batianCap">Loading...</div>
-                    <div class="block-cap-details" id="batianDetails">Total Beds: 0 | Occupied: 0</div>
-                </div>
-                <!-- Nelion -->
-                <div class="block-cap-card" style="border-top-color: #35a96d;">
-                    <div class="block-cap-name">Nelion Block (Female)</div>
-                    <div class="block-cap-beds" id="nelionCap">Loading...</div>
-                    <div class="block-cap-details" id="nelionDetails">Total Beds: 0 | Occupied: 0</div>
-                </div>
-
-            </div>
-
-            <!-- QUICK ACTIONS -->
-            <div class="action-section">
-                <h2 class="section-title">Quick Actions</h2>
-                <div class="action-buttons">
-                    <button class="btn-action" onclick="window.location.href='students.html'">➕ Register Student</button>
-                    <button class="btn-action" onclick="window.location.href='rooms.html'">🛏️ Add Room</button>
-                    <button class="btn-action" onclick="window.location.href='allocations.html'">📋 Allocate Room</button>
-                    <button class="btn-action secondary" onclick="window.location.href='reports.html'">📊 View Reports</button>
-                </div>
-            </div>
-
-            <!-- RECENT STUDENTS -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h3 class="table-title">Recent Student Registrations</h3>
-                    <a href="students.html" style="color: #2a5298; text-decoration: none; font-size: 13px;">Manage Students →</a>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Admission #</th>
-                            <th>Student</th>
-                            <th>Gender</th>
-                            <th>Course</th>
-                            <th>Registered On</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentStudentsTable">
-                        <tr><td colspan="5" style="text-align:center; color:#999;">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- RECENT ALLOCATIONS -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h3 class="table-title">Recent Bookings / Allocations</h3>
-                    <a href="allocations.html" style="color: #2a5298; text-decoration: none; font-size: 13px;">View Allocations →</a>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Room</th>
-                            <th>Room Type</th>
-                            <th>Booking Code</th>
-                            <th>Allocation Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentAllocationsTable">
-                        <tr><td colspan="5" style="text-align:center; color:#999;">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
     <script>
         let currentUser = null;
@@ -701,10 +250,10 @@
                     case 3: suffix = 'rd'; break;
                 }
             }
-            const month = d.toLocaleString('en-GB', { month: 'long' });
+            const month = d.toLocaleString('en-GB', { month: 'short' });
             const year = d.getFullYear();
             
-            return `${day}<sup>${suffix}</sup> ${month} ${year}`;
+            return `${day} ${month} ${year}`;
         }
 
         // Verify session status
@@ -720,9 +269,9 @@
                 
                 currentUser = data.user;
                 document.getElementById('profileName').textContent = currentUser.fullName;
-                document.getElementById('profileRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                document.getElementById('profileRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) + ' Admin';
                 document.getElementById('avatarLetter').textContent = currentUser.fullName.charAt(0).toUpperCase();
-                document.getElementById('welcomeMessage').textContent = `Welcome back, ${currentUser.fullName}! Here's your hostel overview.`;
+                document.getElementById('welcomeMessage').textContent = `Welcome back, ${currentUser.fullName}!`;
                 
                 loadDashboardData();
             } catch (err) {
@@ -738,40 +287,39 @@
                 
                 if (data.success) {
                     const stats = data.stats;
-                    document.getElementById('statStudents').textContent = stats.total_students;
-                    document.getElementById('statBeds').textContent = stats.total_beds;
-                    document.getElementById('statOccupied').textContent = stats.occupied_beds;
-                    document.getElementById('statAvailable').textContent = stats.available_beds;
+                    document.getElementById('statStudents').textContent = Number(stats.total_students).toLocaleString();
+                    document.getElementById('statBeds').textContent = Number(stats.total_beds).toLocaleString();
+                    document.getElementById('statOccupied').textContent = Number(stats.occupied_beds).toLocaleString();
+                    document.getElementById('statAvailable').textContent = Number(stats.available_beds).toLocaleString();
                     
                     // Render block stats
                     const blocks = data.blocks_stats;
                     if (blocks) {
-                        const showBlockCap = (blockName, elementPrefix) => {
+                        const updateBlockIndicator = (blockName, elementPrefix) => {
                             const bData = blocks[blockName] || { total: 0, occupied: 0 };
                             const remaining = bData.total - bData.occupied;
                             document.getElementById(`${elementPrefix}Cap`).textContent = `${remaining} beds left`;
                             document.getElementById(`${elementPrefix}Details`).textContent = `Total Capacity: ${bData.total} | Occupied: ${bData.occupied}`;
+                            
+                            const percentage = bData.total > 0 ? Math.round((bData.occupied / bData.total) * 100) : 0;
+                            document.getElementById(`${elementPrefix}ProgressBar`).style.width = `${percentage}%`;
                         };
                         
-                        showBlockCap('Batian', 'batian');
-                        showBlockCap('Nelion', 'nelion');
+                        updateBlockIndicator('Batian', 'batian');
+                        updateBlockIndicator('Nelion', 'nelion');
                     }
 
                     // Render recent students
                     const studentsBody = document.getElementById('recentStudentsTable');
                     if (data.recent_students.length === 0) {
-                        studentsBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No students registered yet.</td></tr>';
+                        studentsBody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-outline">No students registered yet.</td></tr>';
                     } else {
-                        studentsBody.innerHTML = data.recent_students.map(s => {
-                            const date = formatDate(s.created_at);
-                            const genderLabel = s.gender ? s.gender.charAt(0).toUpperCase() + s.gender.slice(1) : 'N/A';
+                        studentsBody.innerHTML = data.recent_students.slice(0, 5).map(s => {
                             return `
-                                <tr>
-                                    <td><strong>${s.admission_number}</strong></td>
-                                    <td>${s.full_name}</td>
-                                    <td>${genderLabel}</td>
-                                    <td>${s.course}</td>
-                                    <td>${date}</td>
+                                <tr class="border-b border-outline-variant/20 hover:bg-outline-variant/10 transition-colors">
+                                    <td class="py-3 font-semibold text-on-surface">${s.full_name}</td>
+                                    <td class="py-3 text-outline">${s.admission_number}</td>
+                                    <td class="py-3 text-outline text-xs">${s.course}</td>
                                 </tr>
                             `;
                         }).join('');
@@ -780,17 +328,14 @@
                     // Render recent allocations
                     const allocBody = document.getElementById('recentAllocationsTable');
                     if (data.recent_allocations.length === 0) {
-                        allocBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No allocations yet.</td></tr>';
+                        allocBody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-outline">No allocations yet.</td></tr>';
                     } else {
-                        allocBody.innerHTML = data.recent_allocations.map(a => {
-                            const date = formatDate(a.allocation_date);
+                        allocBody.innerHTML = data.recent_allocations.slice(0, 5).map(a => {
                             return `
-                                <tr>
-                                    <td><strong>${a.full_name}</strong></td>
-                                    <td>${a.room_number}</td>
-                                    <td>${a.room_type}</td>
-                                    <td><span class="badge-ref">${a.booking_code || 'N/A'}</span></td>
-                                    <td>${date}</td>
+                                <tr class="border-b border-outline-variant/20 hover:bg-outline-variant/10 transition-colors">
+                                    <td class="py-3 font-semibold text-on-surface">${a.full_name}</td>
+                                    <td class="py-3 text-outline">${a.room_number}</td>
+                                    <td class="py-3"><span class="px-2 py-0.5 bg-primary/10 text-primary font-mono text-xs font-semibold rounded">${a.booking_code || 'N/A'}</span></td>
                                 </tr>
                             `;
                         }).join('');
@@ -802,19 +347,16 @@
         }
 
         // Profile dropdown toggle
-        document.getElementById('profileBtn').addEventListener('click', function() {
+        document.getElementById('profileBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
             const menu = document.getElementById('profileMenu');
-            menu.classList.toggle('show');
+            menu.classList.toggle('hidden');
         });
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const profileBtn = document.getElementById('profileBtn');
-            const profileMenu = document.getElementById('profileMenu');
-            
-            if (!profileBtn.contains(event.target) && !profileMenu.contains(event.target)) {
-                profileMenu.classList.remove('show');
-            }
+        document.addEventListener('click', function() {
+            const menu = document.getElementById('profileMenu');
+            menu.classList.add('hidden');
         });
 
         // Logout function

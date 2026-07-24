@@ -1,235 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Student Login - Everest University HMS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#000666",
+                        "primary-container": "#1a237e",
+                        secondary: "#006a60",
+                        "secondary-container": "#85f6e5",
+                        background: "#fbf8ff",
+                        surface: "#fbf8ff",
+                        "on-surface": "#1b1b21",
+                        outline: "#767683",
+                        "outline-variant": "#c6c5d4"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            padding: 40px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .login-header h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 6px;
-        }
-
-        .brand-mark {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .login-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #1e3c72;
-            box-shadow: 0 0 5px rgba(30, 60, 114, 0.1);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .alert.show {
-            display: block;
-        }
-
-        .password-wrap {
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-
-        .password-wrap input {
-            flex: 1;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 16px;
-            color: #1e3c72;
-            padding: 0;
-        }
-
-        .password-toggle:hover {
-            opacity: 0.8;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1e3c72;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: #555;
-        }
-
-        .footer-link a {
-            color: #1e3c72;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .footer-link a:hover {
-            text-decoration: underline;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
-<body>
-    <div class="login-container">
-        <div class="login-header">
-            <div class="brand-mark" aria-hidden="true">🎓🛏️</div>
-            <h1>Student Portal</h1>
-            <p>Everest University Hostel Booking</p>
+<body class="bg-gradient-to-tr from-[#002b28] via-[#004d47] to-[#006a60] text-white min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/25 p-8 rounded-2xl shadow-2xl transition-all duration-300 hover:shadow-white/5">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4 text-3xl animate-pulse">
+                🎓
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-white">Student Portal</h1>
+            <p class="text-sm text-teal-200 mt-1">Everest University Hostel Allocation & Booking</p>
         </div>
 
-        <div class="alert alert-error" id="alertError"></div>
-        <div class="alert alert-success" id="alertSuccess"></div>
+        <!-- Alerts -->
+        <div class="hidden p-4 mb-4 text-sm rounded-lg bg-red-500/25 border border-red-500/50 text-red-200" id="alertError"></div>
+        <div class="hidden p-4 mb-4 text-sm rounded-lg bg-green-500/25 border border-green-500/50 text-green-200" id="alertSuccess"></div>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="admission_number">Admission Number</label>
-                <input type="text" id="admission_number" name="admission_number" required placeholder="Enter ADM001, ADM002...">
-            </div>
-
-            <div class="form-group password-group">
-                <label for="password">Password</label>
-                <div class="password-wrap">
-                    <input type="password" id="password" name="password" required placeholder="Enter student password">
-                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">👁️</button>
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="admission_number" class="block text-xs font-semibold uppercase tracking-wider text-teal-200 mb-2">Admission Number</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-teal-300 text-lg">badge</span>
+                    <input type="text" id="admission_number" name="admission_number" required 
+                           class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-teal-300/50 focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none transition-all" 
+                           placeholder="e.g., ADM001">
                 </div>
             </div>
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
+            <div>
+                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-teal-200 mb-2">Password</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-teal-300 text-lg">lock</span>
+                    <input type="password" id="password" name="password" required 
+                           class="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-teal-300/50 focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none transition-all" 
+                           placeholder="Enter portal password">
+                    <button type="button" id="passwordToggle" aria-label="Show password" 
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-teal-300 hover:text-white transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                </div>
             </div>
 
-            <button type="submit" class="btn-login" id="submitBtn">Login</button>
-            <p style="text-align: right; margin-top: 12px; font-size: 12px;">
-                <a href="javascript:void(0)" onclick="forgotPassword()" style="color: #1e3c72; text-decoration: none; font-weight: 500;">Forgot Password?</a>
-            </p>
+            <!-- Loading Spinner -->
+            <div class="hidden text-center py-2" id="loading">
+                <div class="inline-block w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs text-teal-200 mt-1">Verifying credentials...</p>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <div></div>
+                <a href="javascript:void(0)" onclick="forgotPassword()" class="text-teal-300 hover:text-white hover:underline transition-colors font-medium">Forgot Password?</a>
+            </div>
+
+            <button type="submit" id="submitBtn" 
+                    class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-500 active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-teal-500/20 transition-all duration-150">
+                Log In to Portal
+            </button>
         </form>
 
-        <p class="footer-link">
-            Don't have an account? <a href="student-register.html">Register here</a>
-        </p>
-        <p style="text-align: center; margin-top: 15px; font-size: 11px; color: #999;">
-            Admin? <a href="index.html" style="color: #999; text-decoration: underline;">Admin login</a>
-        </p>
+        <div class="mt-8 pt-6 border-t border-white/10 text-center text-sm text-teal-200 space-y-2">
+            <div>
+                Don't have an account? <a href="student-register.html" class="text-teal-300 hover:text-white font-bold hover:underline transition-colors">Register here</a>
+            </div>
+            <div class="text-xs opacity-75">
+                Admin? <a href="index.html" class="text-teal-300 hover:text-white hover:underline transition-colors">Admin login</a>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -260,11 +133,11 @@
             const password = document.getElementById('password').value.trim();
 
             // Clear alerts
-            alertError.classList.remove('show');
-            alertSuccess.classList.remove('show');
+            alertError.classList.add('hidden');
+            alertSuccess.classList.add('hidden');
 
             // Show loading
-            loading.style.display = 'block';
+            loading.classList.remove('hidden');
             submitBtn.disabled = true;
 
             try {
@@ -283,20 +156,20 @@
 
                 if (data.success) {
                     alertSuccess.textContent = data.message;
-                    alertSuccess.classList.add('show');
+                    alertSuccess.classList.remove('hidden');
                     
                     setTimeout(() => {
                         window.location.href = 'student-dashboard.html';
                     }, 1500);
                 } else {
                     alertError.textContent = data.message || 'Login failed';
-                    alertError.classList.add('show');
+                    alertError.classList.remove('hidden');
                 }
             } catch (error) {
                 alertError.textContent = 'Network error. Please try again.';
-                alertError.classList.add('show');
+                alertError.classList.remove('hidden');
             } finally {
-                loading.style.display = 'none';
+                loading.classList.add('hidden');
                 submitBtn.disabled = false;
             }
         });
@@ -307,7 +180,7 @@
         passwordToggle.addEventListener('click', () => {
             const isPassword = passwordInput.type === 'password';
             passwordInput.type = isPassword ? 'text' : 'password';
-            passwordToggle.textContent = isPassword ? '🙈' : '👁️';
+            passwordToggle.querySelector('span').textContent = isPassword ? 'visibility_off' : 'visibility';
             passwordToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
         });
 
