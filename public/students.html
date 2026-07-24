@@ -518,6 +518,7 @@
                 <div class="flex justify-between"><span class="text-outline">Admission Number</span><span id="detailAdm" class="font-semibold font-mono text-xs">ADM-N/A</span></div>
                 <div class="flex justify-between"><span class="text-outline">Gender</span><span id="detailGender" class="font-semibold capitalize">-</span></div>
                 <div class="flex justify-between"><span class="text-outline">Course</span><span id="detailCourse" class="font-semibold">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Allocated Room</span><span id="detailAllocatedRoom" class="font-bold text-primary">Not Allocated</span></div>
                 <div class="flex justify-between"><span class="text-outline">Phone</span><span id="detailPhone" class="font-semibold font-mono">-</span></div>
                 <div class="flex justify-between"><span class="text-outline">Email</span><span id="detailEmail" class="font-semibold">-</span></div>
                 <div class="flex justify-between"><span class="text-outline">Next of Kin</span><span id="detailKinName" class="font-semibold">-</span></div>
@@ -877,7 +878,7 @@
         }
 
         // Open detail modal
-        function viewStudentDetails(studentId) {
+        async function viewStudentDetails(studentId) {
             const student = allStudentsList.find(s => s.student_id === studentId);
             if (!student) return;
 
@@ -911,6 +912,29 @@
             badge.className = student.status === 'active' 
                 ? 'px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-[#006a60]' 
                 : 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-[#ba1a1a]';
+
+            const roomEl = document.getElementById('detailAllocatedRoom');
+            roomEl.textContent = 'Checking...';
+            try {
+                const res = await fetch('/api/allocations');
+                const allocData = await res.json();
+                if (allocData.success && allocData.data) {
+                    const alloc = allocData.data.find(a => a.student_id === studentId && (a.status === 'active' || a.status === 'pending_payment'));
+                    if (alloc) {
+                        roomEl.textContent = `${alloc.block_name || ''} Block — Room ${alloc.room_number || 'N/A'}`;
+                        roomEl.className = 'font-bold text-primary';
+                    } else {
+                        roomEl.textContent = 'Not Allocated';
+                        roomEl.className = 'font-semibold text-outline';
+                    }
+                } else {
+                    roomEl.textContent = 'Not Allocated';
+                    roomEl.className = 'font-semibold text-outline';
+                }
+            } catch (err) {
+                roomEl.textContent = 'Not Allocated';
+                roomEl.className = 'font-semibold text-outline';
+            }
 
             document.getElementById('detailsModal').classList.remove('hidden');
         }

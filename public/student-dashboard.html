@@ -1747,6 +1747,45 @@
             }
         }
 
+        async function checkStudentPendingTransfer() {
+            try {
+                const res = await fetch('/api/allocations/transfer-requests');
+                const data = await res.json();
+                if (data.success && data.data) {
+                    const pending = data.data.find(r => r.status === 'pending');
+                    const alertDiv = document.getElementById('transferModalAlert');
+                    if (pending) {
+                        const targetStr = pending.request_type === 'swap'
+                            ? `Swap request with ${pending.swap_student_name} (${pending.swap_student_admission})`
+                            : `Transfer request to Room ${pending.target_room_number} (${pending.target_block})`;
+                        
+                        alertDiv.innerHTML = `
+                            <div class="space-y-2">
+                                <div>⏳ <strong>Pending Admin Approval:</strong> Your ${targetStr} is awaiting admin review.</div>
+                                <button type="button" onclick="cancelPendingTransfer(${pending.request_id})" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold rounded transition-colors shadow">Cancel Request</button>
+                            </div>
+                        `;
+                        alertDiv.className = 'p-3 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 text-xs font-semibold mb-3';
+                        alertDiv.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function cancelPendingTransfer(reqId) {
+            if (!confirm('Are you sure you want to cancel your pending transfer request?')) return;
+            try {
+                const res = await fetch(`/api/allocations/transfer-requests/${reqId}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+                showTransferModalError('Transfer request cancelled.');
+            } catch (err) {
+                showTransferModalError(err.message);
+            }
+        }
+
         // Room Transfer & Swap Modal operations
         function openTransferSwapModal() {
             showTransferModalError('');
@@ -1756,6 +1795,7 @@
             toggleManageAction();
             loadTransferRooms();
             loadSwapCandidates();
+            checkStudentPendingTransfer();
         }
 
         function closeTransferSwapModal() {

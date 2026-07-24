@@ -111,6 +111,22 @@ const auditLogSchema = new mongoose.Schema({
 });
 const AuditLog = mongoose.model('AuditLog', auditLogSchema);
 
+// Transfer Requests
+const transferRequestSchema = new mongoose.Schema({
+  request_id:       { type: Number, unique: true },
+  student_id:       Number,
+  request_type:     { type: String, default: 'transfer' },
+  current_room_id:  Number,
+  target_room_id:   Number,
+  swap_student_id:  Number,
+  status:           { type: String, default: 'pending' },
+  reason:           String,
+  admin_remarks:    String,
+  created_at: { type: String, default: () => new Date().toISOString() },
+  updated_at: { type: String, default: () => new Date().toISOString() }
+});
+const TransferRequest = mongoose.model('TransferRequest', transferRequestSchema);
+
 // ─── In-memory cache (populated at startup) ───────────────────────────────────
 let cache = {
   users: [],
@@ -118,16 +134,18 @@ let cache = {
   rooms: [],
   allocations: [],
   payments: [],
-  audit_logs: []
+  audit_logs: [],
+  transfer_requests: []
 };
 
 async function loadCache() {
-  cache.users       = (await User.find().lean()).map(mongoToPlain);
-  cache.students    = (await Student.find().lean()).map(mongoToPlain);
-  cache.rooms       = (await Room.find().lean()).map(mongoToPlain);
-  cache.allocations = (await Allocation.find().lean()).map(mongoToPlain);
-  cache.payments    = (await Payment.find().lean()).map(mongoToPlain);
-  cache.audit_logs  = (await AuditLog.find().lean()).map(mongoToPlain);
+  cache.users             = (await User.find().lean()).map(mongoToPlain);
+  cache.students          = (await Student.find().lean()).map(mongoToPlain);
+  cache.rooms             = (await Room.find().lean()).map(mongoToPlain);
+  cache.allocations       = (await Allocation.find().lean()).map(mongoToPlain);
+  cache.payments          = (await Payment.find().lean()).map(mongoToPlain);
+  cache.audit_logs        = (await AuditLog.find().lean()).map(mongoToPlain);
+  cache.transfer_requests = (await TransferRequest.find().lean()).map(mongoToPlain);
 }
 
 function mongoToPlain(doc) {
@@ -138,12 +156,13 @@ function mongoToPlain(doc) {
 
 // ─── Async write helpers (fire-and-forget) ────────────────────────────────────
 
-function saveUser(data)       { User.findOneAndUpdate({ user_id: data.user_id }, data, { upsert: true }).exec().catch(console.error); }
-function saveStudent(data)    { Student.findOneAndUpdate({ student_id: data.student_id }, data, { upsert: true }).exec().catch(console.error); }
-function saveRoom(data)       { Room.findOneAndUpdate({ room_id: data.room_id }, data, { upsert: true }).exec().catch(console.error); }
-function saveAllocation(data) { Allocation.findOneAndUpdate({ allocation_id: data.allocation_id }, data, { upsert: true }).exec().catch(console.error); }
-function savePayment(data)    { Payment.findOneAndUpdate({ payment_id: data.payment_id }, data, { upsert: true }).exec().catch(console.error); }
-function saveAuditLog(data)   { AuditLog.findOneAndUpdate({ log_id: data.log_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveUser(data)            { User.findOneAndUpdate({ user_id: data.user_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveStudent(data)         { Student.findOneAndUpdate({ student_id: data.student_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveRoom(data)            { Room.findOneAndUpdate({ room_id: data.room_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveAllocation(data)      { Allocation.findOneAndUpdate({ allocation_id: data.allocation_id }, data, { upsert: true }).exec().catch(console.error); }
+function savePayment(data)         { Payment.findOneAndUpdate({ payment_id: data.payment_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveAuditLog(data)        { AuditLog.findOneAndUpdate({ log_id: data.log_id }, data, { upsert: true }).exec().catch(console.error); }
+function saveTransferRequest(data) { TransferRequest.findOneAndUpdate({ request_id: data.request_id }, data, { upsert: true }).exec().catch(console.error); }
 
 function deleteFromDB(Model, query) { Model.deleteOne(query).exec().catch(console.error); }
 
@@ -296,6 +315,34 @@ const db = {
       cache.audit_logs.push(obj);
       saveAuditLog(obj);
       return obj;
+    }
+  },
+
+  transferRequests: {
+    find:    (fn) => fn ? cache.transfer_requests.filter(fn) : [...cache.transfer_requests],
+    findOne: (fn) => cache.transfer_requests.find(fn) || null,
+    insert:  async (data) => {
+      const id = await nextId('request_id');
+      const obj = { request_id: id, status: 'pending', ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      cache.transfer_requests.push(obj);
+      saveTransferRequest(obj);
+      return obj;
+    },
+    update: (reqId, updates) => {
+      const idx = cache.transfer_requests.findIndex(r => r.request_id === parseInt(reqId));
+      if (idx === -1) return false;
+      cache.transfer_requests[idx] = { ...cache.transfer_requests[idx], ...updates, updated_at: new Date().toISOString() };
+      saveTransferRequest(cache.transfer_requests[idx]);
+      return true;
+    },
+    delete: (reqId) => {
+      const before = cache.transfer_requests.length;
+      cache.transfer_requests = cache.transfer_requests.filter(r => r.request_id !== parseInt(reqId));
+      if (cache.transfer_requests.length < before) {
+        deleteFromDB(TransferRequest, { request_id: parseInt(reqId) });
+        return true;
+      }
+      return false;
     }
   },
 

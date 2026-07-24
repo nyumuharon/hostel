@@ -341,14 +341,14 @@ router.get('/swap-candidates', (req, res) => {
   }
 });
 
-// POST /api/allocations/transfer (Students can transfer or swap rooms)
-router.post('/transfer', (req, res) => {
+// POST /api/allocations/transfer (Students submit a transfer or swap request for admin approval)
+router.post('/transfer', async (req, res) => {
   if (req.session.role !== 'student') {
     return res.status(403).json({ success: false, message: 'Forbidden: Students only' });
   }
 
   const sId = req.session.userId;
-  const { new_room_id, swap_student_id } = req.body;
+  const { new_room_id, swap_student_id, reason } = req.body;
 
   try {
     const student = db.students.findOne(s => s.student_id === sId);
@@ -361,9 +361,13 @@ router.post('/transfer', (req, res) => {
       return res.status(400).json({ success: false, message: 'You do not have an active booking to transfer/swap.' });
     }
 
-    const oldRoom = db.rooms.findOne(r => r.room_id === activeAlloc.room_id);
+    // Check if student already has a pending transfer request
+    const existingPending = db.transferRequests.findOne(r => r.student_id === sId && r.status === 'pending');
+    if (existingPending) {
+      return res.status(400).json({ success: false, message: 'You already have a pending room transfer request waiting for admin approval.' });
+    }
 
-    // CASE 2: Room Swap with another student
+    // Validate target room or swap partner
     if (swap_student_id) {
       const targetStudentId = parseInt(swap_student_id);
       if (targetStudentId === sId) {
@@ -375,7 +379,6 @@ router.post('/transfer', (req, res) => {
         return res.status(404).json({ success: false, message: 'Target student not found.' });
       }
 
-      // Check gender match
       if (student.gender !== targetStudent.gender) {
         return res.status(400).json({ success: false, message: 'You can only swap rooms with students of the same gender.' });
       }
@@ -389,39 +392,30 @@ router.post('/transfer', (req, res) => {
         return res.status(400).json({ success: false, message: 'You are already in the same room.' });
       }
 
-      const targetRoom = db.rooms.findOne(r => r.room_id === targetAlloc.room_id);
-
-      // Perform swap
-      const roomA = activeAlloc.room_id;
-      const roomB = targetAlloc.room_id;
-
-      db.allocations.update(activeAlloc.allocation_id, { room_id: roomB });
-      db.allocations.update(targetAlloc.allocation_id, { room_id: roomA });
-
-      // Log audits
-      db.auditLogs.insert({
-        user_id: sId,
-        action: 'SWAP_ROOM',
-        table_name: 'allocations',
-        record_id: activeAlloc.allocation_id,
-        details: `Student ${student.full_name} swapped rooms with ${targetStudent.full_name}. Now in Room ${targetRoom ? targetRoom.room_number : 'N/A'}.`
+      const newReq = await db.transferRequests.insert({
+        student_id: sId,
+        request_type: 'swap',
+        current_room_id: activeAlloc.room_id,
+        target_room_id: targetAlloc.room_id,
+        swap_student_id: targetStudentId,
+        reason: reason || 'Room swap request',
+        status: 'pending'
       });
 
-      db.auditLogs.insert({
-        user_id: targetStudentId,
-        action: 'SWAP_ROOM',
-        table_name: 'allocations',
-        record_id: targetAlloc.allocation_id,
-        details: `Student ${targetStudent.full_name} swapped rooms with ${student.full_name}. Now in Room ${oldRoom ? oldRoom.room_number : 'N/A'}.`
+      await db.auditLogs.insert({
+        user_id: sId,
+        action: 'SUBMIT_SWAP_REQUEST',
+        table_name: 'transfer_requests',
+        record_id: newReq.request_id,
+        details: `Student ${student.full_name} submitted a room swap request with ${targetStudent.full_name}. Pending admin approval.`
       });
 
       return res.json({
         success: true,
-        message: `Successfully swapped rooms! You are now in Room ${targetRoom ? targetRoom.room_number : 'N/A'}.`
+        message: `Swap request submitted successfully! Awaiting admin approval.`
       });
     }
 
-    // CASE 1: Simple room transfer
     if (new_room_id) {
       const rId = parseInt(new_room_id);
       if (activeAlloc.room_id === rId) {
@@ -433,14 +427,145 @@ router.post('/transfer', (req, res) => {
         return res.status(404).json({ success: false, message: 'Target room not found.' });
       }
 
-      // Check capacity
       if (newRoom.current_occupancy >= newRoom.capacity) {
         return res.status(400).json({ success: false, message: 'Target room is full.' });
       }
 
-      // Check gender
       if (student.gender !== newRoom.gender_restriction) {
         return res.status(400).json({ success: false, message: `Gender restriction: Room is designated for ${newRoom.gender_restriction}s.` });
+      }
+
+      const newReq = await db.transferRequests.insert({
+        student_id: sId,
+        request_type: 'transfer',
+        current_room_id: activeAlloc.room_id,
+        target_room_id: rId,
+        reason: reason || 'Room transfer request',
+        status: 'pending'
+      });
+
+      await db.auditLogs.insert({
+        user_id: sId,
+        action: 'SUBMIT_TRANSFER_REQUEST',
+        table_name: 'transfer_requests',
+        record_id: newReq.request_id,
+        details: `Student ${student.full_name} submitted a transfer request to Room ${newRoom.room_number}. Pending admin approval.`
+      });
+
+      return res.json({
+        success: true,
+        message: `Transfer request to Room ${newRoom.room_number} submitted successfully! Awaiting admin approval.`
+      });
+    }
+
+    return res.status(400).json({ success: false, message: 'Please specify a target room or student to swap with.' });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Database error: ' + error.message });
+  }
+});
+
+// GET /api/allocations/transfer-requests (Returns all transfer requests for admin or student)
+router.get('/transfer-requests', (req, res) => {
+  try {
+    let requests = db.transferRequests.find();
+
+    if (req.session.role === 'student') {
+      requests = requests.filter(r => r.student_id === req.session.userId);
+    }
+
+    const students = db.students.find();
+    const rooms = db.rooms.find();
+
+    const data = requests.map(r => {
+      const student = students.find(s => s.student_id === r.student_id);
+      const currRoom = rooms.find(rm => rm.room_id === r.current_room_id);
+      const targetRoom = rooms.find(rm => rm.room_id === r.target_room_id);
+      const swapStudent = r.swap_student_id ? students.find(s => s.student_id === r.swap_student_id) : null;
+
+      return {
+        ...r,
+        student_name: student ? student.full_name : 'Unknown Student',
+        admission_number: student ? student.admission_number : 'N/A',
+        current_room_number: currRoom ? currRoom.room_number : 'N/A',
+        current_block: currRoom ? currRoom.block_name : 'N/A',
+        target_room_number: targetRoom ? targetRoom.room_number : 'N/A',
+        target_block: targetRoom ? targetRoom.block_name : 'N/A',
+        swap_student_name: swapStudent ? swapStudent.full_name : null,
+        swap_student_admission: swapStudent ? swapStudent.admission_number : null
+      };
+    });
+
+    data.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+
+    res.json({ success: true, data: data, count: data.length });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Database error: ' + error.message });
+  }
+});
+
+// POST /api/allocations/transfer-requests/:id/approve (Admin approves transfer/swap request)
+router.post('/transfer-requests/:id/approve', async (req, res) => {
+  if (req.session.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Forbidden: Requires Admin privileges' });
+  }
+
+  const reqId = parseInt(req.params.id);
+
+  try {
+    const request = db.transferRequests.findOne(r => r.request_id === reqId);
+    if (!request) {
+      return res.status(404).json({ success: false, message: 'Transfer request not found.' });
+    }
+
+    if (request.status !== 'pending') {
+      return res.status(400).json({ success: false, message: `This request is already ${request.status}.` });
+    }
+
+    const student = db.students.findOne(s => s.student_id === request.student_id);
+    const activeAlloc = db.allocations.findOne(a => a.student_id === request.student_id && (a.status === 'active' || a.status === 'pending_payment'));
+    
+    if (!activeAlloc) {
+      db.transferRequests.update(reqId, { status: 'rejected', admin_remarks: 'Student no longer has an active allocation.' });
+      return res.status(400).json({ success: false, message: 'Student no longer has an active allocation.' });
+    }
+
+    const oldRoom = db.rooms.findOne(r => r.room_id === activeAlloc.room_id);
+
+    if (request.request_type === 'swap') {
+      const targetStudentId = request.swap_student_id;
+      const targetAlloc = db.allocations.findOne(a => a.student_id === targetStudentId && (a.status === 'active' || a.status === 'pending_payment'));
+      
+      if (!targetAlloc) {
+        db.transferRequests.update(reqId, { status: 'rejected', admin_remarks: 'Swap target student no longer has an active allocation.' });
+        return res.status(400).json({ success: false, message: 'Swap target student no longer has an active allocation.' });
+      }
+
+      const roomA = activeAlloc.room_id;
+      const roomB = targetAlloc.room_id;
+
+      db.allocations.update(activeAlloc.allocation_id, { room_id: roomB });
+      db.allocations.update(targetAlloc.allocation_id, { room_id: roomA });
+      db.transferRequests.update(reqId, { status: 'approved' });
+
+      await db.auditLogs.insert({
+        user_id: req.session.userId,
+        action: 'APPROVE_ROOM_SWAP',
+        table_name: 'allocations',
+        record_id: reqId,
+        details: `Admin approved room swap between ${student ? student.full_name : 'Student'} and target student.`
+      });
+
+      return res.json({ success: true, message: 'Room swap request approved and executed successfully!' });
+    } else {
+      // Room Transfer
+      const targetRoom = db.rooms.findOne(r => r.room_id === request.target_room_id);
+      if (!targetRoom) {
+        return res.status(404).json({ success: false, message: 'Target room not found.' });
+      }
+
+      if (targetRoom.current_occupancy >= targetRoom.capacity) {
+        return res.status(400).json({ success: false, message: 'Target room is currently full.' });
       }
 
       // Decrement old room
@@ -453,36 +578,92 @@ router.post('/transfer', (req, res) => {
       }
 
       // Increment new room
-      const newOccupancy = newRoom.current_occupancy + 1;
-      db.rooms.update(newRoom.room_id, {
+      const newOccupancy = targetRoom.current_occupancy + 1;
+      db.rooms.update(targetRoom.room_id, {
         current_occupancy: newOccupancy,
-        status: newOccupancy >= newRoom.capacity ? 'occupied' : 'available'
+        status: newOccupancy >= targetRoom.capacity ? 'occupied' : 'available'
       });
 
-      // Update allocation record
-      db.allocations.update(activeAlloc.allocation_id, {
-        room_id: rId
-      });
+      // Update student allocation record
+      db.allocations.update(activeAlloc.allocation_id, { room_id: targetRoom.room_id });
+      db.transferRequests.update(reqId, { status: 'approved' });
 
-      // Audit Log
-      db.auditLogs.insert({
-        user_id: sId,
-        action: 'TRANSFER_ROOM',
+      await db.auditLogs.insert({
+        user_id: req.session.userId,
+        action: 'APPROVE_ROOM_TRANSFER',
         table_name: 'allocations',
-        record_id: activeAlloc.allocation_id,
-        details: `Student ${student.full_name} transferred from room ${oldRoom ? oldRoom.room_number : 'N/A'} to room ${newRoom.room_number}.`
+        record_id: reqId,
+        details: `Admin approved room transfer for ${student ? student.full_name : 'Student'} to Room ${targetRoom.room_number}.`
       });
 
-      return res.json({
-        success: true,
-        message: `Successfully transferred to Room ${newRoom.room_number}!`
-      });
+      return res.json({ success: true, message: `Room transfer to ${targetRoom.room_number} approved and updated successfully!` });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+  }
+});
+
+// POST /api/allocations/transfer-requests/:id/reject (Admin rejects request)
+router.post('/transfer-requests/:id/reject', async (req, res) => {
+  if (req.session.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Forbidden: Requires Admin privileges' });
+  }
+
+  const reqId = parseInt(req.params.id);
+  const { remarks } = req.body;
+
+  try {
+    const request = db.transferRequests.findOne(r => r.request_id === reqId);
+    if (!request) {
+      return res.status(404).json({ success: false, message: 'Transfer request not found.' });
     }
 
-    return res.status(400).json({ success: false, message: 'Please specify a target room or student to swap with.' });
+    db.transferRequests.update(reqId, {
+      status: 'rejected',
+      admin_remarks: remarks || 'Rejected by administration.'
+    });
 
+    await db.auditLogs.insert({
+      user_id: req.session.userId,
+      action: 'REJECT_TRANSFER_REQUEST',
+      table_name: 'transfer_requests',
+      record_id: reqId,
+      details: `Admin rejected transfer request #${reqId}`
+    });
+
+    res.json({ success: true, message: 'Transfer request rejected.' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Database error: ' + error.message });
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+  }
+});
+
+// DELETE /api/allocations/transfer-requests/:id (Student or Admin cancels request)
+router.delete('/transfer-requests/:id', async (req, res) => {
+  const reqId = parseInt(req.params.id);
+
+  try {
+    const request = db.transferRequests.findOne(r => r.request_id === reqId);
+    if (!request) {
+      return res.status(404).json({ success: false, message: 'Transfer request not found.' });
+    }
+
+    if (req.session.role === 'student' && request.student_id !== req.session.userId) {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    }
+
+    db.transferRequests.delete(reqId);
+
+    await db.auditLogs.insert({
+      user_id: req.session.userId,
+      action: 'CANCEL_TRANSFER_REQUEST',
+      table_name: 'transfer_requests',
+      record_id: reqId,
+      details: `Cancelled transfer request #${reqId}`
+    });
+
+    res.json({ success: true, message: 'Transfer request cancelled.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
   }
 });
 

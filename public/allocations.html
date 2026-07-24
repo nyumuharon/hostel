@@ -235,6 +235,36 @@
 
         <!-- Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Pending Room Transfer & Swap Requests -->
+            <section id="pendingTransfersCard" class="bg-white p-6 rounded-2xl border border-amber-300 bg-amber-50/40 shadow-sm lg:col-span-3 space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-amber-900 text-base flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-600">swap_horiz</span>
+                        <span>Pending Room Transfer & Swap Requests</span>
+                        <span id="pendingTransferBadge" class="bg-amber-600 text-white text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                    </h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-amber-200 text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                <th class="py-2.5 px-2">Student</th>
+                                <th class="py-2.5 px-2">Admission</th>
+                                <th class="py-2.5 px-2">Request Type</th>
+                                <th class="py-2.5 px-2">Current Room</th>
+                                <th class="py-2.5 px-2">Target Room / Partner</th>
+                                <th class="py-2.5 px-2">Date Requested</th>
+                                <th class="py-2.5 px-2 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transferRequestsTableBody" class="divide-y divide-amber-100">
+                            <tr><td colspan="7" class="text-center py-4 text-amber-800">Loading pending requests...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
             
             <!-- Allocation Form Panel -->
             <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm h-fit space-y-4">
@@ -412,8 +442,96 @@
                 
                 await loadOptions();
                 await loadAllocations();
+                await loadTransferRequests();
             } catch (err) {
                 window.location.href = 'index.html';
+            }
+        }
+
+        async function loadTransferRequests() {
+            const card = document.getElementById('pendingTransfersCard');
+            const tbody = document.getElementById('transferRequestsTableBody');
+            const badge = document.getElementById('pendingTransferBadge');
+            
+            if (!card || !tbody) return;
+
+            try {
+                const res = await fetch('/api/allocations/transfer-requests');
+                const data = await res.json();
+                if (data.success && data.data) {
+                    const pending = data.data.filter(r => r.status === 'pending');
+                    if (pending.length === 0) {
+                        card.classList.add('hidden');
+                        return;
+                    }
+
+                    badge.textContent = pending.length;
+                    card.classList.remove('hidden');
+
+                    tbody.innerHTML = pending.map(req => {
+                        const isSwap = req.request_type === 'swap';
+                        const targetDesc = isSwap 
+                            ? `<span class="font-bold text-amber-900">Swap with ${req.swap_student_name} (${req.swap_student_admission})</span>`
+                            : `<span class="font-bold text-amber-900">Room ${req.target_room_number} (${req.target_block})</span>`;
+
+                        return `
+                            <tr class="hover:bg-amber-100/40 transition-colors">
+                                <td class="py-3 px-2 font-bold text-on-surface">${req.student_name}</td>
+                                <td class="py-3 px-2 text-xs font-mono font-semibold text-outline-variant">${req.admission_number}</td>
+                                <td class="py-3 px-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${isSwap ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
+                                        ${req.request_type}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-2 text-xs font-semibold">Room ${req.current_room_number} (${req.current_block})</td>
+                                <td class="py-3 px-2 text-xs">${targetDesc}</td>
+                                <td class="py-3 px-2 text-xs text-outline">${formatDate(req.created_at)}</td>
+                                <td class="py-3 px-2 text-right">
+                                    <div class="flex justify-end gap-1.5">
+                                        <button onclick="approveTransferRequest(${req.request_id})" class="px-2.5 py-1 bg-green-700 hover:bg-green-800 text-white text-xs font-bold rounded-lg transition-colors shadow">
+                                            Approve
+                                        </button>
+                                        <button onclick="rejectTransferRequest(${req.request_id})" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors shadow">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Failed to load transfer requests:', err);
+            }
+        }
+
+        async function approveTransferRequest(reqId) {
+            if (!confirm('Are you sure you want to approve this room transfer/swap request?')) return;
+            try {
+                const res = await fetch(`/api/allocations/transfer-requests/${reqId}/approve`, { method: 'POST' });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+                showMessage('success', '✓ ' + data.message);
+                await Promise.all([loadTransferRequests(), loadAllocations(), loadOptions()]);
+            } catch (err) {
+                showMessage('error', err.message);
+            }
+        }
+
+        async function rejectTransferRequest(reqId) {
+            if (!confirm('Are you sure you want to reject this request?')) return;
+            try {
+                const res = await fetch(`/api/allocations/transfer-requests/${reqId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ remarks: 'Rejected by administration' })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+                showMessage('success', 'Transfer request rejected.');
+                await Promise.all([loadTransferRequests(), loadAllocations()]);
+            } catch (err) {
+                showMessage('error', err.message);
             }
         }
 
