@@ -66,9 +66,10 @@ router.get('/balance', (req, res) => {
 
     const balance = totalPaid - totalCharged;
 
-    // Calculate due date (5th of next month if balance < 0)
-    let dueDate = null;
-    if (balance < 0) {
+    // Calculate due date automatically (from active allocation expected_checkout_date or 5th of next month if balance < 0)
+    const activeAlloc = allocations.find(a => a.expected_checkout_date);
+    let dueDate = activeAlloc ? activeAlloc.expected_checkout_date : null;
+    if (!dueDate && balance < 0) {
       const now = new Date();
       const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 5);
       dueDate = nextMonth.toISOString().split('T')[0];
