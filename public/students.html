@@ -661,6 +661,10 @@
         async function loadStudents() {
             try {
                 const response = await fetch('/api/students');
+                if (response.status === 401) {
+                    window.location.href = 'index.html';
+                    return;
+                }
                 const data = await response.json();
 
                 if (!data.success) {
@@ -917,6 +921,10 @@
                     })
                 });
 
+                if (response.status === 401) {
+                    window.location.href = 'index.html';
+                    return;
+                }
                 const data = await response.json();
                 if (!data.success) {
                     throw new Error(data.message || 'Status update failed');
@@ -977,6 +985,10 @@
                     body: JSON.stringify(payload)
                 });
 
+                if (response.status === 401) {
+                    window.location.href = 'index.html';
+                    return;
+                }
                 const data = await response.json();
                 if (!data.success) {
                     throw new Error(data.message || 'Registration failed');
@@ -984,7 +996,7 @@
 
                 showMessage('success', 'Student registered successfully.');
                 closeRegisterModal();
-                await Promise.all([loadStats(), loadStudents()]);
+                await loadStudents();
             } catch (error) {
                 showMessage('error', error.message);
             }
@@ -997,13 +1009,17 @@
                     method: 'DELETE'
                 });
 
+                if (response.status === 401) {
+                    window.location.href = 'index.html';
+                    return;
+                }
                 const data = await response.json();
                 if (!data.success) {
                     throw new Error(data.message || 'Delete failed');
                 }
 
                 showMessage('success', 'Student deleted successfully.');
-                await Promise.all([loadStats(), loadStudents()]);
+                await loadStudents();
             } catch (error) {
                 showMessage('error', error.message);
             }
