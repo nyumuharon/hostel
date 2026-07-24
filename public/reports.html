@@ -110,24 +110,128 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-24">
+<body class="bg-background text-on-surface min-h-screen pb-24 md:pb-8 flex flex-col md:flex-row">
 
-    <!-- Top Navigation Bar -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
-        <div class="flex items-center gap-3">
-            <a href="dashboard.html" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 flex items-center justify-center">
-                <span class="material-symbols-outlined text-primary">arrow_back</span>
-            </a>
-            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">System Reports</h1>
+    <!-- Left Sidebar (Desktop only) -->
+    <aside class="fixed top-0 left-0 w-64 h-full bg-white border-r border-outline-variant flex flex-col justify-between z-40 hidden md:flex">
+        <div>
+            <!-- Sidebar Logo Header -->
+            <div class="h-20 bg-[#000666] text-white flex items-center gap-3 px-6 shadow-sm border-b border-primary/20">
+                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">corporate_fare</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold tracking-wide text-sm">Admin Portal</span>
+                    <span class="text-[10px] text-blue-200 uppercase tracking-widest font-semibold">Central Management</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <!-- Dashboard -->
+                <a href="dashboard.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <!-- Students -->
+                <a href="students.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>Students</span>
+                </a>
+                <!-- Rooms -->
+                <a href="rooms.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">bed</span>
+                    <span>Room Inventory</span>
+                </a>
+                <!-- Allocations -->
+                <a href="allocations.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">assignment_turned_in</span>
+                    <span>Allocations</span>
+                </a>
+                <!-- Payments -->
+                <a href="payments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span>Payments</span>
+                </a>
+                <!-- Reports (ACTIVE) -->
+                <a href="reports.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-primary-fixed text-primary">
+                    <span class="material-symbols-outlined active-tab-indicator">description</span>
+                    <span>Reports</span>
+                </a>
+            </nav>
         </div>
 
-        <div class="flex items-center gap-2">
-            <span id="topNav" class="text-xs font-semibold px-3 py-1.5 bg-primary/10 text-primary rounded-full">👤 Admin</span>
+        <!-- Sidebar Bottom Logout -->
+        <div class="p-4 border-t border-outline-variant/30">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Top Header Bar -->
+    <header class="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white border-b border-outline-variant flex justify-between items-center px-6 z-30">
+        <div class="flex items-center gap-4 flex-grow max-w-lg">
+            <span class="text-headline-sm font-bold text-primary mr-4 hidden md:inline">Academic HMS</span>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobileMenuBtn" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 md:hidden">
+                <span class="material-symbols-outlined text-on-surface-variant">menu</span>
+            </button>
+            <span class="text-headline-sm font-bold text-primary md:hidden">Academic HMS</span>
+            
+            <!-- Search Bar (Desktop only) -->
+            <div class="relative flex-grow hidden md:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                <input id="topSearchInput" oninput="syncSearch(this.value)" type="text" placeholder="Search reports..." class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Icons -->
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative">
+                <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">help</span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">settings</span>
+            </button>
+
+            <!-- Divider Line -->
+            <div class="h-8 w-[1px] bg-outline-variant hidden sm:block"></div>
+
+            <!-- Profile Info dropdown trigger -->
+            <button id="profileBtn" class="flex items-center gap-2 p-1 hover:bg-outline-variant/20 rounded-lg transition-colors text-left relative">
+                <div class="hidden sm:flex flex-col items-end text-xs leading-none pr-1">
+                    <span id="profileName" class="font-bold text-on-surface text-sm">Admin User</span>
+                    <span id="profileRole" class="text-outline text-[10px] uppercase font-semibold mt-0.5">Hostel Supervisor</span>
+                </div>
+                <div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+                    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA75ojBV-s9Bn-foNoXwbMSGA2pYQUCuv8fKcWTTCEp705Ew4QL9lGfbxh4KpeidH1nj3crTcxxkOZzPykqvixYbgnq6AEIi0eHe-tqEdb4rdYRPz_xeceLz0SU1nl7-T8GDH2O0S4WYuD1iAatFl3Bix_kdrgeUgAIq9vyguBIkSR1y-MC8gBqeIqLhahxe3NzVS2iVBufmh6MMSBAIfZrNwwtEU2ocdhc-nhy7_uL3gK9IcsmFmuAqGLMdVDU0izcb-qNAWJDeb4"/>
+                </div>
+                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
+                
+                <!-- Dropdown Menu inside button -->
+                <div id="profileMenu" class="hidden absolute right-0 top-12 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 text-sm text-on-surface">
+                    <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
+                        <span class="material-symbols-outlined text-sm">settings</span>
+                        <span>System Settings</span>
+                    </a>
+                    <hr class="border-outline-variant/30 my-1">
+                    <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-6">
+    <!-- Main Content Area -->
+    <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-6 pb-24 md:pb-8 w-full">
 
         <!-- Welcome / Page Header -->
         <section class="mt-4">
@@ -286,6 +390,51 @@
         const money = v => 'Ksh ' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         const moneyDecimal = v => 'Ksh ' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+        let allLedgers = [];
+
+        function syncSearch(val) {
+            filterLedgers(val);
+        }
+
+        function filterLedgers(searchVal = '') {
+            const query = (searchVal || document.getElementById('topSearchInput')?.value || '').toLowerCase().trim();
+            const filtered = allLedgers.filter(l => 
+                (l.full_name || '').toLowerCase().includes(query) ||
+                (l.admission_number || '').toLowerCase().includes(query) ||
+                (l.allocated_room || '').toLowerCase().includes(query)
+            );
+            renderLedgersTable(filtered);
+        }
+
+        function renderLedgersTable(ledgers) {
+            const ledgersBody = document.getElementById('ledgersTableBody');
+            if (ledgers.length === 0) {
+                ledgersBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-outline">No matching student ledgers found.</td></tr>';
+                return;
+            }
+            ledgersBody.innerHTML = ledgers.map(l => {
+                const statusClass = l.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200';
+                const statusText = l.status === 'paid' ? 'Paid / Prepaid' : 'Due';
+                const balanceText = l.balance >= 0 ? moneyDecimal(l.balance) : `-${moneyDecimal(Math.abs(l.balance))}`;
+                const genderLabel = l.gender ? l.gender.charAt(0).toUpperCase() + l.gender.slice(1) : '-';
+                
+                return `
+                    <tr class="hover:bg-outline-variant/10 transition-colors">
+                        <td class="py-3 px-2 font-bold text-on-surface">${esc(l.full_name)}</td>
+                        <td class="py-3 px-2 font-semibold text-outline-variant">${esc(l.admission_number)}</td>
+                        <td class="py-3 px-2 text-xs text-outline">${genderLabel}</td>
+                        <td class="py-3 px-2 text-xs text-outline font-bold">${esc(l.allocated_room)}</td>
+                        <td class="py-3 px-2 text-xs font-semibold text-teal-800">${moneyDecimal(l.total_paid)}</td>
+                        <td class="py-3 px-2 text-xs font-semibold text-outline">${moneyDecimal(l.total_charged)}</td>
+                        <td class="py-3 px-2 font-bold ${l.balance >= 0 ? 'text-green-800' : 'text-red-800'}">${balanceText}</td>
+                        <td class="py-3 px-2">
+                            <span class="px-2 py-0.5 border rounded-full text-xs font-semibold uppercase tracking-wider ${statusClass}">${statusText}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         // Verify session status
         async function checkAuth() {
             try {
@@ -297,7 +446,9 @@
                     return;
                 }
                 
-                document.getElementById('topNav').textContent = `👤 ${data.user.fullName}`;
+                document.getElementById('profileName').textContent = data.user.fullName;
+                document.getElementById('profileRole').textContent = data.user.role.charAt(0).toUpperCase() + data.user.role.slice(1) + ' Admin';
+                
                 await Promise.all([loadReports(), loadLedgers()]);
             } catch (err) {
                 window.location.href = 'index.html';
@@ -413,36 +564,9 @@
                 const response = await fetch('/api/reports/ledgers');
                 const data = await response.json();
                 
-                const ledgersBody = document.getElementById('ledgersTableBody');
-                
                 if (data.success) {
-                    const ledgers = data.data || [];
-                    if (ledgers.length === 0) {
-                        ledgersBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-outline">No active student ledgers found.</td></tr>';
-                        return;
-                    }
-                    
-                    ledgersBody.innerHTML = ledgers.map(l => {
-                        const statusClass = l.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200';
-                        const statusText = l.status === 'paid' ? 'Paid / Prepaid' : 'Due';
-                        const balanceText = l.balance >= 0 ? moneyDecimal(l.balance) : `-${moneyDecimal(Math.abs(l.balance))}`;
-                        const genderLabel = l.gender ? l.gender.charAt(0).toUpperCase() + l.gender.slice(1) : '-';
-                        
-                        return `
-                            <tr class="hover:bg-outline-variant/10 transition-colors">
-                                <td class="py-3 px-2 font-bold text-on-surface">${esc(l.full_name)}</td>
-                                <td class="py-3 px-2 font-semibold text-outline-variant">${esc(l.admission_number)}</td>
-                                <td class="py-3 px-2 text-xs text-outline">${genderLabel}</td>
-                                <td class="py-3 px-2 text-xs text-outline font-bold">${esc(l.allocated_room)}</td>
-                                <td class="py-3 px-2 text-xs font-semibold text-teal-800">${moneyDecimal(l.total_paid)}</td>
-                                <td class="py-3 px-2 text-xs font-semibold text-outline">${moneyDecimal(l.total_charged)}</td>
-                                <td class="py-3 px-2 font-bold ${l.balance >= 0 ? 'text-green-800' : 'text-red-800'}">${balanceText}</td>
-                                <td class="py-3 px-2">
-                                    <span class="px-2 py-0.5 border rounded-full text-xs font-semibold uppercase tracking-wider ${statusClass}">${statusText}</span>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
+                    allLedgers = data.data || [];
+                    filterLedgers();
                 }
             } catch (error) {
                 console.error('Error loading ledgers:', error);
@@ -450,8 +574,52 @@
             }
         }
 
+        // Profile dropdown toggle
+        document.getElementById('profileBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('profileMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            const menu = document.getElementById('profileMenu');
+            menu.classList.add('hidden');
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.querySelector('aside');
+        if (mobileMenuBtn && sidebar) {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('flex');
+                sidebar.classList.add('shadow-2xl');
+            });
+            // Close sidebar on click outside
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768 && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('flex');
+                }
+            });
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/api/logout', {
+                    method: 'POST'
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
         // Initialize check
         checkAuth();
     </script>
+</body>
 </body>
 </html>

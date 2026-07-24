@@ -110,165 +110,287 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-24">
+<body class="bg-background text-on-surface min-h-screen pb-24 md:pb-8 flex flex-col md:flex-row">
 
-    <!-- Top Navigation Bar -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-lg">⛰️</div>
-            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">Everest University</h1>
+    <!-- Left Sidebar (Desktop only) -->
+    <aside class="fixed top-0 left-0 w-64 h-full bg-white border-r border-outline-variant flex flex-col justify-between z-40 hidden md:flex">
+        <div>
+            <!-- Sidebar Logo Header -->
+            <div class="h-20 bg-[#000666] text-white flex items-center gap-3 px-6 shadow-sm border-b border-primary/20">
+                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">corporate_fare</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold tracking-wide text-sm">Admin Portal</span>
+                    <span class="text-[10px] text-blue-200 uppercase tracking-widest font-semibold">Central Management</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <!-- Dashboard (ACTIVE) -->
+                <a href="dashboard.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-primary-fixed text-primary">
+                    <span class="material-symbols-outlined active-tab-indicator">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <!-- Students -->
+                <a href="students.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>Students</span>
+                </a>
+                <!-- Rooms -->
+                <a href="rooms.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">bed</span>
+                    <span>Room Inventory</span>
+                </a>
+                <!-- Allocations -->
+                <a href="allocations.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">assignment_turned_in</span>
+                    <span>Allocations</span>
+                </a>
+                <!-- Payments -->
+                <a href="payments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span>Payments</span>
+                </a>
+                <!-- Reports -->
+                <a href="reports.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">description</span>
+                    <span>Reports</span>
+                </a>
+            </nav>
         </div>
 
-        <div class="flex items-center gap-4 relative">
-            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95">
-                <span class="material-symbols-outlined text-outline" data-icon="notifications">notifications</span>
+        <!-- Sidebar Bottom Logout -->
+        <div class="p-4 border-t border-outline-variant/30">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
             </button>
+        </div>
+    </aside>
+
+    <!-- Top Header Bar -->
+    <header class="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white border-b border-outline-variant flex justify-between items-center px-6 z-30">
+        <div class="flex items-center gap-4 flex-grow max-w-lg">
+            <span class="text-headline-sm font-bold text-primary mr-4 hidden md:inline">Academic HMS</span>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobileMenuBtn" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 md:hidden">
+                <span class="material-symbols-outlined text-on-surface-variant">menu</span>
+            </button>
+            <span class="text-headline-sm font-bold text-primary md:hidden">Academic HMS</span>
             
-            <!-- Profile Pill -->
-            <button id="profileBtn" class="flex items-center gap-2 p-1.5 hover:bg-outline-variant/20 rounded-full transition-colors active:scale-98">
-                <div id="avatarLetter" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">A</div>
-                <div class="hidden md:flex flex-col items-start text-left text-xs leading-tight pr-2">
-                    <span id="profileName" class="font-bold text-on-surface">Admin</span>
-                    <span id="profileRole" class="text-outline">System Admin</span>
-                </div>
-                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
+            <!-- Search Bar (Desktop only) -->
+            <div class="relative flex-grow hidden md:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                <input type="text" placeholder="Search records..." class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Icons -->
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative">
+                <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">help</span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">settings</span>
             </button>
 
-            <!-- Dropdown Menu -->
-            <div id="profileMenu" class="hidden absolute right-0 top-14 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 animate-fade-in text-sm text-on-surface">
-                <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
-                    <span class="material-symbols-outlined text-sm">settings</span>
-                    <span>System Settings</span>
-                </a>
-                <hr class="border-outline-variant/30 my-1">
-                <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
-                    <span class="material-symbols-outlined text-sm">logout</span>
-                    <span>Log Out</span>
-                </button>
-            </div>
+            <!-- Divider Line -->
+            <div class="h-8 w-[1px] bg-outline-variant hidden sm:block"></div>
+
+            <!-- Profile Info dropdown trigger -->
+            <button id="profileBtn" class="flex items-center gap-2 p-1 hover:bg-outline-variant/20 rounded-lg transition-colors text-left relative">
+                <div class="hidden sm:flex flex-col items-end text-xs leading-none pr-1">
+                    <span id="profileName" class="font-bold text-on-surface text-sm">Admin User</span>
+                    <span id="profileRole" class="text-outline text-[10px] uppercase font-semibold mt-0.5">Hostel Supervisor</span>
+                </div>
+                <div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+                    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA75ojBV-s9Bn-foNoXwbMSGA2pYQUCuv8fKcWTTCEp705Ew4QL9lGfbxh4KpeidH1nj3crTcxxkOZzPykqvixYbgnq6AEIi0eHe-tqEdb4rdYRPz_xeceLz0SU1nl7-T8GDH2O0S4WYuD1iAatFl3Bix_kdrgeUgAIq9vyguBIkSR1y-MC8gBqeIqLhahxe3NzVS2iVBufmh6MMSBAIfZrNwwtEU2ocdhc-nhy7_uL3gK9IcsmFmuAqGLMdVDU0izcb-qNAWJDeb4"/>
+                </div>
+                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
+                
+                <!-- Dropdown Menu inside button -->
+                <div id="profileMenu" class="hidden absolute right-0 top-12 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 text-sm text-on-surface">
+                    <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
+                        <span class="material-symbols-outlined text-sm">settings</span>
+                        <span>System Settings</span>
+                    </a>
+                    <hr class="border-outline-variant/30 my-1">
+                    <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-8">
+    <!-- Main Content Area -->
+    <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-8 pb-24 md:pb-8 w-full">
         
         <!-- Welcome Section -->
-        <section class="mt-4">
-            <h2 id="welcomeMessage" class="text-headline-md font-bold text-primary">Welcome back, Administrator!</h2>
-            <p class="text-body-md text-outline mt-1">Here is the current hostel occupancy status and recent activities.</p>
+        <section class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 id="welcomeMessage" class="text-3xl font-bold tracking-tight text-primary">System Overview</h2>
+                <p class="text-body-md text-on-surface-variant mt-1">Institutional occupancy and financial summary for the current academic semester.</p>
+            </div>
         </section>
 
         <!-- Stats Grid -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
-                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">Total Registered</p>
-                <p id="statStudents" class="text-3xl font-bold text-primary">0</p>
-                <p class="text-[11px] text-outline mt-1">Active Students</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
-                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">System Capacity</p>
-                <p id="statBeds" class="text-3xl font-bold text-primary">200</p>
-                <p class="text-[11px] text-outline mt-1">Total Bed Spaces</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
-                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">Occupied Beds</p>
-                <p id="statOccupied" class="text-3xl font-bold text-secondary">0</p>
-                <p class="text-[11px] text-outline mt-1">Current Bookings</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
-                <p class="text-xs font-semibold uppercase tracking-wider text-outline mb-1">Available Beds</p>
-                <p id="statAvailable" class="text-3xl font-bold text-teal-600">0</p>
-                <p class="text-[11px] text-outline mt-1">Ready for Allocation</p>
-            </div>
-        </section>
-
-        <!-- Block Progress Indicators -->
-        <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm space-y-6">
-            <h3 class="text-lg font-bold text-primary">Hostel Block Allocations</h3>
-            
-            <div class="space-y-4">
-                <!-- Batian Block -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="font-semibold text-on-surface">Batian Block (Male Hostel)</span>
-                        <span id="batianCap" class="text-xs font-bold text-primary">Loading beds...</span>
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: TOTAL STUDENTS -->
+            <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-all flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm text-outline-variant uppercase tracking-wider font-semibold">Total Students</span>
+                    <p id="statStudents" class="text-headline-lg font-bold text-primary leading-none">0</p>
+                    <div class="flex items-center gap-1 text-[11px] text-[#006a60] font-semibold mt-1">
+                        <span class="material-symbols-outlined text-xs">trending_up</span>
+                        <span>+12 from last week</span>
                     </div>
-                    <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div id="batianProgressBar" class="h-full bg-gradient-to-r from-blue-600 to-indigo-800 rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                    <p id="batianDetails" class="text-xs text-outline">Total Capacity: 100 beds</p>
                 </div>
-
-                <!-- Nelion Block -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="font-semibold text-on-surface">Nelion Block (Female Hostel)</span>
-                        <span id="nelionCap" class="text-xs font-bold text-secondary">Loading beds...</span>
-                    </div>
-                    <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div id="nelionProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-700 rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                    <p id="nelionDetails" class="text-xs text-outline">Total Capacity: 100 beds</p>
+                <div class="p-3 bg-primary-container/10 text-primary rounded-xl">
+                    <span class="material-symbols-outlined text-xl">groups</span>
+                </div>
+            </div>
+            <!-- Card 2: TOTAL CAPACITY -->
+            <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-all flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm text-outline-variant uppercase tracking-wider font-semibold">Total Capacity</span>
+                    <p id="statBeds" class="text-headline-lg font-bold text-primary leading-none">200</p>
+                    <p class="text-[11px] text-outline-variant mt-1">Standardized Units</p>
+                </div>
+                <div class="p-3 bg-primary-container/10 text-primary rounded-xl">
+                    <span class="material-symbols-outlined text-xl">domain</span>
+                </div>
+            </div>
+            <!-- Card 3: OCCUPIED BEDS -->
+            <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-all flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm text-outline-variant uppercase tracking-wider font-semibold">Occupied Beds</span>
+                    <p id="statOccupied" class="text-headline-lg font-bold text-secondary leading-none">0</p>
+                    <p id="occupiedPercentage" class="text-[11px] text-outline-variant mt-1">0% Total Occupancy</p>
+                </div>
+                <div class="p-3 bg-secondary-container/20 text-secondary rounded-xl">
+                    <span class="material-symbols-outlined text-xl text-secondary">check_circle</span>
+                </div>
+            </div>
+            <!-- Card 4: AVAILABLE BEDS -->
+            <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-all flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm text-outline-variant uppercase tracking-wider font-semibold">Available Beds</span>
+                    <p id="statAvailable" class="text-headline-lg font-bold text-secondary leading-none">0</p>
+                    <p class="text-[11px] text-outline-variant mt-1">Ready for Allocation</p>
+                </div>
+                <div class="p-3 bg-secondary-container/20 text-secondary rounded-xl">
+                    <span class="material-symbols-outlined text-xl">calendar_today</span>
                 </div>
             </div>
         </section>
 
-        <!-- Lists Grid -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Recent Students -->
-            <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-primary">Recently Registered</h3>
-                    <a href="students.html" class="text-xs text-secondary hover:underline font-semibold flex items-center gap-1">
-                        Directory <span class="material-symbols-outlined text-xs">arrow_forward</span>
-                    </a>
+        <!-- Dynamic Content Rows -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Capacity Progress -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)] space-y-5">
+                    <h3 class="text-lg font-bold text-primary">Capacity Progress</h3>
+                    
+                    <!-- Batian Block -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <span class="text-on-surface">Batian Block</span>
+                            <span id="batianFraction" class="text-primary">0/100</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div id="batianBar" class="h-full bg-primary rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[11px] text-outline">Male Students</p>
+                    </div>
+
+                    <!-- Nelion Block -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <span class="text-on-surface">Nelion Block</span>
+                            <span id="nelionFraction" class="text-secondary">0/100</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div id="nelionBar" class="h-full bg-secondary rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[11px] text-outline">Female Students</p>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead>
-                            <tr class="border-b border-outline-variant/50 text-xs font-semibold uppercase tracking-wider text-outline">
-                                <th class="py-2.5">Student</th>
-                                <th class="py-2.5">Admission</th>
-                                <th class="py-2.5">Course</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentStudentsTable">
-                            <tr><td colspan="3" class="text-center py-4 text-outline">Loading records...</td></tr>
-                        </tbody>
-                    </table>
+
+                <!-- Notice Card -->
+                <div class="bg-surface-container border border-outline-variant/60 rounded-xl p-5 shadow-[0px_2px_4px_rgba(0,0,0,0.03)] space-y-2 text-sm leading-relaxed text-on-surface-variant">
+                    <div class="flex items-center gap-2 font-bold text-primary mb-1">
+                        <span class="material-symbols-outlined text-lg">info</span>
+                        <span>Notice</span>
+                    </div>
+                    <p>Annual maintenance scheduled for Batian Block, Wing B (Rooms 201-220) starting next Friday.</p>
                 </div>
             </div>
 
-            <!-- Recent Allocations -->
-            <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-primary">Recent Allocations</h3>
-                    <a href="allocations.html" class="text-xs text-secondary hover:underline font-semibold flex items-center gap-1">
-                        Manage <span class="material-symbols-outlined text-xs">arrow_forward</span>
-                    </a>
+            <!-- Right Column: Recent Allocations & Payments -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Recent Allocations -->
+                <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-primary">Recent Allocations</h3>
+                        <a href="allocations.html" class="text-xs text-secondary hover:underline font-semibold flex items-center gap-1">
+                            VIEW ALL <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead>
+                                <tr class="border-b border-outline-variant/50 text-[11px] font-bold uppercase tracking-wider text-outline">
+                                    <th class="py-3 px-2">Student Name</th>
+                                    <th class="py-3 px-2">Room ID</th>
+                                    <th class="py-3 px-2">Status</th>
+                                    <th class="py-3 px-2 text-right">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentAllocationsTable">
+                                <tr><td colspan="4" class="text-center py-6 text-outline">Loading allocations...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead>
-                            <tr class="border-b border-outline-variant/50 text-xs font-semibold uppercase tracking-wider text-outline">
-                                <th class="py-2.5">Student</th>
-                                <th class="py-2.5">Room</th>
-                                <th class="py-2.5">Code</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentAllocationsTable">
-                            <tr><td colspan="3" class="text-center py-4 text-outline">Loading allocations...</td></tr>
-                        </tbody>
-                    </table>
+
+                <!-- Recent Payments -->
+                <div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-primary">Recent Payments</h3>
+                        <a href="payments.html" class="text-xs text-secondary hover:underline font-semibold flex items-center gap-1">
+                            FINANCIALS <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead>
+                                <tr class="border-b border-outline-variant/50 text-[11px] font-bold uppercase tracking-wider text-outline">
+                                    <th class="py-3 px-2">Transaction ID</th>
+                                    <th class="py-3 px-2">Amount</th>
+                                    <th class="py-3 px-2">Method</th>
+                                    <th class="py-3 px-2 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPaymentsTable">
+                                <tr><td colspan="4" class="text-center py-6 text-outline">Loading payments...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
         </section>
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+    <!-- Bottom Navigation Bar (Mobile only) -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg md:hidden">
         <!-- Dashboard (ACTIVE) -->
         <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1.5 transition-all duration-150 active:scale-90" href="dashboard.html">
             <span class="material-symbols-outlined active-tab-indicator" data-icon="dashboard">dashboard</span>
@@ -324,6 +446,15 @@
             return `${day} ${month} ${year}`;
         }
 
+        function formatName(fullName) {
+            if (!fullName) return '-';
+            const parts = fullName.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                return `${parts[parts.length - 1]}, ${parts.slice(0, -1).join(' ')}`;
+            }
+            return fullName;
+        }
+
         // Verify session status
         async function checkAuth() {
             try {
@@ -338,8 +469,6 @@
                 currentUser = data.user;
                 document.getElementById('profileName').textContent = currentUser.fullName;
                 document.getElementById('profileRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) + ' Admin';
-                document.getElementById('avatarLetter').textContent = currentUser.fullName.charAt(0).toUpperCase();
-                document.getElementById('welcomeMessage').textContent = `Welcome back, ${currentUser.fullName}!`;
                 
                 loadDashboardData();
             } catch (err) {
@@ -360,53 +489,67 @@
                     document.getElementById('statOccupied').textContent = Number(stats.occupied_beds).toLocaleString();
                     document.getElementById('statAvailable').textContent = Number(stats.available_beds).toLocaleString();
                     
+                    const occRate = stats.total_beds > 0 ? Math.round((stats.occupied_beds / stats.total_beds) * 100) : 0;
+                    document.getElementById('occupiedPercentage').textContent = `${occRate}% Total Occupancy`;
+
                     // Render block stats
                     const blocks = data.blocks_stats;
                     if (blocks) {
                         const updateBlockIndicator = (blockName, elementPrefix) => {
                             const bData = blocks[blockName] || { total: 0, occupied: 0 };
-                            const remaining = bData.total - bData.occupied;
-                            document.getElementById(`${elementPrefix}Cap`).textContent = `${remaining} beds left`;
-                            document.getElementById(`${elementPrefix}Details`).textContent = `Total Capacity: ${bData.total} | Occupied: ${bData.occupied}`;
+                            document.getElementById(`${elementPrefix}Fraction`).textContent = `${bData.occupied}/${bData.total}`;
                             
                             const percentage = bData.total > 0 ? Math.round((bData.occupied / bData.total) * 100) : 0;
-                            document.getElementById(`${elementPrefix}ProgressBar`).style.width = `${percentage}%`;
+                            document.getElementById(`${elementPrefix}Bar`).style.width = `${percentage}%`;
                         };
                         
                         updateBlockIndicator('Batian', 'batian');
                         updateBlockIndicator('Nelion', 'nelion');
                     }
 
-                    // Render recent students
-                    const studentsBody = document.getElementById('recentStudentsTable');
-                    if (data.recent_students.length === 0) {
-                        studentsBody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-outline">No students registered yet.</td></tr>';
+                    // Render recent allocations
+                    const allocBody = document.getElementById('recentAllocationsTable');
+                    if (data.recent_allocations.length === 0) {
+                        allocBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-outline">No allocations yet.</td></tr>';
                     } else {
-                        studentsBody.innerHTML = data.recent_students.slice(0, 5).map(s => {
+                        allocBody.innerHTML = data.recent_allocations.slice(0, 3).map(a => {
                             return `
                                 <tr class="border-b border-outline-variant/20 hover:bg-outline-variant/10 transition-colors">
-                                    <td class="py-3 font-semibold text-on-surface">${s.full_name}</td>
-                                    <td class="py-3 text-outline">${s.admission_number}</td>
-                                    <td class="py-3 text-outline text-xs">${s.course}</td>
+                                    <td class="py-3 px-2 font-semibold text-on-surface">${formatName(a.full_name)}</td>
+                                    <td class="py-3 px-2 text-primary font-semibold font-mono text-xs">${a.room_number}</td>
+                                    <td class="py-3 px-2">
+                                        <span class="px-2 py-0.5 bg-primary-fixed text-primary rounded text-[11px] font-bold">ASSIGNED</span>
+                                    </td>
+                                    <td class="py-3 px-2 text-right text-outline-variant text-xs">${formatDate(a.allocation_date)}</td>
                                 </tr>
                             `;
                         }).join('');
                     }
 
-                    // Render recent allocations
-                    const allocBody = document.getElementById('recentAllocationsTable');
-                    if (data.recent_allocations.length === 0) {
-                        allocBody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-outline">No allocations yet.</td></tr>';
-                    } else {
-                        allocBody.innerHTML = data.recent_allocations.slice(0, 5).map(a => {
-                            return `
-                                <tr class="border-b border-outline-variant/20 hover:bg-outline-variant/10 transition-colors">
-                                    <td class="py-3 font-semibold text-on-surface">${a.full_name}</td>
-                                    <td class="py-3 text-outline">${a.room_number}</td>
-                                    <td class="py-3"><span class="px-2 py-0.5 bg-primary/10 text-primary font-mono text-xs font-semibold rounded">${a.booking_code || 'N/A'}</span></td>
-                                </tr>
-                            `;
-                        }).join('');
+                    // Fetch and Render recent payments
+                    const paymentsResponse = await fetch('/api/payments');
+                    const paymentsData = await paymentsResponse.json();
+                    if (paymentsData.success) {
+                        const paymentsBody = document.getElementById('recentPaymentsTable');
+                        if (paymentsData.data.length === 0) {
+                            paymentsBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-outline">No payments recorded.</td></tr>';
+                        } else {
+                            paymentsBody.innerHTML = paymentsData.data.slice(0, 3).map(p => {
+                                const statusClass = p.status === 'completed' ? 'bg-green-100 text-[#006a60]' : (p.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-[#ba1a1a]');
+                                const statusText = p.status === 'completed' ? 'SUCCESS' : (p.status === 'pending' ? 'PENDING' : 'DECLINED');
+                                const amountClass = p.status === 'completed' ? 'text-[#006a60] font-semibold' : 'text-[#ba1a1a] font-semibold';
+                                return `
+                                    <tr class="border-b border-outline-variant/20 hover:bg-outline-variant/10 transition-colors">
+                                        <td class="py-3 px-2 font-mono text-xs text-on-surface">${p.transaction_id || ('TXN-' + p.payment_id)}</td>
+                                        <td class="py-3 px-2 ${amountClass}">Ksh ${Number(p.amount).toLocaleString()}</td>
+                                        <td class="py-3 px-2 text-outline-variant text-xs">${p.payment_method || 'MPesa'}</td>
+                                        <td class="py-3 px-2 text-right">
+                                            <span class="px-2 py-0.5 rounded text-[11px] font-bold ${statusClass}">${statusText}</span>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('');
+                        }
                     }
                 }
             } catch (err) {
@@ -426,6 +569,25 @@
             const menu = document.getElementById('profileMenu');
             menu.classList.add('hidden');
         });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.querySelector('aside');
+        if (mobileMenuBtn && sidebar) {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('flex');
+                sidebar.classList.add('shadow-2xl');
+            });
+            // Close sidebar on click outside
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768 && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('flex');
+                }
+            });
+        }
 
         // Logout function
         function logout() {

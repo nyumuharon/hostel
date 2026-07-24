@@ -110,24 +110,128 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-24">
+<body class="bg-background text-on-surface min-h-screen pb-24 md:pb-8 flex flex-col md:flex-row">
 
-    <!-- Top Navigation Bar -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
-        <div class="flex items-center gap-3">
-            <a href="dashboard.html" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 flex items-center justify-center">
-                <span class="material-symbols-outlined text-primary">arrow_back</span>
-            </a>
-            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">Bed Payments</h1>
+    <!-- Left Sidebar (Desktop only) -->
+    <aside class="fixed top-0 left-0 w-64 h-full bg-white border-r border-outline-variant flex flex-col justify-between z-40 hidden md:flex">
+        <div>
+            <!-- Sidebar Logo Header -->
+            <div class="h-20 bg-[#000666] text-white flex items-center gap-3 px-6 shadow-sm border-b border-primary/20">
+                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">corporate_fare</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold tracking-wide text-sm">Admin Portal</span>
+                    <span class="text-[10px] text-blue-200 uppercase tracking-widest font-semibold">Central Management</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <!-- Dashboard -->
+                <a href="dashboard.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <!-- Students -->
+                <a href="students.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>Students</span>
+                </a>
+                <!-- Rooms -->
+                <a href="rooms.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">bed</span>
+                    <span>Room Inventory</span>
+                </a>
+                <!-- Allocations -->
+                <a href="allocations.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">assignment_turned_in</span>
+                    <span>Allocations</span>
+                </a>
+                <!-- Payments (ACTIVE) -->
+                <a href="payments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-primary-fixed text-primary">
+                    <span class="material-symbols-outlined active-tab-indicator">payments</span>
+                    <span>Payments</span>
+                </a>
+                <!-- Reports -->
+                <a href="reports.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">description</span>
+                    <span>Reports</span>
+                </a>
+            </nav>
         </div>
 
-        <div class="flex items-center gap-2">
-            <span id="profilePill" class="text-xs font-semibold px-3 py-1.5 bg-primary/10 text-primary rounded-full">👤 Admin</span>
+        <!-- Sidebar Bottom Logout -->
+        <div class="p-4 border-t border-outline-variant/30">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Top Header Bar -->
+    <header class="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white border-b border-outline-variant flex justify-between items-center px-6 z-30">
+        <div class="flex items-center gap-4 flex-grow max-w-lg">
+            <span class="text-headline-sm font-bold text-primary mr-4 hidden md:inline">Academic HMS</span>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobileMenuBtn" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 md:hidden">
+                <span class="material-symbols-outlined text-on-surface-variant">menu</span>
+            </button>
+            <span class="text-headline-sm font-bold text-primary md:hidden">Academic HMS</span>
+            
+            <!-- Search Bar (Desktop only) -->
+            <div class="relative flex-grow hidden md:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                <input id="topSearchInput" oninput="syncSearch(this.value)" type="text" placeholder="Search payments..." class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Icons -->
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative">
+                <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">help</span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">settings</span>
+            </button>
+
+            <!-- Divider Line -->
+            <div class="h-8 w-[1px] bg-outline-variant hidden sm:block"></div>
+
+            <!-- Profile Info dropdown trigger -->
+            <button id="profileBtn" class="flex items-center gap-2 p-1 hover:bg-outline-variant/20 rounded-lg transition-colors text-left relative">
+                <div class="hidden sm:flex flex-col items-end text-xs leading-none pr-1">
+                    <span id="profileName" class="font-bold text-on-surface text-sm">Admin User</span>
+                    <span id="profileRole" class="text-outline text-[10px] uppercase font-semibold mt-0.5">Hostel Supervisor</span>
+                </div>
+                <div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+                    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA75ojBV-s9Bn-foNoXwbMSGA2pYQUCuv8fKcWTTCEp705Ew4QL9lGfbxh4KpeidH1nj3crTcxxkOZzPykqvixYbgnq6AEIi0eHe-tqEdb4rdYRPz_xeceLz0SU1nl7-T8GDH2O0S4WYuD1iAatFl3Bix_kdrgeUgAIq9vyguBIkSR1y-MC8gBqeIqLhahxe3NzVS2iVBufmh6MMSBAIfZrNwwtEU2ocdhc-nhy7_uL3gK9IcsmFmuAqGLMdVDU0izcb-qNAWJDeb4"/>
+                </div>
+                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
+                
+                <!-- Dropdown Menu inside button -->
+                <div id="profileMenu" class="hidden absolute right-0 top-12 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 text-sm text-on-surface">
+                    <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
+                        <span class="material-symbols-outlined text-sm">settings</span>
+                        <span>System Settings</span>
+                    </a>
+                    <hr class="border-outline-variant/30 my-1">
+                    <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-6">
+    <!-- Main Content Area -->
+    <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-6 pb-24 md:pb-8 w-full">
 
         <!-- Notification Alerts -->
         <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="message"></div>
@@ -399,18 +503,18 @@
         const money = v => 'Ksh ' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         const moneyDecimal = v => 'Ksh ' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        // Verify session status
         async function checkAuth() {
             try {
                 const response = await fetch('/api/auth/me');
                 const data = await response.json();
                 
-                if (!data.success) {
+                if (!data.success || data.user.role !== 'admin') {
                     window.location.href = 'index.html';
                     return;
                 }
                 
-                document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
+                document.getElementById('profileName').textContent = data.user.fullName;
+                document.getElementById('profileRole').textContent = data.user.role.charAt(0).toUpperCase() + data.user.role.slice(1) + ' Admin';
                 
                 await Promise.all([loadStudents(), loadPayments()]);
                 reset();
@@ -442,102 +546,68 @@
             if (!selectedBlock || !pDateVal || !monthlyRate) return;
 
             const dailyRate = monthlyRate / 30;
-            const daysCovered = Math.round(monthlyRate / dailyRate); // 30 days for full month payment
+            const daysCovered = Math.round(monthlyRate / dailyRate);
 
-            const start = new Date(pDateVal);
-            start.setDate(start.getDate() + daysCovered);
+            const date = new Date(pDateVal);
+            date.setDate(date.getDate() + daysCovered);
+            dueDate.value = date.toISOString().split('T')[0];
+        }
 
-            dueDate.value = start.toISOString().split('T')[0];
-            updatePreview();
+        function formatDate(dateInput) {
+            if (!dateInput) return '-';
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'short' }) + ' ' + d.getFullYear();
+        }
+
+        function monthLabel(monthString) {
+            if (!monthString) return '-';
+            const [year, month] = monthString.split('-');
+            const d = new Date(year, parseInt(month) - 1, 1);
+            return d.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
         }
 
         function updateRate() {
-            rateDisplay.textContent = block.value ? money(rates[block.value]) + ' per month' : 'Choose a block';
+            const blockVal = block.value;
+            const val = rates[blockVal];
+            rateDisplay.textContent = val ? money(val) + ' / month' : 'No block selected';
             autoCalculateDueDate();
             updatePreview();
         }
 
-        function monthLabel(monthValue) {
-            if (!monthValue || !/^\d{4}-\d{2}$/.test(monthValue)) return '-';
-            const [year, month] = monthValue.split('-');
-            const d = new Date(Number(year), Number(month) - 1, 1);
-            return d.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-        }
-
-        function formatDate(dateInput) {
-            if (!dateInput) return 'Not set';
-            const d = new Date(dateInput);
-            if (isNaN(d.getTime())) return String(dateInput);
-            
-            const day = d.getDate();
-            let suffix = 'th';
-            if (day < 11 || day > 13) {
-                switch (day % 10) {
-                    case 1: suffix = 'st'; break;
-                    case 2: suffix = 'nd'; break;
-                    case 3: suffix = 'rd'; break;
-                }
+        function updateFromSelectedStudent() {
+            const studentId = studentSelect.value;
+            const info = activeAllocationsByStudent[studentId];
+            if (info) {
+                allocatedRoom.value = info.room_number;
+                allocatedBed.value = info.bed_label;
+                block.value = info.hostel_block;
+                updateRate();
+            } else {
+                allocatedRoom.value = '';
+                allocatedBed.value = '';
+                block.value = '';
+                updateRate();
             }
-            const month = d.toLocaleString('en-GB', { month: 'short' });
-            const year = d.getFullYear();
-            
-            return `${day} ${month} ${year}`;
         }
 
         function updatePreview() {
-            const selectedBlock = block.value || '-';
-            const selectedMonth = monthLabel(billingMonth.value);
-            const selectedDueDate = dueDate.value ? formatDate(dueDate.value) : 'Not set';
-            const amount = block.value ? (rates[block.value] || 0) : 0;
-
-            previewBlock.textContent = selectedBlock;
-            previewMonth.textContent = selectedMonth;
-            previewDueDate.innerHTML = selectedDueDate;
-            previewAmount.textContent = moneyDecimal(amount);
+            previewBlock.textContent = block.value ? block.value + ' Block' : 'Not Specified';
+            previewMonth.textContent = billingMonth.value ? monthLabel(billingMonth.value) : 'Not Specified';
+            previewDueDate.textContent = dueDate.value ? formatDate(dueDate.value) : 'Not Specified';
+            previewAmount.textContent = block.value ? moneyDecimal(rates[block.value] || 0) : moneyDecimal(0);
         }
 
         function reset() {
             form.reset();
             paymentId.value = '';
-            paymentDate.value = new Date().toISOString().slice(0, 10);
-            billingMonth.value = new Date().toISOString().slice(0, 7);
-            allocatedRoom.value = 'Auto-filled';
-            allocatedBed.value = 'Auto-filled';
+            allocatedRoom.value = '';
+            allocatedBed.value = '';
+            paymentDate.value = new Date().toISOString().split('T')[0];
+            dueDate.value = '';
             saveBtn.textContent = 'Record Bed Payment';
             updateRate();
-            autoCalculateDueDate();
             updatePreview();
-        }
-
-        billingMonth.addEventListener('input', () => {
-            updatePreview();
-        });
-
-        paymentDate.addEventListener('change', () => {
-            autoCalculateDueDate();
-        });
-
-        function inferBlock(roomNumber) {
-            const text = String(roomNumber || '').toUpperCase();
-            if (text.startsWith('BAT-')) return 'Batian';
-            if (text.startsWith('NEL-')) return 'Nelion';
-            return '';
-        }
-
-        function updateFromSelectedStudent() {
-            const selected = activeAllocationsByStudent[String(studentSelect.value)];
-            if (!selected) {
-                allocatedRoom.value = 'Auto-filled';
-                allocatedBed.value = 'Auto-filled';
-                return;
-            }
-
-            allocatedRoom.value = selected.room_number || '-';
-            allocatedBed.value = selected.bed_label || '-';
-            if (selected.hostel_block) {
-                block.value = selected.hostel_block;
-            }
-            updateRate();
         }
 
         async function loadStudents() {
@@ -576,19 +646,39 @@
             }
         }
 
-        async function loadPayments() {
-            const query = new URLSearchParams();
-            if (filterStudent.value) query.set('student_id', filterStudent.value);
-            if (filterStatus.value) query.set('status', filterStatus.value);
-            
-            const response = await fetch('/api/payments?' + query);
-            const data = await response.json();
-            if (!data.success) throw new Error(data.message);
-            
-            payments = data.data || [];
-            renderPaymentsSummary(payments);
+        function inferBlock(roomNum) {
+            if (!roomNum) return '';
+            if (roomNum.startsWith('BAT')) return 'Batian';
+            if (roomNum.startsWith('NEL')) return 'Nelion';
+            return '';
+        }
 
-            body.innerHTML = payments.length ? payments.map(payment => {
+        function syncSearch(val) {
+            filterPayments();
+        }
+
+        function filterPayments() {
+            const studentId = filterStudent.value;
+            const statusVal = filterStatus.value;
+            const query = (document.getElementById('topSearchInput')?.value || '').toLowerCase().trim();
+            
+            let filtered = payments;
+            if (studentId) {
+                filtered = filtered.filter(p => String(p.student_id) === String(studentId));
+            }
+            if (statusVal) {
+                filtered = filtered.filter(p => p.status === statusVal);
+            }
+            if (query) {
+                filtered = filtered.filter(p => 
+                    (p.full_name || p.student_name || '').toLowerCase().includes(query) ||
+                    (p.admission_number || '').toLowerCase().includes(query) ||
+                    (p.transaction_id || '').toLowerCase().includes(query) ||
+                    (p.payment_reference || '').toLowerCase().includes(query)
+                );
+            }
+            
+            body.innerHTML = filtered.length ? filtered.map(payment => {
                 const sName = payment.full_name || payment.student_name || 'Unknown Student';
                 const formattedBillingMonth = monthLabel(payment.billing_month ? payment.billing_month.slice(0,7) : '');
                 
@@ -628,7 +718,21 @@
                     </td>
                 </tr>
             `;
-            }).join('') : '<tr><td colspan="8" class="text-center py-6 text-outline">No bed payments found.</td></tr>';
+            }).join('') : '<tr><td colspan="9" class="text-center py-6 text-outline">No bed payments found.</td></tr>';
+        }
+
+        async function loadPayments() {
+            try {
+                const response = await fetch('/api/payments');
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message);
+                
+                payments = data.data || [];
+                renderPaymentsSummary(payments);
+                filterPayments();
+            } catch (err) {
+                notice('error', err.message);
+            }
         }
 
         function renderPaymentsSummary(allPayments) {
@@ -656,12 +760,9 @@
         form.addEventListener('submit', async event => {
             event.preventDefault();
             const data = Object.fromEntries(new FormData(form));
-            // Ensure billing_month is YYYY-MM-DD
             if (billingMonth.value) {
                 data.billing_month = billingMonth.value + '-01';
             }
-            
-            // Add the amount field based on block rate
             if (rates[block.value]) {
                 data.amount = rates[block.value];
             }
@@ -717,15 +818,55 @@
         studentSelect.onchange = updateFromSelectedStudent;
         billingMonth.onchange = updatePreview;
         dueDate.onchange = updatePreview;
-        document.getElementById('filterBtn').onclick = () => loadPayments().catch(error => notice('error', error.message));
+        
+        document.getElementById('filterBtn').onclick = () => {
+            filterPayments();
+        };
         document.getElementById('clearBtn').onclick = reset;
         document.getElementById('clearBtn2').onclick = () => {
             filterStudent.value = '';
             filterStatus.value = '';
-            loadPayments().catch(error => notice('error', error.message));
+            filterPayments();
         };
 
-        // Initialize check
+        document.getElementById('profileBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('profileMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+            const menu = document.getElementById('profileMenu');
+            menu.classList.add('hidden');
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.querySelector('aside');
+        if (mobileMenuBtn && sidebar) {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('flex');
+                sidebar.classList.add('shadow-2xl');
+            });
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768 && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('flex');
+                }
+            });
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/api/logout', {
+                    method: 'POST'
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
         checkAuth();
     </script>
 </body>

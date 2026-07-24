@@ -110,34 +110,159 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-24">
+<body class="bg-background text-on-surface min-h-screen pb-24 md:pb-8 flex flex-col md:flex-row">
 
-    <!-- Top Navigation Bar -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface border-b border-outline-variant shadow-sm">
-        <div class="flex items-center gap-3">
-            <a href="dashboard.html" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 flex items-center justify-center">
-                <span class="material-symbols-outlined text-primary">arrow_back</span>
-            </a>
-            <h1 class="text-headline-sm font-headline-sm font-bold text-primary">Student Directory</h1>
+    <!-- Left Sidebar (Desktop only) -->
+    <aside class="fixed top-0 left-0 w-64 h-full bg-white border-r border-outline-variant flex flex-col justify-between z-40 hidden md:flex">
+        <div>
+            <!-- Sidebar Logo Header -->
+            <div class="h-20 bg-[#000666] text-white flex items-center gap-3 px-6 shadow-sm border-b border-primary/20">
+                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">corporate_fare</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold tracking-wide text-sm">Admin Portal</span>
+                    <span class="text-[10px] text-blue-200 uppercase tracking-widest font-semibold">Central Management</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <!-- Dashboard -->
+                <a href="dashboard.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <!-- Students (ACTIVE) -->
+                <a href="students.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-primary-fixed text-primary">
+                    <span class="material-symbols-outlined active-tab-indicator">group</span>
+                    <span>Students</span>
+                </a>
+                <!-- Rooms -->
+                <a href="rooms.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">bed</span>
+                    <span>Room Inventory</span>
+                </a>
+                <!-- Allocations -->
+                <a href="allocations.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">assignment_turned_in</span>
+                    <span>Allocations</span>
+                </a>
+                <!-- Payments -->
+                <a href="payments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span>Payments</span>
+                </a>
+                <!-- Reports -->
+                <a href="reports.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
+                    <span class="material-symbols-outlined">description</span>
+                    <span>Reports</span>
+                </a>
+            </nav>
         </div>
 
-        <div class="flex items-center gap-2">
-            <span id="profilePill" class="text-xs font-semibold px-3 py-1.5 bg-primary/10 text-primary rounded-full">👤 Admin</span>
+        <!-- Sidebar Bottom Logout -->
+        <div class="p-4 border-t border-outline-variant/30">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Top Header Bar -->
+    <header class="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white border-b border-outline-variant flex justify-between items-center px-6 z-30">
+        <div class="flex items-center gap-4 flex-grow max-w-lg">
+            <span class="text-headline-sm font-bold text-primary mr-4 hidden md:inline">Academic HMS</span>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobileMenuBtn" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 md:hidden">
+                <span class="material-symbols-outlined text-on-surface-variant">menu</span>
+            </button>
+            <span class="text-headline-sm font-bold text-primary md:hidden">Academic HMS</span>
+            
+            <!-- Search Bar (Desktop only) -->
+            <div class="relative flex-grow hidden md:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                <input id="topSearchInput" oninput="syncSearchAndFilter(this.value)" type="text" placeholder="Search directory..." class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Icons -->
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative">
+                <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">help</span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
+                <span class="material-symbols-outlined text-on-surface-variant">settings</span>
+            </button>
+
+            <!-- Divider Line -->
+            <div class="h-8 w-[1px] bg-outline-variant hidden sm:block"></div>
+
+            <!-- Profile Info dropdown trigger -->
+            <button id="profileBtn" class="flex items-center gap-2 p-1 hover:bg-outline-variant/20 rounded-lg transition-colors text-left relative">
+                <div class="hidden sm:flex flex-col items-end text-xs leading-none pr-1">
+                    <span id="profileName" class="font-bold text-on-surface text-sm">Admin User</span>
+                    <span id="profileRole" class="text-outline text-[10px] uppercase font-semibold mt-0.5">Hostel Supervisor</span>
+                </div>
+                <div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+                    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA75ojBV-s9Bn-foNoXwbMSGA2pYQUCuv8fKcWTTCEp705Ew4QL9lGfbxh4KpeidH1nj3crTcxxkOZzPykqvixYbgnq6AEIi0eHe-tqEdb4rdYRPz_xeceLz0SU1nl7-T8GDH2O0S4WYuD1iAatFl3Bix_kdrgeUgAIq9vyguBIkSR1y-MC8gBqeIqLhahxe3NzVS2iVBufmh6MMSBAIfZrNwwtEU2ocdhc-nhy7_uL3gK9IcsmFmuAqGLMdVDU0izcb-qNAWJDeb4"/>
+                </div>
+                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
+                
+                <!-- Dropdown Menu inside button -->
+                <div id="profileMenu" class="hidden absolute right-0 top-12 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 text-sm text-on-surface">
+                    <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
+                        <span class="material-symbols-outlined text-sm">settings</span>
+                        <span>System Settings</span>
+                    </a>
+                    <hr class="border-outline-variant/30 my-1">
+                    <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="pt-20 px-4 max-w-5xl mx-auto space-y-6">
+    <!-- Main Content Area -->
+    <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-6 pb-24 md:pb-8 w-full">
 
-        <!-- Search and Filter Section -->
-        <section class="mt-4 sticky top-16 bg-background z-40 py-3 border-b border-outline-variant/20">
-            <div class="flex flex-col md:flex-row gap-3">
-                <div class="relative flex-grow">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
-                    <input id="searchInput" oninput="filterStudents()" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline text-sm" placeholder="Search by Name, ADM no or Phone..." type="text"/>
+        <!-- Header & Action Button -->
+        <section class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight text-primary">Student Directory</h2>
+                <p class="text-body-md text-on-surface-variant mt-1">Manage and monitor institutional resident records.</p>
+            </div>
+            <!-- + Register New Student button -->
+            <button onclick="openRegisterModal()" class="flex items-center justify-center gap-2 px-5 py-3 bg-[#000666] hover:bg-[#000666]/90 text-white font-semibold rounded-lg shadow-md transition-all active:scale-98">
+                <span class="material-symbols-outlined text-lg">add</span>
+                <span>Register New Student</span>
+            </button>
+        </section>
+
+        <!-- Search & Filter Card -->
+        <section class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <!-- Search -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-outline">Search Database</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                        <input id="searchInput" oninput="filterStudents()" type="text" placeholder="Name or Admission No..." 
+                               class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    <select id="courseFilter" onchange="filterStudents()" class="px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm min-w-[150px]">
+                <!-- Course Filter -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-outline">Course Filter</label>
+                    <select id="courseFilter" onchange="filterStudents()" 
+                            class="w-full px-3 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
                         <option value="">All Courses</option>
                         <option value="Software Engineering">Software Engineering</option>
                         <option value="IT">IT</option>
@@ -147,12 +272,34 @@
                         <option value="Psychology">Psychology</option>
                         <option value="Education Arts">Education Arts</option>
                     </select>
-                    <select id="genderFilter" onchange="filterStudents()" class="px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm min-w-[120px]">
-                        <option value="">All Genders</option>
+                </div>
+                <!-- Gender Filter -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-outline">Gender</label>
+                    <select id="genderFilter" onchange="filterStudents()" 
+                            class="w-full px-3 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                        <option value="">Both</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
                 </div>
+                <!-- Status Filter -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-outline">Status</label>
+                    <select id="statusFilter" onchange="filterStudents()" 
+                            class="w-full px-3 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                        <option value="">Any Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Suspended</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Clear Filters Button -->
+            <div class="flex justify-end pt-2 border-t border-outline-variant/10">
+                <button onclick="clearFilters()" class="flex items-center gap-2 px-4 py-2 border border-outline-variant text-primary font-semibold rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                    <span>Clear</span>
+                </button>
             </div>
         </section>
 
@@ -160,41 +307,43 @@
         <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="successAlert"></div>
         <div class="hidden p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" id="errorAlert"></div>
 
-        <!-- Stats Overview Cards -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
-                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">Total Registered</p>
-                <p id="statStudents" class="text-2xl font-bold text-primary">0</p>
+        <!-- Directory Data Table Card -->
+        <div class="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col justify-between min-h-[400px]">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-outline-variant text-[11px] font-bold uppercase tracking-wider text-outline select-none">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Full Name</th>
+                            <th class="py-3 px-4 text-left">Admission No.</th>
+                            <th class="py-3 px-4 text-center">Gender</th>
+                            <th class="py-3 px-4 text-left">Course</th>
+                            <th class="py-3 px-4 text-left">Phone</th>
+                            <th class="py-3 px-4 text-left">Date Admitted</th>
+                            <th class="py-3 px-4 text-center">Status</th>
+                            <th class="py-3 px-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <tr>
+                            <td colspan="8" class="text-center py-12 text-outline">Loading student directory...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
-                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">In Residence</p>
-                <p id="statOccupied" class="text-2xl font-bold text-secondary">0</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
-                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">Available Beds</p>
-                <p id="statAvailable" class="text-2xl font-bold text-teal-600">0</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant">
-                <p class="text-xs text-outline uppercase font-semibold tracking-wider mb-1">Total Capacity</p>
-                <p id="statCapacity" class="text-2xl font-bold text-primary">200</p>
-            </div>
-        </section>
 
-        <!-- Student List Cards -->
-        <div id="studentTableBody" class="space-y-4">
-            <div class="text-center py-8 text-outline">Loading student directory...</div>
+            <!-- Table Pagination Footer -->
+            <div class="p-4 bg-slate-50 border-t border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-outline select-none">
+                <span id="paginationInfo">Showing 0 - 0 of 0 students</span>
+                <div id="paginationKeys" class="flex gap-1 items-center">
+                    <!-- Dynamic keys -->
+                </div>
+            </div>
         </div>
 
     </main>
 
-    <!-- Floating Action Button -->
-    <button onclick="openRegisterModal()" class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group">
-        <span class="material-symbols-outlined text-3xl">add</span>
-        <span class="absolute right-16 bg-primary text-white px-3 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none">Add Student</span>
-    </button>
-
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+    <!-- Bottom Navigation Bar (Mobile only) -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg md:hidden">
         <!-- Dashboard -->
         <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="dashboard.html">
             <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
@@ -344,12 +493,46 @@
         </div>
     </div>
 
+    <!-- Student Detail View Modal -->
+    <div id="detailsModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 relative">
+            <button onclick="closeDetailsModal()" class="absolute right-4 top-4 p-1 hover:bg-slate-100 rounded-full transition-colors">
+                <span class="material-symbols-outlined text-outline">close</span>
+            </button>
+            
+            <div class="flex flex-col items-center text-center space-y-3 pb-6 border-b border-outline-variant/30">
+                <div id="detailAvatar" class="w-20 h-20 rounded-full flex items-center justify-center font-bold text-3xl text-white">S</div>
+                <h2 id="detailName" class="text-xl font-bold text-primary">Student Name</h2>
+                <span id="detailStatus" class="px-3 py-1 rounded-full text-xs font-bold">ACTIVE</span>
+            </div>
+
+            <div class="py-4 space-y-3 text-sm">
+                <div class="flex justify-between"><span class="text-outline">Admission Number</span><span id="detailAdm" class="font-semibold font-mono text-xs">ADM-N/A</span></div>
+                <div class="flex justify-between"><span class="text-outline">Gender</span><span id="detailGender" class="font-semibold capitalize">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Course</span><span id="detailCourse" class="font-semibold">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Phone</span><span id="detailPhone" class="font-semibold font-mono">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Email</span><span id="detailEmail" class="font-semibold">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Next of Kin</span><span id="detailKinName" class="font-semibold">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Kin Phone</span><span id="detailKinPhone" class="font-semibold font-mono">-</span></div>
+                <div class="flex justify-between"><span class="text-outline">Date Admitted</span><span id="detailAdmittedDate" class="font-semibold">-</span></div>
+            </div>
+            
+            <div class="pt-4 border-t border-outline-variant/30">
+                <button onclick="closeDetailsModal()" class="w-full py-2.5 bg-primary hover:bg-primary-container text-white font-semibold rounded-lg text-center transition-all duration-150 text-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const form = document.getElementById('studentForm');
         const tableBody = document.getElementById('studentTableBody');
         const successAlert = document.getElementById('successAlert');
         const errorAlert = document.getElementById('errorAlert');
+        
         let allStudentsList = [];
+        let currentPage = 1;
+        const itemsPerPage = 8;
+        const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
         function formatDate(dateInput) {
             if (!dateInput) return '-';
@@ -371,8 +554,6 @@
             return `${day} ${month} ${year}`;
         }
 
-        // Phone validation helper — user enters 9 digits starting with 7 or 1
-        // Auto-strips leading 0 so typing 0712345678 works same as 712345678
         function validatePhone(input) {
             const hint = document.getElementById('phoneHint');
             const wrap = document.getElementById('phoneWrap');
@@ -430,7 +611,6 @@
             }
         }
 
-        // Verify session status
         async function checkAuth() {
             try {
                 const response = await fetch('/api/auth/me');
@@ -441,27 +621,13 @@
                     return;
                 }
                 
-                document.getElementById('profilePill').textContent = `👤 ${data.user.fullName}`;
+                document.getElementById('profileName').textContent = data.user.fullName;
+                document.getElementById('profileRole').textContent = data.user.role.charAt(0).toUpperCase() + data.user.role.slice(1) + ' Admin';
                 document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
                 
-                await Promise.all([loadStats(), loadStudents()]);
+                await loadStudents();
             } catch (err) {
                 window.location.href = 'index.html';
-            }
-        }
-
-        async function loadStats() {
-            try {
-                const res = await fetch('/api/reports/dashboard-stats');
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('statStudents').textContent = data.stats.total_students;
-                    document.getElementById('statOccupied').textContent = data.stats.occupied_beds;
-                    document.getElementById('statAvailable').textContent = data.stats.available_beds;
-                    document.getElementById('statCapacity').textContent = data.stats.total_beds;
-                }
-            } catch (err) {
-                console.error(err);
             }
         }
 
@@ -479,7 +645,6 @@
             }
         }
 
-        // Modal triggers
         function openRegisterModal() {
             document.getElementById('registerModal').classList.remove('hidden');
         }
@@ -487,14 +652,6 @@
         function closeRegisterModal() {
             document.getElementById('registerModal').classList.add('hidden');
             form.reset();
-            document.getElementById('date_of_admission').value = new Date().toISOString().split('T')[0];
-            ['phoneWrap','kinPhoneWrap'].forEach(id => {
-                const el = document.getElementById(id);
-                el.classList.remove('border-green-500','border-red-500','border-yellow-500');
-                el.classList.add('border-outline-variant');
-            });
-            document.getElementById('phoneHint').textContent = '';
-            document.getElementById('kinPhoneHint').textContent = '';
         }
 
         async function loadStudents() {
@@ -507,78 +664,164 @@
                 }
 
                 allStudentsList = data.data || [];
-                renderStudents(allStudentsList);
+                filterStudents();
             } catch (error) {
-                tableBody.innerHTML = `<div class="text-center py-8 text-red-500 font-semibold">${error.message}</div>`;
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-red-500 font-semibold">${error.message}</td></tr>`;
             }
         }
 
         function renderStudents(students) {
+            const tableBody = document.getElementById('studentTableBody');
+            const paginationInfo = document.getElementById('paginationInfo');
+            const paginationKeys = document.getElementById('paginationKeys');
+
             if (!students.length) {
-                tableBody.innerHTML = '<div class="text-center py-12 text-outline bg-white border border-outline-variant rounded-2xl shadow-sm">No matching students found.</div>';
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-outline">No matching students found.</td></tr>';
+                paginationInfo.textContent = 'Showing 0 - 0 of 0 students';
+                paginationKeys.innerHTML = '';
                 return;
             }
 
-            tableBody.innerHTML = students.map(student => {
-                const genderLabel = student.gender ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1) : 'N/A';
-                const isStatusActive = student.status === 'active';
-                const statusBg = isStatusActive ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container text-on-surface-variant';
-                const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : 'S';
+            // Pagination calculation
+            const totalItems = students.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            const pageItems = students.slice(startIndex, endIndex);
+
+            paginationInfo.textContent = `Showing ${startIndex + 1} - ${endIndex} of ${totalItems} students`;
+
+            // Pagination keys
+            let keysHtml = '';
+            keysHtml += `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors">
+                    <span class="material-symbols-outlined text-sm">chevron_left</span>
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 5 && Math.abs(i - currentPage) > 1 && i !== 1 && i !== totalPages) {
+                    if (i === 2 || i === totalPages - 1) {
+                        keysHtml += `<span class="px-2 text-outline">...</span>`;
+                    }
+                    continue;
+                }
+                const activeClass = i === currentPage ? 'bg-primary text-white border-primary' : 'border-outline-variant hover:bg-slate-50';
+                keysHtml += `
+                    <button onclick="changePage(${i})" class="w-8 h-8 rounded border flex items-center justify-center font-bold text-xs transition-colors ${activeClass}">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            keysHtml += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors">
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                </button>
+            `;
+            paginationKeys.innerHTML = keysHtml;
+
+            tableBody.innerHTML = pageItems.map(student => {
+                const initial = student.full_name ? student.full_name.trim().charAt(0).toUpperCase() : 'S';
                 
+                // Gender symbols
+                const genderLower = (student.gender || '').toLowerCase();
+                const genderSymbol = genderLower === 'female' 
+                    ? '<span class="text-pink-500 text-lg font-bold" title="Female">♀</span>' 
+                    : '<span class="text-blue-500 text-lg font-bold" title="Male">♂</span>';
+
+                const statusClass = student.status === 'active' 
+                    ? 'bg-green-100 text-[#006a60]' 
+                    : 'bg-red-100 text-[#ba1a1a]';
+
+                const dateAdmitted = formatDate(student.date_of_admission + 'T00:00:00');
+
+                // Avatar colors
+                const colors = [
+                    'bg-violet-100 text-violet-700',
+                    'bg-blue-100 text-blue-700',
+                    'bg-pink-100 text-pink-700',
+                    'bg-amber-100 text-amber-700',
+                    'bg-emerald-100 text-emerald-700',
+                    'bg-teal-100 text-teal-700'
+                ];
+                const colorIdx = initial.charCodeAt(0) % colors.length;
+                const avatarBg = colors[colorIdx];
+
                 return `
-                    <div class="group relative bg-white p-4 rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-all duration-200">
-                        <div class="flex items-start gap-4">
-                            <div class="w-16 h-16 rounded-lg bg-primary-container text-white flex items-center justify-center font-bold text-xl flex-shrink-0">
-                                ${initial}
-                            </div>
-                            <div class="flex-grow">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h3 class="text-body-lg font-bold text-on-surface">${esc(student.full_name || '-')}</h3>
-                                        <div class="flex items-center gap-2 mt-1">
-                                            <span class="text-label-md bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">${esc(student.admission_number || '-')}</span>
-                                            <span class="text-label-md text-outline">•</span>
-                                            <span class="text-label-md text-on-surface-variant">${esc(genderLabel)}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <select class="px-3 py-1 font-bold rounded-full text-label-sm border-0 focus:ring-1 focus:ring-secondary transition-all cursor-pointer ${statusBg}" onchange="changeStudentStatus(${student.student_id}, this.value)">
-                                            <option value="active" class="bg-white text-on-surface font-semibold" ${student.status === 'active' ? 'selected' : ''}>Active</option>
-                                            <option value="inactive" class="bg-white text-on-surface font-semibold" ${student.status === 'inactive' ? 'selected' : ''}>Inactive</option>
-                                        </select>
-                                    </div>
+                    <tr class="border-b border-outline-variant/20 hover:bg-slate-50 transition-colors text-sm text-on-surface">
+                        <!-- Full Name -->
+                        <td class="py-4 px-4 font-semibold">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${avatarBg}">
+                                    ${initial}
                                 </div>
-                                <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-y-2">
-                                    <div class="flex items-center gap-2 text-body-md text-on-surface-variant">
-                                        <span class="material-symbols-outlined text-sm" data-icon="school">school</span>
-                                        <span class="truncate">${esc(student.course || '-')}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-body-md text-on-surface-variant">
-                                        <span class="material-symbols-outlined text-sm" data-icon="call">call</span>
-                                        <span>${esc(student.phone || '-')}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-[11px] text-outline md:col-span-2">
-                                        <span class="material-symbols-outlined text-xs">calendar_today</span>
-                                        <span>Admitted on: ${formatDate(student.date_of_admission + 'T00:00:00')}</span>
-                                    </div>
-                                </div>
+                                <span class="truncate max-w-[180px]">${esc(student.full_name)}</span>
                             </div>
-                            <div class="flex flex-col gap-2">
-                                <button onclick="deleteStudent(${student.student_id})" class="p-2 text-outline hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center" title="Delete Account">
-                                    <span class="material-symbols-outlined text-base">delete</span>
+                        </td>
+                        <!-- Admission No -->
+                        <td class="py-4 px-4 font-semibold font-mono text-primary text-xs">
+                            ${esc(student.admission_number)}
+                        </td>
+                        <!-- Gender -->
+                        <td class="py-4 px-4 text-center">
+                            ${genderSymbol}
+                        </td>
+                        <!-- Course -->
+                        <td class="py-4 px-4 text-xs font-semibold text-on-surface-variant max-w-[150px] truncate">
+                            ${esc(student.course || '-')}
+                        </td>
+                        <!-- Phone -->
+                        <td class="py-4 px-4 text-xs font-medium text-on-surface-variant font-mono">
+                            ${esc(student.phone || '-')}
+                        </td>
+                        <!-- Date Admitted -->
+                        <td class="py-4 px-4 text-xs text-outline font-semibold">
+                            ${dateAdmitted}
+                        </td>
+                        <!-- Status -->
+                        <td class="py-4 px-4 text-center">
+                            <select onchange="changeStudentStatus(${student.student_id}, this.value)" 
+                                    class="px-2 py-0.5 rounded text-[11px] font-bold border-0 focus:ring-1 focus:ring-secondary transition-all cursor-pointer ${statusClass}">
+                                <option value="active" class="bg-white text-on-surface font-semibold" ${student.status === 'active' ? 'selected' : ''}>ACTIVE</option>
+                                <option value="inactive" class="bg-white text-on-surface font-semibold" ${student.status === 'inactive' ? 'selected' : ''}>SUSPENDED</option>
+                            </select>
+                        </td>
+                        <!-- Actions -->
+                        <td class="py-4 px-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="viewStudentDetails(${student.student_id})" class="p-1.5 text-outline hover:text-primary hover:bg-primary-fixed/30 rounded-lg transition-colors flex items-center justify-center" title="View Details">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </button>
+                                <button onclick="deleteStudent(${student.student_id})" class="p-1.5 text-outline hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center" title="Delete Account">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
                                 </button>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
-        // Live client-side filter
+        function changePage(page) {
+            currentPage = page;
+            filterStudents();
+        }
+
+        function syncSearchAndFilter(val) {
+            document.getElementById('searchInput').value = val;
+            filterStudents();
+        }
+
+        // Live client-side filtering
         function filterStudents() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const courseVal = document.getElementById('courseFilter').value;
             const genderVal = document.getElementById('genderFilter').value;
+            const statusVal = document.getElementById('statusFilter').value;
 
             let filtered = allStudentsList;
 
@@ -598,7 +841,64 @@
                 filtered = filtered.filter(s => s.gender === genderVal);
             }
 
+            if (statusVal) {
+                filtered = filtered.filter(s => s.status === statusVal);
+            }
+
             renderStudents(filtered);
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('topSearchInput').value = '';
+            document.getElementById('courseFilter').value = '';
+            document.getElementById('genderFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            currentPage = 1;
+            filterStudents();
+        }
+
+        // Open detail modal
+        function viewStudentDetails(studentId) {
+            const student = allStudentsList.find(s => s.student_id === studentId);
+            if (!student) return;
+
+            const initial = student.full_name ? student.full_name.trim().charAt(0).toUpperCase() : 'S';
+            const colors = [
+                'bg-violet-100 text-violet-700',
+                'bg-blue-100 text-blue-700',
+                'bg-pink-100 text-pink-700',
+                'bg-amber-100 text-amber-700',
+                'bg-emerald-100 text-emerald-700',
+                'bg-teal-100 text-teal-700'
+            ];
+            const colorIdx = initial.charCodeAt(0) % colors.length;
+            
+            const avatar = document.getElementById('detailAvatar');
+            avatar.textContent = initial;
+            avatar.className = `w-20 h-20 rounded-full flex items-center justify-center font-bold text-3xl text-white ${colors[colorIdx]}`;
+            
+            document.getElementById('detailName').textContent = student.full_name;
+            document.getElementById('detailAdm').textContent = student.admission_number;
+            document.getElementById('detailGender').textContent = student.gender || '-';
+            document.getElementById('detailCourse').textContent = student.course || '-';
+            document.getElementById('detailPhone').textContent = student.phone || '-';
+            document.getElementById('detailEmail').textContent = student.email || '-';
+            document.getElementById('detailKinName').textContent = student.next_of_kin_name || '-';
+            document.getElementById('detailKinPhone').textContent = student.next_of_kin_phone || '-';
+            document.getElementById('detailAdmittedDate').textContent = formatDate(student.date_of_admission + 'T00:00:00');
+            
+            const badge = document.getElementById('detailStatus');
+            badge.textContent = student.status === 'active' ? 'ACTIVE' : 'SUSPENDED';
+            badge.className = student.status === 'active' 
+                ? 'px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-[#006a60]' 
+                : 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-[#ba1a1a]';
+
+            document.getElementById('detailsModal').classList.remove('hidden');
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').classList.add('hidden');
         }
 
         // Direct Inline Status Changer
