@@ -107,144 +107,164 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-tr from-[#002b28] via-[#004d47] to-[#006a60] text-on-surface min-h-screen flex items-center justify-center p-4 md:p-8">
-    <div class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-2xl transition-all duration-300">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container mb-3 text-2xl">
-                person_add
+<body class="bg-background text-on-surface min-h-screen pb-12 flex flex-col justify-between">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full flex items-center px-6 h-16 bg-surface-container-lowest border-b border-outline-variant">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-2xl" data-icon="corporate_fare">corporate_fare</span>
+            <span class="text-headline-sm font-bold text-primary">HMS Student Portal</span>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-8">
+        
+        <div class="w-full max-w-3xl bg-white border border-outline-variant rounded-2xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-8">
+            <div class="text-center mb-6">
+                <!-- Icon Circle -->
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container mb-3 text-2xl">
+                    <span class="material-symbols-outlined text-xl" data-icon="person_add">person_add</span>
+                </div>
+                <h2 class="text-headline-md font-bold text-primary mb-1">Student Registration</h2>
+                <p class="text-body-md text-on-surface-variant text-center">Create your hostel management system student account</p>
             </div>
-            <h1 class="text-2xl font-bold tracking-tight text-primary">Student Registration</h1>
-            <p class="text-sm text-outline mt-1">Create your hostel management system student account</p>
+
+            <!-- Alerts -->
+            <div class="hidden p-4 mb-6 text-sm rounded-lg bg-red-50 border border-red-200 text-red-700" id="alertError"></div>
+            <div class="hidden p-4 mb-6 text-sm rounded-lg bg-green-50 border border-green-200 text-green-700" id="alertSuccess"></div>
+
+            <form id="registerForm" class="space-y-6">
+                <!-- Form Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- 1. Names Section -->
+                    <div>
+                        <label for="first_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">First Name *</label>
+                        <input type="text" id="first_name" name="first_name" required 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="Enter first name">
+                    </div>
+
+                    <div>
+                        <label for="second_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Second Name *</label>
+                        <input type="text" id="second_name" name="second_name" required 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="Enter second name">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="surname" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Surname (Optional)</label>
+                        <input type="text" id="surname" name="surname" 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="Enter surname">
+                    </div>
+
+                    <!-- 2. Admission and Gender -->
+                    <div>
+                        <label for="admission_number" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Admission Number *</label>
+                        <input type="text" id="admission_number" name="admission_number" required 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="e.g., ADM001">
+                    </div>
+
+                    <div>
+                        <label for="gender" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Gender *</label>
+                        <select id="gender" name="gender" required 
+                                class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all text-sm">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. Contact Info -->
+                    <div>
+                        <label for="phone" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Phone Number *</label>
+                        <div class="flex rounded-lg border border-outline-variant overflow-hidden focus-within:ring-2 focus-within:ring-secondary focus-within:border-transparent transition-all" id="phoneWrap">
+                            <span class="bg-surface-container border-r border-outline-variant px-3 py-2.5 text-sm font-bold text-secondary select-none">+254</span>
+                            <input type="tel" id="phone" name="phone" inputmode="numeric" maxlength="10" required 
+                                   class="w-full px-4 border-0 focus:ring-0 outline-none placeholder:text-outline/50 text-sm" 
+                                   placeholder="0712345678" oninput="validatePhone(this)">
+                        </div>
+                        <span id="phoneHint" class="block text-[11px] mt-1 font-medium"></span>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Email Address</label>
+                        <input type="email" id="email" name="email" 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="student@example.com">
+                    </div>
+
+                    <!-- 4. Course and Password -->
+                    <div class="md:col-span-2">
+                        <label for="course" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Course of Study *</label>
+                        <select id="course" name="course" required 
+                                class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all text-sm">
+                            <option value="">Select course</option>
+                            <option value="Software Engineering">Software Engineering</option>
+                            <option value="IT">IT</option>
+                            <option value="Medicine and Surgery">Medicine and Surgery</option>
+                            <option value="Cosmetology">Cosmetology</option>
+                            <option value="Hospitality">Hospitality</option>
+                            <option value="Psychology">Psychology</option>
+                            <option value="Education Arts">Education Arts</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Choose Password *</label>
+                        <input type="password" id="password" name="password" required 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="Create portal password">
+                    </div>
+
+                    <div>
+                        <label for="confirm_password" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Confirm Password *</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="Re-enter password">
+                    </div>
+
+                    <!-- 5. Next of Kin -->
+                    <div>
+                        <label for="next_of_kin_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Next of Kin Name</label>
+                        <input type="text" id="next_of_kin_name" name="next_of_kin_name" 
+                               class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50 text-sm" 
+                               placeholder="Enter next of kin full name">
+                    </div>
+
+                    <div>
+                        <label for="next_of_kin_phone" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Next of Kin Phone Number</label>
+                        <div class="flex rounded-lg border border-outline-variant overflow-hidden focus-within:ring-2 focus-within:ring-secondary focus-within:border-transparent transition-all" id="kinPhoneWrap">
+                            <span class="bg-surface-container border-r border-outline-variant px-3 py-2.5 text-sm font-bold text-secondary select-none">+254</span>
+                            <input type="tel" id="next_of_kin_phone" name="next_of_kin_phone" inputmode="numeric" maxlength="10" 
+                                   class="w-full px-4 border-0 focus:ring-0 outline-none placeholder:text-outline/50 text-sm" 
+                                   placeholder="0712345678" oninput="validateKinPhone(this)">
+                        </div>
+                        <span id="kinPhoneHint" class="block text-[11px] mt-1 font-medium"></span>
+                    </div>
+
+                </div>
+
+                <button type="submit" id="submitBtn" 
+                        class="w-full mt-6 py-3 px-4 bg-secondary hover:bg-secondary-container hover:text-on-secondary-container active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-secondary/20 transition-all duration-150 text-center">
+                    Register Account
+                </button>
+            </form>
+
+            <p class="mt-8 text-center text-sm text-on-surface-variant">
+                Already have an account? <a href="student-login.html" class="text-secondary font-bold hover:underline transition-colors">Login here</a>
+            </p>
         </div>
 
-        <!-- Alerts -->
-        <div class="hidden p-4 mb-6 text-sm rounded-lg bg-red-50 border border-red-200 text-red-700" id="alertError"></div>
-        <div class="hidden p-4 mb-6 text-sm rounded-lg bg-green-50 border border-green-200 text-green-700" id="alertSuccess"></div>
+    </main>
 
-        <form id="registerForm" class="space-y-6">
-            <!-- Form Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <!-- 1. Names Section -->
-                <div>
-                    <label for="first_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">First Name *</label>
-                    <input type="text" id="first_name" name="first_name" required 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="Enter first name">
-                </div>
-
-                <div>
-                    <label for="second_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Second Name *</label>
-                    <input type="text" id="second_name" name="second_name" required 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="Enter second name">
-                </div>
-
-                <div class="md:col-span-2">
-                    <label for="surname" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Surname (Optional)</label>
-                    <input type="text" id="surname" name="surname" 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="Enter surname">
-                </div>
-
-                <!-- 2. Admission and Gender -->
-                <div>
-                    <label for="admission_number" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Admission Number *</label>
-                    <input type="text" id="admission_number" name="admission_number" required 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="e.g., ADM001">
-                </div>
-
-                <div>
-                    <label for="gender" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Gender *</label>
-                    <select id="gender" name="gender" required 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all">
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-
-                <!-- 3. Contact Info -->
-                <div>
-                    <label for="phone" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Phone Number *</label>
-                    <div class="flex rounded-lg border border-outline-variant overflow-hidden focus-within:ring-2 focus-within:ring-secondary focus-within:border-transparent transition-all" id="phoneWrap">
-                        <span class="bg-surface-container border-r border-outline-variant px-3 py-2.5 text-sm font-bold text-secondary select-none">+254</span>
-                        <input type="tel" id="phone" name="phone" inputmode="numeric" maxlength="10" required 
-                               class="w-full px-4 border-0 focus:ring-0 outline-none placeholder:text-outline/50" 
-                               placeholder="0712345678" oninput="validatePhone(this)">
-                    </div>
-                    <span id="phoneHint" class="block text-[11px] mt-1 font-medium"></span>
-                </div>
-
-                <div>
-                    <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Email Address</label>
-                    <input type="email" id="email" name="email" 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="student@example.com">
-                </div>
-
-                <!-- 4. Course and Password -->
-                <div class="md:col-span-2">
-                    <label for="course" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Course of Study *</label>
-                    <select id="course" name="course" required 
-                            class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all">
-                        <option value="">Select course</option>
-                        <option value="Software Engineering">Software Engineering</option>
-                        <option value="IT">IT</option>
-                        <option value="Medicine and Surgery">Medicine and Surgery</option>
-                        <option value="Cosmetology">Cosmetology</option>
-                        <option value="Hospitality">Hospitality</option>
-                        <option value="Psychology">Psychology</option>
-                        <option value="Education Arts">Education Arts</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Choose Password *</label>
-                    <input type="password" id="password" name="password" required 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="Create portal password">
-                </div>
-
-                <div>
-                    <label for="confirm_password" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Confirm Password *</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="Re-enter password">
-                </div>
-
-                <!-- 5. Next of Kin -->
-                <div>
-                    <label for="next_of_kin_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Next of Kin Name</label>
-                    <input type="text" id="next_of_kin_name" name="next_of_kin_name" 
-                           class="w-full px-4 py-2.5 border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-outline/50" 
-                           placeholder="Enter next of kin full name">
-                </div>
-
-                <div>
-                    <label for="next_of_kin_phone" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-2">Next of Kin Phone Number</label>
-                    <div class="flex rounded-lg border border-outline-variant overflow-hidden focus-within:ring-2 focus-within:ring-secondary focus-within:border-transparent transition-all" id="kinPhoneWrap">
-                        <span class="bg-surface-container border-r border-outline-variant px-3 py-2.5 text-sm font-bold text-secondary select-none">+254</span>
-                        <input type="tel" id="next_of_kin_phone" name="next_of_kin_phone" inputmode="numeric" maxlength="10" 
-                               class="w-full px-4 border-0 focus:ring-0 outline-none placeholder:text-outline/50" 
-                               placeholder="0712345678" oninput="validateKinPhone(this)">
-                    </div>
-                    <span id="kinPhoneHint" class="block text-[11px] mt-1 font-medium"></span>
-                </div>
-
-            </div>
-
-            <button type="submit" id="submitBtn" 
-                    class="w-full mt-6 py-3 px-4 bg-secondary hover:bg-secondary-container hover:text-on-secondary-container active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-secondary/20 transition-all duration-150 text-center">
-                Register Account
-            </button>
-        </form>
-
-        <p class="mt-8 text-center text-sm text-outline">
-            Already have an account? <a href="student-login.html" class="text-secondary hover:text-secondary-container font-bold hover:underline transition-colors">Login here</a>
-        </p>
-    </div>
+    <!-- Footer Copyright -->
+    <footer class="w-full text-center text-xs text-outline/80 py-4">
+        © 2024 University Hostel Management System. All Rights Reserved.
+    </footer>
 
     <script>
         const registerForm = document.getElementById('registerForm');
