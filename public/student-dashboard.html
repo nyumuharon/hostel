@@ -978,11 +978,6 @@
         function filterRooms() {
             const tableBody = document.getElementById('roomTableBody');
             const floorVal = document.getElementById('roomFilter').value;
-            
-            if (activeBooking) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-primary font-bold bg-primary/5 rounded-lg">🔒 Room Allocated (${activeBooking.block_name} Block — Room ${activeBooking.room_number}). Directory is hidden while room is active.</td></tr>`;
-                return;
-            }
 
             let list = allRoomsList;
             if (floorVal) {
