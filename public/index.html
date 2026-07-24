@@ -114,7 +114,7 @@
                 ⛰️
             </div>
             <h1 class="text-3xl font-bold tracking-tight text-white">Everest University</h1>
-            <p class="text-sm text-blue-200 mt-1">Hostel Management System — Admin Portal</p>
+            <p class="text-sm text-primary-fixed mt-1">Hostel Management System — Admin Portal</p>
         </div>
 
         <!-- Alerts -->
@@ -123,24 +123,24 @@
 
         <form id="loginForm" class="space-y-6">
             <div>
-                <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">Username</label>
+                <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-primary-fixed mb-2">Username</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-blue-300 text-lg">person</span>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary-fixed-dim text-lg">person</span>
                     <input type="text" id="username" name="username" required 
-                           class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-blue-300/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all" 
+                           class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-primary-fixed-dim/50 focus:ring-2 focus:ring-primary-fixed focus:border-transparent outline-none transition-all" 
                            placeholder="Enter admin username">
                 </div>
             </div>
 
             <div>
-                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">Password</label>
+                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-primary-fixed mb-2">Password</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-blue-300 text-lg">lock</span>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary-fixed-dim text-lg">lock</span>
                     <input type="password" id="password" name="password" required 
-                           class="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-blue-300/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all" 
+                           class="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-primary-fixed-dim/50 focus:ring-2 focus:ring-primary-fixed focus:border-transparent outline-none transition-all" 
                            placeholder="Enter security password">
                     <button type="button" id="passwordToggle" aria-label="Show password" 
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-blue-300 hover:text-white transition-colors focus:outline-none">
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-primary-fixed-dim hover:text-white transition-colors focus:outline-none">
                         <span class="material-symbols-outlined text-lg">visibility</span>
                     </button>
                 </div>
@@ -148,23 +148,23 @@
 
             <!-- Loading Spinner -->
             <div class="hidden text-center py-2" id="loading">
-                <div class="inline-block w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-xs text-blue-200 mt-1">Authenticating account...</p>
+                <div class="inline-block w-6 h-6 border-2 border-primary-fixed-dim border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs text-primary-fixed mt-1">Authenticating account...</p>
             </div>
 
             <div class="flex items-center justify-between text-sm">
                 <div></div>
-                <a href="javascript:void(0)" onclick="forgotPassword()" class="text-blue-300 hover:text-white hover:underline transition-colors font-medium">Forgot Password?</a>
+                <a href="javascript:void(0)" onclick="forgotPassword()" class="text-primary-fixed-dim hover:text-white hover:underline transition-colors font-medium">Forgot Password?</a>
             </div>
 
             <button type="submit" id="submitBtn" 
-                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-blue-500/20 transition-all duration-150">
+                    class="w-full py-3 px-4 bg-primary hover:bg-primary-container active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-150">
                 Log In as Administrator
             </button>
         </form>
 
-        <div class="mt-8 pt-6 border-t border-white/10 text-center text-sm text-blue-200">
-            Student? <a href="student-login.html" class="text-blue-300 hover:text-white font-bold hover:underline transition-colors">Go to Student Portal</a>
+        <div class="mt-8 pt-6 border-t border-white/10 text-center text-sm text-primary-fixed">
+            Student? <a href="student-login.html" class="text-primary-fixed-dim hover:text-white font-bold hover:underline transition-colors">Go to Student Portal</a>
         </div>
     </div>
 

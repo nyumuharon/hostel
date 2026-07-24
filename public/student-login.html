@@ -114,7 +114,7 @@
                 🎓
             </div>
             <h1 class="text-3xl font-bold tracking-tight text-white">Student Portal</h1>
-            <p class="text-sm text-teal-200 mt-1">Everest University Hostel Allocation & Booking</p>
+            <p class="text-sm text-secondary-fixed mt-1">Everest University Hostel Allocation & Booking</p>
         </div>
 
         <!-- Alerts -->
@@ -123,24 +123,24 @@
 
         <form id="loginForm" class="space-y-6">
             <div>
-                <label for="admission_number" class="block text-xs font-semibold uppercase tracking-wider text-teal-200 mb-2">Admission Number</label>
+                <label for="admission_number" class="block text-xs font-semibold uppercase tracking-wider text-secondary-fixed mb-2">Admission Number</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-teal-300 text-lg">badge</span>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary-fixed-dim text-lg">badge</span>
                     <input type="text" id="admission_number" name="admission_number" required 
-                           class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-teal-300/50 focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none transition-all" 
+                           class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-secondary-fixed-dim/50 focus:ring-2 focus:ring-secondary-fixed focus:border-transparent outline-none transition-all" 
                            placeholder="e.g., ADM001">
                 </div>
             </div>
 
             <div>
-                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-teal-200 mb-2">Password</label>
+                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-secondary-fixed mb-2">Password</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-teal-300 text-lg">lock</span>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary-fixed-dim text-lg">lock</span>
                     <input type="password" id="password" name="password" required 
-                           class="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-teal-300/50 focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none transition-all" 
+                           class="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/25 rounded-lg text-white placeholder-secondary-fixed-dim/50 focus:ring-2 focus:ring-secondary-fixed focus:border-transparent outline-none transition-all" 
                            placeholder="Enter portal password">
                     <button type="button" id="passwordToggle" aria-label="Show password" 
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-teal-300 hover:text-white transition-colors focus:outline-none">
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-fixed-dim hover:text-white transition-colors focus:outline-none">
                         <span class="material-symbols-outlined text-lg">visibility</span>
                     </button>
                 </div>
@@ -148,27 +148,27 @@
 
             <!-- Loading Spinner -->
             <div class="hidden text-center py-2" id="loading">
-                <div class="inline-block w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-xs text-teal-200 mt-1">Verifying credentials...</p>
+                <div class="inline-block w-6 h-6 border-2 border-secondary-fixed-dim border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs text-secondary-fixed mt-1">Verifying credentials...</p>
             </div>
 
             <div class="flex items-center justify-between text-sm">
                 <div></div>
-                <a href="javascript:void(0)" onclick="forgotPassword()" class="text-teal-300 hover:text-white hover:underline transition-colors font-medium">Forgot Password?</a>
+                <a href="javascript:void(0)" onclick="forgotPassword()" class="text-secondary-fixed-dim hover:text-white hover:underline transition-colors font-medium">Forgot Password?</a>
             </div>
 
             <button type="submit" id="submitBtn" 
-                    class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-500 active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-teal-500/20 transition-all duration-150">
+                    class="w-full py-3 px-4 bg-secondary hover:bg-secondary-container hover:text-on-secondary-container active:scale-[0.98] text-white font-semibold rounded-lg shadow-lg hover:shadow-secondary/20 transition-all duration-150">
                 Log In to Portal
             </button>
         </form>
 
-        <div class="mt-8 pt-6 border-t border-white/10 text-center text-sm text-teal-200 space-y-2">
+        <div class="mt-8 pt-6 border-t border-white/10 text-center text-sm text-secondary-fixed space-y-2">
             <div>
-                Don't have an account? <a href="student-register.html" class="text-teal-300 hover:text-white font-bold hover:underline transition-colors">Register here</a>
+                Don't have an account? <a href="student-register.html" class="text-secondary-fixed-dim hover:text-white font-bold hover:underline transition-colors">Register here</a>
             </div>
             <div class="text-xs opacity-75">
-                Admin? <a href="index.html" class="text-teal-300 hover:text-white hover:underline transition-colors">Admin login</a>
+                Admin? <a href="index.html" class="text-secondary-fixed-dim hover:text-white hover:underline transition-colors">Admin login</a>
             </div>
         </div>
     </div>
