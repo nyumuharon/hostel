@@ -976,6 +976,14 @@
         }
 
         function filterRooms() {
+            const roomFinderCard = document.getElementById('roomFinderCard');
+            if (activeBooking) {
+                if (roomFinderCard) roomFinderCard.style.display = 'none';
+                return;
+            } else {
+                if (roomFinderCard) roomFinderCard.style.display = 'block';
+            }
+
             const tableBody = document.getElementById('roomTableBody');
             const floorVal = document.getElementById('roomFilter').value;
 
