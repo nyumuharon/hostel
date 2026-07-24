@@ -712,7 +712,7 @@
                         <div class="text-xs text-outline">${esc(payment.admission_number)}</div>
                     </td>
                     <td class="py-3 px-2 font-semibold text-on-surface-variant">${esc(payment.hostel_block || '-')}</td>
-                    <td class="py-3 px-2 text-xs text-outline">${esc(payment.fee_category || 'Bed space fee')}</td>
+                    <td class="py-3 px-2 text-xs text-outline">${esc(payment.fee_category || 'Room fee')}</td>
                     <td class="py-3 px-2 text-xs text-outline font-semibold">${esc(formattedBillingMonth)}</td>
                     <td class="py-3 px-2 text-xs text-outline">${payment.due_date ? formatDate(payment.due_date) : '-'}</td>
                     <td class="py-3 px-2 text-xs text-outline">${payment.payment_date ? formatDate(payment.payment_date) : '-'}</td>

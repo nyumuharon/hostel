@@ -315,7 +315,7 @@
         <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 id="welcomeTitle" class="text-headline-md font-bold text-primary">Welcome, Student!</h2>
-                <p class="text-body-md text-outline mt-1">Select available rooms matching your gender, reserve your bed space, and track statement ledger balances.</p>
+                <p class="text-body-md text-outline mt-1">Select available rooms matching your gender, reserve your room, and track statement ledger balances.</p>
             </div>
             <button onclick="openTransferSwapModal()" class="px-4 py-2 border border-secondary text-secondary hover:bg-secondary/5 font-semibold rounded-lg text-sm transition-colors flex items-center gap-1.5 self-start md:self-auto">
                 <span class="material-symbols-outlined text-sm">swap_horiz</span>
@@ -339,7 +339,7 @@
                     <div id="bookingStatusSection" class="text-center py-6">
                         <div class="text-4xl text-outline mb-2">❓</div>
                         <p class="text-sm text-outline mb-4">You do not have any active room bookings.</p>
-                        <p class="text-xs text-outline-variant max-w-sm mx-auto">Please find an available room below, finalize the booking process, and secure your bedspace.</p>
+                        <p class="text-xs text-outline-variant max-w-sm mx-auto">Please find an available room below, finalize the booking process, and secure your room.</p>
                     </div>
                 </div>
 
@@ -368,7 +368,7 @@
                                 <tr class="border-b border-outline-variant/60 text-xs font-semibold uppercase tracking-wider text-outline">
                                     <th class="py-2.5 px-2">Room #</th>
                                     <th class="py-2.5 px-2">Block</th>
-                                    <th class="py-2.5 px-2">Beds Space</th>
+                                    <th class="py-2.5 px-2">Beds Available</th>
                                     <th class="py-2.5 px-2">Monthly Rate</th>
                                     <th class="py-2.5 px-2 text-right">Action</th>
                                 </tr>
@@ -477,7 +477,7 @@
         <div class="receipt-watermark">PAID</div>
         <div class="receipt-header">
             <h1>Everest University Reshalls</h1>
-            <p class="font-bold">Bed Space Allocation Receipt</p>
+            <p class="font-bold">Room Allocation Receipt</p>
             <p>P.O. Box 100-00100, Nairobi | Tel: +254 700 000 000</p>
         </div>
         <div class="receipt-title">ALLOCATION RECEIPT</div>
@@ -567,7 +567,7 @@
                 <span class="material-symbols-outlined text-outline">close</span>
             </button>
             
-            <h3 class="text-lg font-bold text-primary mb-4">Complete Bed Space Booking</h3>
+            <h3 class="text-lg font-bold text-primary mb-4">Complete Room Booking</h3>
             
             <div id="bookingForm" class="space-y-4">
                 <input type="hidden" id="modalRoomId">
@@ -805,7 +805,7 @@
                 <div class="bg-slate-50 p-2.5 rounded-lg flex gap-4 text-xs font-semibold">
                     <label class="flex items-center gap-1.5 cursor-pointer">
                         <input type="radio" name="manageAction" value="transfer" checked onchange="toggleManageAction()" class="text-primary focus:ring-primary">
-                        <span>Transfer to Empty Bed</span>
+                        <span>Transfer to Empty Room</span>
                     </label>
                     <label class="flex items-center gap-1.5 cursor-pointer">
                         <input type="radio" name="manageAction" value="swap" onchange="toggleManageAction()" class="text-primary focus:ring-primary">
@@ -815,7 +815,7 @@
 
                 <!-- Transfer form section -->
                 <div id="transferSection" class="space-y-3">
-                    <label for="transferRoomSelect" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Target Room Bed Space *</label>
+                    <label for="transferRoomSelect" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Target Room *</label>
                     <select id="transferRoomSelect" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none text-sm">
                         <option value="">Select target room</option>
                     </select>
@@ -951,7 +951,7 @@
                 statusSection.innerHTML = `
                     <div class="no-booking-icon">❓</div>
                     <div class="no-booking-text text-sm text-outline">You do not have any active room bookings.</div>
-                    <p class="text-xs text-outline-variant max-w-sm mx-auto mt-2">Find an available room in the directory below, pay the initial fee, and secure your bedspace.</p>
+                    <p class="text-xs text-outline-variant max-w-sm mx-auto mt-2">Find an available room in the directory below, pay the initial fee, and secure your room.</p>
                 `;
             } catch (err) {
                 console.error(err);
@@ -1053,7 +1053,7 @@
                 if (data.success && data.data && data.data.length > 0) {
                     paymentHistoryList = data.data;
                     historyBody.innerHTML = data.data.map(p => {
-                        const feeCat = p.fee_category || 'Bed space fee';
+                        const feeCat = p.fee_category || 'Room fee';
                         const billingText = p.billing_month ? p.billing_month.slice(0, 7) : '';
                         const ref = p.remarks || '-';
                         
@@ -1093,7 +1093,7 @@
         // Room booking modal operations
         function openBookingModal(roomId, roomNumber, blockName) {
             if (activeBooking) {
-                alert('⚠️ Active Booking Detected!\nYou already have an active room allocation. Please vacate your current bedspace first before reserving a new room.');
+                alert('⚠️ Active Booking Detected!\nYou already have an active room allocation. Please vacate your current room first before reserving a new room.');
                 return;
             }
             
@@ -1598,7 +1598,7 @@
             document.getElementById('printReceiptDate').innerHTML = formatDate(payment.payment_date);
             document.getElementById('printReceiptCode').textContent = bookingCode;
             
-            document.getElementById('printBlockRoom').textContent = `${payment.hostel_block} Block - Bed Space Fee`;
+            document.getElementById('printBlockRoom').textContent = `${payment.hostel_block} Block - Room Fee`;
             document.getElementById('printBillingMonth').textContent = formattedMonth;
             document.getElementById('printPayMethod').textContent = `Completed (${payment.payment_method}) - Ref: ${refCode}`;
             document.getElementById('printAmountPaid').textContent = 'Ksh ' + payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
