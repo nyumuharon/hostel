@@ -142,7 +142,8 @@ router.post('/', async (req, res) => {
     });
 
     // 5b. Create initial completed payment if provided
-    if (payment_method && payment_amount && parseFloat(payment_amount) > 0) {
+    if (payment_amount && parseFloat(payment_amount) > 0) {
+      const method = (payment_method && payment_method !== 'Cash') ? payment_method : 'M-Pesa';
       const billingMonth = allocation_date.slice(0, 7) + '-01'; // YYYY-MM-01
       await db.payments.insert({
         student_id: sId,
@@ -152,8 +153,8 @@ router.post('/', async (req, res) => {
         amount: parseFloat(payment_amount),
         payment_date: allocation_date,
         status: 'completed',
-        payment_method: payment_method,
-        remarks: `Initial month booking payment. Ref: ${bookingCode}. Tx: ${payment_reference || 'Cash Admission slip'}`
+        payment_method: method,
+        remarks: `Initial room allocation payment. Ref: ${bookingCode}. Tx: ${payment_reference || 'Ref#' + bookingCode}`
       });
     }
 
