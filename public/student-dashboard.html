@@ -852,7 +852,7 @@
         let studentUser = null;
         let activeBooking = null;
         let paymentHistoryList = [];
-        const blockRates = { Batian: 50000, Nelion: 30000 };
+        const blockRates = { Batian: 20000, Nelion: 20000 };
         let allRoomsList = [];
 
         function formatDate(dateInput) {
@@ -1019,7 +1019,7 @@
 
             tableBody.innerHTML = list.map(room => {
                 const bedsLeft = room.capacity - room.current_occupancy;
-                const rate = blockRates[room.block_name] || 0;
+                const rate = room.monthly_rate || room.price || blockRates[room.block_name] || 20000;
                 
                 return `
                     <tr class="hover:bg-outline-variant/10 transition-colors">
@@ -1794,7 +1794,7 @@
                         return;
                     }
                     roomSelect.innerHTML = '<option value="">Select Target Room</option>' + availableRooms.map(r => {
-                        const rate = blockRates[r.block_name] || 0;
+                        const rate = r.monthly_rate || r.price || blockRates[r.block_name] || 20000;
                         const bedsLeft = r.capacity - r.current_occupancy;
                         return `<option value="${r.room_id}">${r.room_number} (${r.block_name}) | Ksh ${rate.toLocaleString()}/mo | ${bedsLeft} space(s) left</option>`;
                     }).join('');

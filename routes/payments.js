@@ -23,7 +23,7 @@ function getBillingMonths(startDateStr) {
 }
 
 // Helper to get block rates
-const blockRates = { Batian: 50000, Nelion: 30000 };
+const blockRates = { Batian: 20000, Nelion: 20000 };
 
 // GET /api/payments/balance (Returns ledger summary for the logged-in student or a query student_id)
 router.get('/balance', (req, res) => {
@@ -49,7 +49,7 @@ router.get('/balance', (req, res) => {
     allocations.forEach(alloc => {
       const room = db.rooms.findOne(r => r.room_id === alloc.room_id);
       if (room) {
-        const rate = blockRates[room.block_name] || 0;
+        const rate = room.monthly_rate || room.price || blockRates[room.block_name] || 20000;
         const months = getBillingMonths(alloc.allocation_date);
         const charge = rate * months;
         totalCharged += charge;

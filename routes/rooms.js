@@ -58,6 +58,8 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     room_number,
     room_type,
     capacity,
+    monthly_rate,
+    price,
     current_occupancy,
     status,
     floor,
@@ -67,9 +69,11 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
   } = req.body;
 
   const blockMap = {
-    'Batian': { type: 'Double', capacity: 2, prefix: 'BAT-', gender: 'male' },
-    'Nelion': { type: 'Double', capacity: 2, prefix: 'NEL-', gender: 'female' }
+    'Batian': { type: 'Double', capacity: 2, price: 20000, prefix: 'BAT-', gender: 'male' },
+    'Nelion': { type: 'Double', capacity: 2, price: 20000, prefix: 'NEL-', gender: 'female' }
   };
+
+  const finalRate = parseFloat(monthly_rate || price || 20000);
 
   if (blockMap[block_name]) {
     const preset = blockMap[block_name];
@@ -88,10 +92,13 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       }
     }
   } else {
-    if (!room_number || !room_type || !capacity || !gender_restriction) {
-      return res.status(400).json({ success: false, message: "Fields 'room_number', 'room_type', 'capacity', and 'gender_restriction' are required" });
+    if (!room_number) {
+      return res.status(400).json({ success: false, message: "Field 'room_number' is required" });
     }
     room_number = String(room_number).trim();
+    if (!room_type) room_type = 'Double';
+    if (!capacity || parseInt(capacity) <= 0) capacity = 2;
+    if (!gender_restriction) gender_restriction = 'male';
   }
 
   try {
@@ -104,6 +111,8 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       room_number: room_number,
       room_type: room_type,
       capacity: parseInt(capacity),
+      monthly_rate: finalRate,
+      price: finalRate,
       current_occupancy: parseInt(current_occupancy || 0),
       status: status || 'available',
       floor: floor ? parseInt(floor) : 1,

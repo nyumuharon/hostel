@@ -365,13 +365,18 @@
                 </div>
                 <div>
                     <label for="room_type" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Type</label>
-                    <input id="room_type" name="room_type" type="text" readonly
-                           class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed"/>
+                    <input id="room_type" name="room_type" type="text" placeholder="Double"
+                           class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm"/>
                 </div>
                 <div>
-                    <label for="capacity" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Capacity</label>
-                    <input id="capacity" name="capacity" type="number" readonly
-                           class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed"/>
+                    <label for="capacity" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Capacity (Beds)</label>
+                    <input id="capacity" name="capacity" type="number" min="1" max="10" placeholder="2"
+                           class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm"/>
+                </div>
+                <div>
+                    <label for="monthly_rate" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Monthly Rate (Ksh)</label>
+                    <input id="monthly_rate" name="monthly_rate" type="number" min="0" placeholder="20000"
+                           class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm"/>
                 </div>
                 <div>
                     <label for="status" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Initial Status</label>
@@ -424,12 +429,14 @@
         // ---- Block presets ----
         function applyBlockDefaults() {
             const presets = {
-                Batian: { type: 'Double', capacity: 2, prefix: 'BAT-' },
-                Nelion: { type: 'Double', capacity: 2, prefix: 'NEL-' }
+                Batian: { type: 'Double', capacity: 2, price: 20000, prefix: 'BAT-' },
+                Nelion: { type: 'Double', capacity: 2, price: 20000, prefix: 'NEL-' }
             };
             const preset = presets[blockSelect.value] || presets.Batian;
-            roomTypeInput.value = preset.type;
-            capacityInput.value = preset.capacity;
+            if (!roomTypeInput.value) roomTypeInput.value = preset.type;
+            if (!capacityInput.value) capacityInput.value = preset.capacity;
+            const rateInput = document.getElementById('monthly_rate');
+            if (rateInput && !rateInput.value) rateInput.value = preset.price;
             roomNumberInput.placeholder = `${preset.prefix}001`;
         }
         blockSelect.addEventListener('change', applyBlockDefaults);
