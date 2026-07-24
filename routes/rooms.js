@@ -53,7 +53,7 @@ function requireAdmin(req, res, next) {
 }
 
 // POST /api/rooms (Admin only)
-router.post('/', requireAuth, requireAdmin, (req, res) => {
+router.post('/', requireAuth, requireAdmin, async (req, res) => {
   let {
     room_number,
     room_type,

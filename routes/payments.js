@@ -66,8 +66,20 @@ router.get('/balance', (req, res) => {
 
     const balance = totalPaid - totalCharged;
 
+    // Calculate due date (5th of next month if balance < 0)
+    let dueDate = null;
+    if (balance < 0) {
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 5);
+      dueDate = nextMonth.toISOString().split('T')[0];
+    }
+
     res.json({
       success: true,
+      totalPaid: totalPaid,
+      totalCharged: totalCharged,
+      netBalance: balance,
+      dueDate: dueDate,
       data: {
         student_id: studentId,
         full_name: student.full_name,
@@ -121,7 +133,7 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/payments (Simulate cash/Mpesa recording)
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   let {
     student_id,
     hostel_block,
