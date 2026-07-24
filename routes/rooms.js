@@ -100,7 +100,7 @@ router.post('/', requireAuth, requireAdmin, (req, res) => {
       return res.status(400).json({ success: false, message: 'This room number already exists. Please choose another one.' });
     }
 
-    const newRoom = db.rooms.insert({
+    const newRoom = await db.rooms.insert({
       room_number: room_number,
       room_type: room_type,
       capacity: parseInt(capacity),
@@ -112,7 +112,7 @@ router.post('/', requireAuth, requireAdmin, (req, res) => {
       amenities: amenities || ''
     });
 
-    db.auditLogs.insert({
+    await db.auditLogs.insert({
       user_id: req.session.userId,
       action: 'CREATE_ROOM',
       table_name: 'rooms',

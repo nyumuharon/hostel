@@ -154,7 +154,7 @@ router.post('/', (req, res) => {
       return res.status(404).json({ success: false, message: 'Student not found' });
     }
 
-    const newPayment = db.payments.insert({
+    const newPayment = await db.payments.insert({
       student_id: parseInt(student_id),
       hostel_block: hostel_block,
       fee_category: fee_category || 'Monthly Bed Payment',
@@ -176,7 +176,7 @@ router.post('/', (req, res) => {
           lease_expires_at: null
         });
         
-        db.auditLogs.insert({
+        await db.auditLogs.insert({
           user_id: req.session.role === 'admin' ? req.session.userId : null,
           action: 'LEASE_CONFIRMED',
           table_name: 'allocations',
@@ -194,7 +194,7 @@ router.post('/', (req, res) => {
     console.log(`   Message: "Everest Hostels: Ksh ${numericAmount} received. Ref: ${remarks}. Thank you."`);
     console.log(`========================================================================\n`);
 
-    db.auditLogs.insert({
+    await db.auditLogs.insert({
       user_id: req.session.role === 'admin' ? req.session.userId : null,
       action: 'CREATE_PAYMENT',
       table_name: 'fee_payments',

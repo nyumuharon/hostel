@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
     req.session.loginTime = Date.now();
 
     // Log action
-    db.auditLogs.insert({
+    await db.auditLogs.insert({
       user_id: user.user_id,
       action: 'LOGIN',
       table_name: 'users',
@@ -87,7 +87,7 @@ router.post('/student/login', async (req, res) => {
     req.session.loginTime = Date.now();
 
     // Log action
-    db.auditLogs.insert({
+    await db.auditLogs.insert({
       user_id: null, // Student is not admin, user_id foreign key refers to users table. So we keep it null.
       action: 'STUDENT_LOGIN',
       table_name: 'students',

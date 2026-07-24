@@ -66,7 +66,7 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/allocations (Student bookings or admin allocations)
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   let { 
     student_id, 
     room_id, 
@@ -123,7 +123,7 @@ router.post('/', (req, res) => {
     const bookingCode = generateBookingCode();
 
     // 5. Create allocation
-    const newAlloc = db.allocations.insert({
+    const newAlloc = await db.allocations.insert({
       student_id: sId,
       room_id: rId,
       allocation_date: allocation_date,
@@ -135,7 +135,7 @@ router.post('/', (req, res) => {
     // 5b. Create initial completed payment if provided
     if (payment_method && payment_amount && parseFloat(payment_amount) > 0) {
       const billingMonth = allocation_date.slice(0, 7) + '-01'; // YYYY-MM-01
-      db.payments.insert({
+      await db.payments.insert({
         student_id: sId,
         hostel_block: room.block_name,
         fee_category: 'Monthly Bed Payment',
@@ -156,7 +156,7 @@ router.post('/', (req, res) => {
     });
 
     // 7. Log audit
-    db.auditLogs.insert({
+    await db.auditLogs.insert({
       user_id: req.session.role === 'admin' ? req.session.userId : null,
       action: 'BOOK_ROOM',
       table_name: 'allocations',

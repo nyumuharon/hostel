@@ -89,7 +89,7 @@ router.post('/', requireAdmin, async (req, res) => {
     const hashedPassword = await bcrypt.hash(pass, 10);
     const today = new Date().toISOString().split('T')[0];
 
-    const newStudent = db.students.insert({
+    const newStudent = await db.students.insert({
       admission_number: admission_number.trim().toUpperCase(),
       password: hashedPassword,
       gender: gender.toLowerCase() === 'female' ? 'female' : 'male',
@@ -104,7 +104,7 @@ router.post('/', requireAdmin, async (req, res) => {
     });
 
     // Log audit
-    db.auditLogs.insert({
+    await db.auditLogs.insert({
       user_id: req.session.userId,
       action: 'ADMIN_CREATE_STUDENT',
       table_name: 'students',
