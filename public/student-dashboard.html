@@ -312,9 +312,15 @@
     <main class="pt-20 px-4 max-w-5xl mx-auto space-y-6">
 
         <!-- Welcome Banner -->
-        <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm">
-            <h2 id="welcomeTitle" class="text-headline-md font-bold text-primary">Welcome, Student!</h2>
-            <p class="text-body-md text-outline mt-1">View your room, track your payments and manage your account below.</p>
+        <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 id="welcomeTitle" class="text-headline-md font-bold text-primary">Welcome, Student!</h2>
+                <p class="text-body-md text-outline mt-1">Select available rooms matching your gender, reserve your room, and track statement ledger balances.</p>
+            </div>
+            <button onclick="openTransferSwapModal()" class="px-4 py-2 border border-secondary text-secondary hover:bg-secondary/5 font-semibold rounded-lg text-sm transition-colors flex items-center gap-1.5 self-start md:self-auto">
+                <span class="material-symbols-outlined text-sm">swap_horiz</span>
+                <span>Room Transfer / Swap</span>
+            </button>
         </section>
 
         <!-- Dashboard Split Grid -->
@@ -783,6 +789,47 @@
     </div>
 
 
+
+    <!-- ROOM TRANSFER / SWAP REQUEST MODAL -->
+    <div id="transferSwapModal" class="modal fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeTransferSwapModal()" class="absolute right-4 top-4 p-1 hover:bg-slate-100 rounded-full transition-colors">
+                <span class="material-symbols-outlined text-outline">close</span>
+            </button>
+            <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-1">
+                <span class="material-symbols-outlined text-primary text-base">swap_horiz</span>
+                <span>Room Transfer / Swap Request</span>
+            </h3>
+            <div class="space-y-4">
+                <div class="bg-slate-50 p-2.5 rounded-lg flex gap-4 text-xs font-semibold">
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="manageAction" value="transfer" checked onchange="toggleManageAction()" class="text-primary focus:ring-primary">
+                        <span>Transfer to Empty Room</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="manageAction" value="swap" onchange="toggleManageAction()" class="text-primary focus:ring-primary">
+                        <span>Swap Room with Student</span>
+                    </label>
+                </div>
+                <div id="transferSection" class="space-y-3">
+                    <label for="transferRoomSelect" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Target Room *</label>
+                    <select id="transferRoomSelect" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none text-sm">
+                        <option value="">Select target room</option>
+                    </select>
+                </div>
+                <div id="swapSection" class="hidden space-y-3">
+                    <label for="swapStudentSelect" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Select Student Partner to Swap *</label>
+                    <select id="swapStudentSelect" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none text-sm">
+                        <option value="">Select student partner</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="closeTransferSwapModal()" class="flex-1 py-2 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors text-center">Cancel</button>
+                    <button type="button" onclick="submitTransferSwap()" class="flex-1 py-2 bg-primary hover:bg-primary-container text-white font-semibold rounded-lg text-sm shadow-md transition-colors text-center">Submit Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- SCRIPTS -->
     <script>
@@ -1622,6 +1669,106 @@
             document.body.className = 'print-statement-mode';
             window.print();
             document.body.className = '';
+        }
+
+        // Room Transfer & Swap Modal operations
+        function openTransferSwapModal() {
+            document.getElementById('transferSwapModal').classList.add('show');
+            const radios = document.getElementsByName('manageAction');
+            radios[0].checked = true;
+            toggleManageAction();
+            loadTransferRooms();
+            loadSwapCandidates();
+        }
+
+        function closeTransferSwapModal() {
+            document.getElementById('transferSwapModal').classList.remove('show');
+        }
+
+        function toggleManageAction() {
+            const action = document.querySelector('input[name="manageAction"]:checked').value;
+            if (action === 'transfer') {
+                document.getElementById('transferSection').style.display = 'block';
+                document.getElementById('swapSection').style.display = 'none';
+            } else {
+                document.getElementById('transferSection').style.display = 'none';
+                document.getElementById('swapSection').style.display = 'block';
+            }
+        }
+
+        async function loadTransferRooms() {
+            const roomSelect = document.getElementById('transferRoomSelect');
+            roomSelect.innerHTML = '<option value="">Loading available rooms...</option>';
+            try {
+                const response = await fetch('/api/rooms');
+                const data = await response.json();
+                if (data.success) {
+                    const currentRoomId = activeBooking ? activeBooking.room_id : null;
+                    const availableRooms = data.data.filter(r => r.room_id !== currentRoomId && r.current_occupancy < r.capacity);
+                    if (availableRooms.length === 0) {
+                        roomSelect.innerHTML = '<option value="">No rooms available for transfer.</option>';
+                        return;
+                    }
+                    roomSelect.innerHTML = '<option value="">Select Target Room</option>' + availableRooms.map(r => {
+                        const rate = blockRates[r.block_name] || 0;
+                        const bedsLeft = r.capacity - r.current_occupancy;
+                        return `<option value="${r.room_id}">${r.room_number} (${r.block_name}) | Ksh ${rate.toLocaleString()}/mo | ${bedsLeft} space(s) left</option>`;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+                roomSelect.innerHTML = '<option value="">Failed to load rooms.</option>';
+            }
+        }
+
+        async function loadSwapCandidates() {
+            const swapSelect = document.getElementById('swapStudentSelect');
+            swapSelect.innerHTML = '<option value="">Loading eligible students...</option>';
+            try {
+                const response = await fetch('/api/allocations/swap-candidates');
+                const data = await response.json();
+                if (data.success) {
+                    const candidates = data.data || [];
+                    if (candidates.length === 0) {
+                        swapSelect.innerHTML = '<option value="">No eligible students available for swap.</option>';
+                        return;
+                    }
+                    swapSelect.innerHTML = '<option value="">Select Student to Swap With</option>' + candidates.map(c => {
+                        return `<option value="${c.student_id}">${c.full_name} (${c.admission_number}) - Room ${c.room_number} (${c.block_name})</option>`;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+                swapSelect.innerHTML = '<option value="">Failed to load swap candidates.</option>';
+            }
+        }
+
+        async function submitTransferSwap() {
+            const action = document.querySelector('input[name="manageAction"]:checked').value;
+            const payload = {};
+            if (action === 'transfer') {
+                const roomId = document.getElementById('transferRoomSelect').value;
+                if (!roomId) { alert('Please select a target room.'); return; }
+                payload.new_room_id = roomId;
+            } else {
+                const studentId = document.getElementById('swapStudentSelect').value;
+                if (!studentId) { alert('Please select a student to swap with.'); return; }
+                payload.swap_student_id = studentId;
+            }
+            try {
+                const response = await fetch('/api/allocations/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Operation failed');
+                alert('Room change complete!\n' + data.message);
+                closeTransferSwapModal();
+                await Promise.all([loadBookingDetails(), loadAvailableRooms(), loadLedger(), loadPaymentHistory()]);
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         }
 
         function logout() {
