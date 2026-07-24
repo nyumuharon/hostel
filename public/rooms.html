@@ -3,419 +3,404 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Room Inventory - Hostel Management System</title>
+    <title>Room Inventory | Academic HMS</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    "colors": {
-                        "secondary-fixed-dim": "#67d9c9",
-                        "surface-container-highest": "#e4e1ea",
-                        "on-secondary-fixed": "#00201c",
-                        "outline-variant": "#c6c5d4",
-                        "on-background": "#1b1b21",
-                        "secondary": "#006a60",
-                        "secondary-container": "#85f6e5",
-                        "inverse-primary": "#bdc2ff",
-                        "on-secondary-container": "#007166",
+                    colors: {
+                        "secondary-container": "#8f9cff",
                         "error-container": "#ffdad6",
-                        "outline": "#767683",
-                        "on-tertiary": "#ffffff",
-                        "on-tertiary-fixed-variant": "#7b2e12",
-                        "on-secondary-fixed-variant": "#005048",
-                        "on-secondary": "#ffffff",
-                        "on-tertiary-fixed": "#390c00",
-                        "on-surface": "#1b1b21",
-                        "surface-bright": "#fbf8ff",
-                        "surface-tint": "#4c56af",
-                        "background": "#fbf8ff",
-                        "on-primary-fixed-variant": "#343d96",
-                        "primary-fixed-dim": "#bdc2ff",
-                        "tertiary-fixed-dim": "#ffb59d",
-                        "surface-dim": "#dbd9e1",
-                        "primary-fixed": "#e0e0ff",
-                        "surface": "#fbf8ff",
-                        "tertiary": "#380b00",
                         "on-error-container": "#93000a",
-                        "tertiary-fixed": "#ffdbd0",
-                        "surface-container-low": "#f5f2fb",
-                        "inverse-surface": "#303036",
-                        "surface-variant": "#e4e1ea",
-                        "on-primary-container": "#8690ee",
-                        "on-surface-variant": "#454652",
-                        "surface-container": "#efecf5",
-                        "tertiary-container": "#5c1800",
-                        "primary": "#000666",
-                        "surface-container-lowest": "#ffffff",
                         "on-primary-fixed": "#000767",
-                        "on-primary": "#ffffff",
-                        "on-tertiary-container": "#e17c5a",
+                        "surface": "#f8f9fa",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c6c5d4",
+                        "gender-male": "#0277bd",
+                        "surface-tint": "#4c56af",
+                        "on-tertiary": "#ffffff",
                         "primary-container": "#1a237e",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "financial-negative": "#d32f2f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary": "#000666",
                         "on-error": "#ffffff",
-                        "secondary-fixed": "#85f6e5",
-                        "surface-container-high": "#eae7ef",
-                        "inverse-on-surface": "#f2eff8",
-                        "error": "#ba1a1a"
+                        "on-secondary-fixed-variant": "#303c9a",
+                        "on-tertiary-fixed": "#00105c",
+                        "outline": "#767683",
+                        "on-secondary-container": "#202e8c",
+                        "background": "#f8f9fa",
+                        "tertiary": "#000f5b",
+                        "status-maintenance": "#ed6c02",
+                        "error": "#ba1a1a",
+                        "secondary": "#4955b3",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-fixed-variant": "#293ca0",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-container": "#7e90f8",
+                        "secondary-fixed-dim": "#bcc2ff",
+                        "on-primary": "#ffffff",
+                        "gender-female": "#c2185b",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-fixed-variant": "#343d96",
+                        "tertiary-container": "#072189",
+                        "financial-positive": "#2e7d32",
+                        "secondary-fixed": "#dfe0ff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#8690ee",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed": "#000c62",
+                        "primary-fixed": "#e0e0ff",
+                        "tertiary-fixed": "#dee0ff",
+                        "inverse-primary": "#bdc2ff",
+                        "on-surface-variant": "#454652",
+                        "status-occupied": "#2e7d32",
+                        "surface-variant": "#e1e3e4",
+                        "on-background": "#191c1d",
+                        "tertiary-fixed-dim": "#bac3ff",
+                        "status-available": "#1a237e"
                     },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
                     },
-                    "spacing": {
-                        "base": "8px",
-                        "xl": "32px",
-                        "sm": "12px",
-                        "lg": "24px",
-                        "container-margin": "16px",
-                        "xs": "4px",
-                        "gutter": "16px",
-                        "md": "16px"
+                    spacing: {
+                        "margin-mobile": "16px",
+                        "max-width": "1440px",
+                        "margin-desktop": "32px",
+                        "base": "4px",
+                        "gutter": "16px"
                     },
-                    "fontFamily": {
-                        "body-lg": ["Inter"],
-                        "label-md": ["Inter"],
-                        "headline-lg-mobile": ["Inter"],
+                    fontFamily: {
                         "headline-lg": ["Inter"],
-                        "headline-sm": ["Inter"],
-                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
                         "headline-md": ["Inter"],
-                        "label-sm": ["Inter"]
+                        "data-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-sm": ["Inter"]
                     },
-                    "fontSize": {
-                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    fontSize: {
                         "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
                         "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}]
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
                     }
-                },
-            },
+                }
+            }
         }
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .active-tab-indicator {
-            font-variation-settings: 'FILL' 1;
-        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        body { font-family: 'Inter', sans-serif; }
+        /* Button click feedback */
+        button:active { transform: scale(0.97); transition: transform 0.06s ease; }
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-24 md:pb-8 flex flex-col md:flex-row">
+<body class="bg-surface text-on-surface min-h-screen">
 
-    <!-- Left Sidebar (Desktop only) -->
-    <aside class="fixed top-0 left-0 w-64 h-full bg-white border-r border-outline-variant flex flex-col justify-between z-40 hidden md:flex">
-        <div>
-            <!-- Sidebar Logo Header -->
-            <div class="h-20 bg-[#000666] text-white flex items-center gap-3 px-6 shadow-sm border-b border-primary/20">
-                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-xl">corporate_fare</span>
+    <!-- Left Sidebar -->
+    <aside class="fixed top-0 left-0 h-full flex flex-col bg-surface-container-low border-r border-outline-variant w-64 z-40 hidden md:flex">
+        <div class="px-6 py-6 border-b border-outline-variant">
+            <div class="flex items-center gap-3 mb-1">
+                <div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-lg filled">school</span>
                 </div>
-                <div class="flex flex-col">
-                    <span class="font-bold tracking-wide text-sm">Admin Portal</span>
-                    <span class="text-[10px] text-blue-200 uppercase tracking-widest font-semibold">Central Management</span>
-                </div>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary">Admin Portal</span>
             </div>
-
-            <!-- Sidebar Navigation Links -->
-            <nav class="p-4 space-y-1">
-                <!-- Dashboard -->
-                <a href="dashboard.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    <span>Dashboard</span>
-                </a>
-                <!-- Students -->
-                <a href="students.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
-                    <span class="material-symbols-outlined">group</span>
-                    <span>Students</span>
-                </a>
-                <!-- Rooms (ACTIVE) -->
-                <a href="rooms.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-primary-fixed text-primary">
-                    <span class="material-symbols-outlined active-tab-indicator">bed</span>
-                    <span>Room Inventory</span>
-                </a>
-                <!-- Allocations -->
-                <a href="allocations.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
-                    <span class="material-symbols-outlined">assignment_turned_in</span>
-                    <span>Allocations</span>
-                </a>
-                <!-- Payments -->
-                <a href="payments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
-                    <span class="material-symbols-outlined">payments</span>
-                    <span>Payments</span>
-                </a>
-                <!-- Reports -->
-                <a href="reports.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-on-surface-variant hover:bg-outline-variant/20 hover:text-primary">
-                    <span class="material-symbols-outlined">description</span>
-                    <span>Reports</span>
-                </a>
-            </nav>
+            <p class="font-label-caps text-label-caps text-outline ml-11">Central Management</p>
         </div>
-
-        <!-- Sidebar Bottom Logout -->
-        <div class="p-4 border-t border-outline-variant/30">
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all">
-                <span class="material-symbols-outlined">logout</span>
-                <span>Logout</span>
+        <nav class="flex-grow py-4">
+            <a href="dashboard.html" class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+            <a href="students.html" class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined">group</span> Students
+            </a>
+            <a href="rooms.html" class="flex items-center gap-4 px-6 py-3 text-primary bg-secondary-fixed font-bold transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined filled">bed</span> Room Inventory
+            </a>
+            <a href="allocations.html" class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined">assignment_turned_in</span> Allocations
+            </a>
+            <a href="payments.html" class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined">payments</span> Payments
+            </a>
+            <a href="reports.html" class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined">analytics</span> Reports
+            </a>
+        </nav>
+        <div class="p-4 border-t border-outline-variant">
+            <button onclick="logout()" class="flex items-center gap-4 px-6 py-3 w-full text-on-surface-variant hover:bg-surface-container-high transition-all font-label-caps text-label-caps">
+                <span class="material-symbols-outlined">logout</span> Logout
             </button>
         </div>
     </aside>
 
-    <!-- Top Header Bar -->
-    <header class="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white border-b border-outline-variant flex justify-between items-center px-6 z-30">
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 md:left-64 right-0 h-16 z-30 bg-surface border-b border-outline-variant flex justify-between items-center px-6">
         <div class="flex items-center gap-4 flex-grow max-w-lg">
-            <span class="text-headline-sm font-bold text-primary mr-4 hidden md:inline">Academic HMS</span>
-            <!-- Mobile Menu Toggle Button -->
-            <button id="mobileMenuBtn" class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 md:hidden">
+            <!-- Mobile menu btn -->
+            <button id="mobileMenuBtn" class="p-2 rounded-full hover:bg-surface-container-high transition-colors md:hidden">
                 <span class="material-symbols-outlined text-on-surface-variant">menu</span>
             </button>
-            <span class="text-headline-sm font-bold text-primary md:hidden">Academic HMS</span>
-            
-            <!-- Search Bar (Desktop only) -->
-            <div class="relative flex-grow hidden md:block">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
-                <input id="topSearchInput" oninput="syncSearch(this.value)" type="text" placeholder="Search rooms..." class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+            <span class="font-headline-sm text-headline-sm font-bold text-primary md:hidden">Academic HMS</span>
+            <!-- Search -->
+            <div class="relative flex-grow hidden md:flex items-center bg-surface-container-low border border-outline-variant px-3 py-1.5 rounded-lg w-64">
+                <span class="material-symbols-outlined text-outline text-sm">search</span>
+                <input id="topSearchInput" oninput="syncSearch(this.value)" type="text" placeholder="Search room number..."
+                       class="bg-transparent border-none focus:ring-0 text-body-sm w-full ml-2 outline-none"/>
             </div>
         </div>
-
-        <div class="flex items-center gap-4">
-            <!-- Icons -->
-            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 relative">
-                <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
-            </button>
-            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
-                <span class="material-symbols-outlined text-on-surface-variant">help</span>
-            </button>
-            <button class="p-2 rounded-full hover:bg-outline-variant/20 transition-colors active:scale-95 hidden sm:block">
-                <span class="material-symbols-outlined text-on-surface-variant">settings</span>
-            </button>
-
-            <!-- Divider Line -->
-            <div class="h-8 w-[1px] bg-outline-variant hidden sm:block"></div>
-
-            <!-- Profile Info dropdown trigger -->
-            <button id="profileBtn" class="flex items-center gap-2 p-1 hover:bg-outline-variant/20 rounded-lg transition-colors text-left relative">
+        <div class="flex items-center gap-3">
+            <button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full transition-colors">notifications</button>
+            <button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full transition-colors hidden sm:block">help</button>
+            <button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full transition-colors hidden sm:block">settings</button>
+            <div class="ml-1 flex items-center gap-2 cursor-pointer" id="profileBtn">
                 <div class="hidden sm:flex flex-col items-end text-xs leading-none pr-1">
-                    <span id="profileName" class="font-bold text-on-surface text-sm">Admin User</span>
+                    <span id="profileName" class="font-bold text-on-surface text-sm">Admin</span>
                     <span id="profileRole" class="text-outline text-[10px] uppercase font-semibold mt-0.5">Hostel Supervisor</span>
                 </div>
-                <div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
-                    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA75ojBV-s9Bn-foNoXwbMSGA2pYQUCuv8fKcWTTCEp705Ew4QL9lGfbxh4KpeidH1nj3crTcxxkOZzPykqvixYbgnq6AEIi0eHe-tqEdb4rdYRPz_xeceLz0SU1nl7-T8GDH2O0S4WYuD1iAatFl3Bix_kdrgeUgAIq9vyguBIkSR1y-MC8gBqeIqLhahxe3NzVS2iVBufmh6MMSBAIfZrNwwtEU2ocdhc-nhy7_uL3gK9IcsmFmuAqGLMdVDU0izcb-qNAWJDeb4"/>
+                <div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden bg-primary-fixed flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-sm">person</span>
                 </div>
-                <span class="material-symbols-outlined text-outline text-sm">arrow_drop_down</span>
-                
-                <!-- Dropdown Menu inside button -->
-                <div id="profileMenu" class="hidden absolute right-0 top-12 w-48 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 text-sm text-on-surface">
-                    <a href="#" class="flex items-center gap-2 px-4 py-2 hover:bg-background transition-colors">
-                        <span class="material-symbols-outlined text-sm">settings</span>
-                        <span>System Settings</span>
-                    </a>
-                    <hr class="border-outline-variant/30 my-1">
+                <!-- Profile Dropdown -->
+                <div id="profileMenu" class="hidden absolute right-4 top-14 w-44 bg-white border border-outline-variant rounded-xl shadow-xl py-2 z-50 text-sm text-on-surface">
                     <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 transition-colors text-left">
                         <span class="material-symbols-outlined text-sm">logout</span>
                         <span>Log Out</span>
                     </button>
                 </div>
-            </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-6 pb-24 md:pb-8 w-full">
+    <!-- Main Content -->
+    <main class="md:ml-64 pt-20 px-6 pb-10 min-h-screen">
+        <div class="max-w-7xl mx-auto">
 
-        <!-- Notification Alerts -->
-        <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="successAlert"></div>
-        <div class="hidden p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" id="errorAlert"></div>
-
-        <!-- Block Summary Cards -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Batian Block Stats -->
-            <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between">
+            <!-- Page Header -->
+            <header class="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
                 <div>
-                    <h3 class="font-bold text-primary text-base">Batian Block (Male)</h3>
-                    <p class="text-xs text-outline mt-1">Capacity: 100 beds</p>
-                    <p id="batianStats" class="text-sm font-semibold text-on-surface-variant mt-2">Beds allocated: Loading...</p>
+                    <h2 class="font-headline-lg text-headline-lg text-primary">Room Inventory</h2>
+                    <p class="text-on-surface-variant font-body-md mt-1">Real-time occupancy tracking for campus residence blocks.</p>
                 </div>
-                <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-xl font-bold">
-                    M
+                <button onclick="openNewRoomModal()" class="bg-primary text-on-primary px-4 py-2 rounded font-body-md font-semibold flex items-center gap-2 transition-colors hover:bg-primary-container self-start sm:self-auto">
+                    <span class="material-symbols-outlined text-sm">add</span> New Room Entry
+                </button>
+            </header>
+
+            <!-- Alerts -->
+            <div id="successAlert" class="hidden mb-4 p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm font-semibold"></div>
+            <div id="errorAlert" class="hidden mb-4 p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm font-semibold"></div>
+
+            <!-- Block Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-8">
+                <!-- Batian Block -->
+                <div class="md:col-span-4 bg-surface-container-lowest border border-outline-variant p-6 rounded relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gender-male"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-label-caps text-label-caps text-outline">BATIAN BLOCK (MALE)</h3>
+                        <span class="material-symbols-outlined text-gender-male">male</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span id="batianOccupancy" class="font-headline-lg text-headline-lg text-on-surface">-/-</span>
+                        <span id="batianPct" class="text-financial-positive font-body-sm font-semibold flex items-center">
+                            <span class="material-symbols-outlined text-sm mr-1">trending_up</span> 0%
+                        </span>
+                    </div>
+                    <p class="text-on-surface-variant text-body-sm mt-1">Total Occupancy Status</p>
+                    <div class="mt-4 w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                        <div id="batianBar" class="bg-gender-male h-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- Nelion Block -->
+                <div class="md:col-span-4 bg-surface-container-lowest border border-outline-variant p-6 rounded relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gender-female"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-label-caps text-label-caps text-outline">NELION BLOCK (FEMALE)</h3>
+                        <span class="material-symbols-outlined text-gender-female">female</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span id="nelionOccupancy" class="font-headline-lg text-headline-lg text-on-surface">-/-</span>
+                        <span id="nelionPct" class="text-on-surface-variant font-body-sm font-semibold flex items-center">
+                            <span class="material-symbols-outlined text-sm mr-1">trending_flat</span> 0%
+                        </span>
+                    </div>
+                    <p class="text-on-surface-variant text-body-sm mt-1">Total Occupancy Status</p>
+                    <div class="mt-4 w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                        <div id="nelionBar" class="bg-gender-female h-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Summary -->
+                <div class="md:col-span-4 bg-primary text-on-primary p-6 rounded flex flex-col justify-center">
+                    <h3 class="font-label-caps text-label-caps opacity-80 mb-3">QUICK SUMMARY</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p id="summaryAvailable" class="text-headline-sm font-headline-sm">-</p>
+                            <p class="text-xs opacity-70 uppercase">AVAILABLE SLOTS</p>
+                        </div>
+                        <div>
+                            <p id="summaryTotal" class="text-headline-sm font-headline-sm">-</p>
+                            <p class="text-xs opacity-70 uppercase">TOTAL ROOMS</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Nelion Block Stats -->
-            <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between">
-                <div>
-                    <h3 class="font-bold text-secondary text-base">Nelion Block (Female)</h3>
-                    <p class="text-xs text-outline mt-1">Capacity: 100 beds</p>
-                    <p id="nelionStats" class="text-sm font-semibold text-on-surface-variant mt-2">Beds allocated: Loading...</p>
-                </div>
-                <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center text-xl font-bold">
-                    F
-                </div>
-            </div>
-        </section>
-
-        <!-- 2-Column Split Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Room Creator Form -->
-            <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm h-fit space-y-4">
-                <h3 class="font-bold text-primary text-lg">Create New Room</h3>
-                
-                <form id="roomForm" class="space-y-4">
-                    <div>
-                        <label for="block_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Hostel Block *</label>
-                        <select id="block_name" name="block_name" required
-                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+            <!-- Room Ledger Table -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded overflow-hidden">
+                <!-- Table Header with Filters -->
+                <div class="px-6 py-4 border-b border-primary flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-surface-container-low">
+                    <h3 class="font-label-caps text-label-caps text-primary">ROOM LEDGER — ALL BLOCKS</h3>
+                    <div class="flex gap-3 flex-wrap items-center">
+                        <div class="flex gap-3 text-body-sm">
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-status-available inline-block"></span> Available</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-status-occupied inline-block"></span> Full</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-status-maintenance inline-block"></span> Maintenance</span>
+                        </div>
+                        <select id="blockFilter" onchange="filterRooms()" class="px-3 py-1.5 bg-white border border-outline-variant rounded text-xs font-semibold outline-none focus:ring-1 focus:ring-primary">
+                            <option value="">All Blocks</option>
                             <option value="Batian">Batian (Male)</option>
                             <option value="Nelion">Nelion (Female)</option>
                         </select>
-                    </div>
-
-                    <div>
-                        <label for="room_number" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Number *</label>
-                        <input id="room_number" name="room_number" required type="text"
-                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="BAT-001">
-                    </div>
-
-                    <div>
-                        <label for="room_type" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Type</label>
-                        <input id="room_type" name="room_type" type="text" readonly
-                               class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed">
-                    </div>
-
-                    <div>
-                        <label for="capacity" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Max Bed Capacity</label>
-                        <input id="capacity" name="capacity" type="number" readonly
-                               class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed">
-                    </div>
-
-                    <div>
-                        <label for="current_occupancy" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Current Occupancy</label>
-                        <input id="current_occupancy" name="current_occupancy" type="number" min="0" max="2" value="0"
-                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
-                    </div>
-
-                    <div>
-                        <label for="status" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Initial Status</label>
-                        <select id="status" name="status"
-                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
-                            <option value="available">Available</option>
-                            <option value="occupied">Full</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="floor" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Building Floor</label>
-                        <input id="floor" name="floor" type="number" min="1" max="5" value="1"
-                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
-                    </div>
-
-                    <div>
-                        <label for="amenities" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Amenities</label>
-                        <textarea id="amenities" name="amenities" rows="2"
-                                  class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-outline/40 text-sm" placeholder="Wi-Fi, studying desks, lockers..."></textarea>
-                    </div>
-
-                    <div class="pt-2 flex gap-2">
-                        <button type="button" onclick="resetForm()" class="flex-1 py-2 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors text-center">Clear</button>
-                        <button type="submit" class="flex-1 py-2 bg-primary hover:bg-primary-container text-white font-semibold rounded-lg text-sm shadow-md transition-colors text-center">Save Room</button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Room Directory Table -->
-            <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm lg:col-span-2 space-y-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-primary text-lg">Available Rooms</h3>
-                    <div class="flex gap-2">
-                        <select id="blockFilter" onchange="filterRooms()" class="px-3 py-1.5 bg-slate-50 border border-outline-variant rounded-lg text-xs font-semibold outline-none">
-                            <option value="">All Blocks</option>
-                            <option value="Batian">Batian Block</option>
-                            <option value="Nelion">Nelion Block</option>
-                        </select>
-                        <select id="occupancyFilter" onchange="filterRooms()" class="px-3 py-1.5 bg-slate-50 border border-outline-variant rounded-lg text-xs font-semibold outline-none">
+                        <select id="occupancyFilter" onchange="filterRooms()" class="px-3 py-1.5 bg-white border border-outline-variant rounded text-xs font-semibold outline-none focus:ring-1 focus:ring-primary">
                             <option value="">Any Occupancy</option>
                             <option value="vacant">Has Vacancy</option>
                             <option value="full">Fully Booked</option>
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-outline-variant/60 text-xs font-semibold uppercase tracking-wider text-outline">
-                                <th class="py-3 px-2">Room #</th>
-                                <th class="py-3 px-2">Type</th>
-                                <th class="py-3 px-2">Beds</th>
-                                <th class="py-3 px-2">Occupied</th>
-                                <th class="py-3 px-2">Status</th>
-                                <th class="py-3 px-2">Floor</th>
-                                <th class="py-3 px-2 text-right">Action</th>
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-surface-container-high">
+                            <tr>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant">ROOM ID</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant">BLOCK / GENDER</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant">TYPE</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant">CAPACITY</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant">OCCUPANCY</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant text-right">ACTION</th>
                             </tr>
                         </thead>
-                        <tbody id="roomsTableBody" class="divide-y divide-outline-variant/30">
-                            <tr><td colspan="7" class="text-center py-6 text-outline">Loading rooms...</td></tr>
+                        <tbody id="roomsTableBody" class="divide-y divide-outline-variant">
+                            <tr><td colspan="7" class="text-center py-8 text-outline font-body-md">Loading rooms...</td></tr>
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
 
         </div>
-
     </main>
 
-    <!-- Bottom Navigation Bar (Mobile only) -->
+    <!-- Bottom Nav (Mobile) -->
     <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg md:hidden">
-        <!-- Dashboard -->
-        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="dashboard.html">
-            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-            <span class="text-label-sm">Dashboard</span>
+        <a href="dashboard.html" class="flex flex-col items-center text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-surface-container-high transition-all">
+            <span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Dashboard</span>
         </a>
-        <!-- Students -->
-        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="students.html">
-            <span class="material-symbols-outlined" data-icon="group">group</span>
-            <span class="text-label-sm">Students</span>
+        <a href="students.html" class="flex flex-col items-center text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-surface-container-high transition-all">
+            <span class="material-symbols-outlined">group</span><span class="text-[10px]">Students</span>
         </a>
-        <!-- Rooms (ACTIVE) -->
-        <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1.5 transition-all duration-150 active:scale-90" href="rooms.html">
-            <span class="material-symbols-outlined active-tab-indicator" data-icon="bed">bed</span>
-            <span class="text-label-sm font-bold">Rooms</span>
+        <a href="rooms.html" class="flex flex-col items-center text-primary bg-secondary-fixed px-3 py-1.5 rounded-full transition-all font-bold">
+            <span class="material-symbols-outlined filled">bed</span><span class="text-[10px]">Rooms</span>
         </a>
-        <!-- Allocations -->
-        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="allocations.html">
-            <span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
-            <span class="text-label-sm">Allocations</span>
+        <a href="allocations.html" class="flex flex-col items-center text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-surface-container-high transition-all">
+            <span class="material-symbols-outlined">assignment_turned_in</span><span class="text-[10px]">Allocations</span>
         </a>
-        <!-- Payments -->
-        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="payments.html">
-            <span class="material-symbols-outlined" data-icon="payments">payments</span>
-            <span class="text-label-sm">Payments</span>
-        </a>
-        <!-- Reports -->
-        <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="reports.html">
-            <span class="material-symbols-outlined" data-icon="description">description</span>
-            <span class="text-label-sm">Reports</span>
+        <a href="payments.html" class="flex flex-col items-center text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-surface-container-high transition-all">
+            <span class="material-symbols-outlined">payments</span><span class="text-[10px]">Payments</span>
         </a>
     </nav>
 
-    <script>
-        const form = document.getElementById('roomForm');
-        const roomsTableBody = document.getElementById('roomsTableBody');
-        const successAlert = document.getElementById('successAlert');
-        const errorAlert = document.getElementById('errorAlert');
+    <!-- New Room Modal -->
+    <div id="newRoomModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeNewRoomModal()" class="absolute right-4 top-4 p-1 hover:bg-surface-container rounded-full transition-colors">
+                <span class="material-symbols-outlined text-outline">close</span>
+            </button>
+            <h3 class="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+                <span class="material-symbols-outlined text-base filled">bed</span> Create New Room
+            </h3>
+            <p class="text-body-sm text-outline mb-5">Add a new room to the hostel inventory.</p>
 
+            <!-- Inline alerts inside modal -->
+            <div id="modalSuccess" class="hidden mb-3 p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 text-sm font-semibold"></div>
+            <div id="modalError" class="hidden mb-3 p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm font-semibold"></div>
+
+            <form id="roomForm" class="space-y-4">
+                <div>
+                    <label for="block_name" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Hostel Block *</label>
+                    <select id="block_name" name="block_name" required class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm">
+                        <option value="Batian">Batian (Male)</option>
+                        <option value="Nelion">Nelion (Female)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="room_number" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Number *</label>
+                    <input id="room_number" name="room_number" required type="text" placeholder="BAT-001"
+                           class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm"/>
+                </div>
+                <div>
+                    <label for="room_type" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Room Type</label>
+                    <input id="room_type" name="room_type" type="text" readonly
+                           class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed"/>
+                </div>
+                <div>
+                    <label for="capacity" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Capacity</label>
+                    <input id="capacity" name="capacity" type="number" readonly
+                           class="w-full px-3 py-2 bg-slate-50 border border-outline-variant rounded-lg outline-none text-sm text-outline cursor-not-allowed"/>
+                </div>
+                <div>
+                    <label for="status" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Initial Status</label>
+                    <select id="status" name="status" class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm">
+                        <option value="available">Available</option>
+                        <option value="occupied">Full</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="floor" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Floor</label>
+                    <input id="floor" name="floor" type="number" min="1" max="10" value="1"
+                           class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm"/>
+                </div>
+                <div>
+                    <label for="amenities" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Amenities</label>
+                    <textarea id="amenities" name="amenities" rows="2" placeholder="Wi-Fi, study desk, locker..."
+                              class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary outline-none text-sm resize-none"></textarea>
+                </div>
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="resetForm()" class="flex-1 py-2 border border-outline text-outline hover:bg-slate-50 font-semibold rounded-lg text-sm transition-colors">Clear</button>
+                    <button type="submit" class="flex-1 py-2 bg-primary text-white hover:bg-primary-container font-semibold rounded-lg text-sm shadow-md transition-colors">Save Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const roomsTableBody = document.getElementById('roomsTableBody');
         const blockSelect = document.getElementById('block_name');
         const roomNumberInput = document.getElementById('room_number');
         const roomTypeInput = document.getElementById('room_type');
@@ -423,11 +408,20 @@
 
         let allRoomsList = [];
 
-        function syncSearch(val) {
-            filterRooms(val);
+        // ---- Modal open/close ----
+        function openNewRoomModal() {
+            resetForm();
+            document.getElementById('newRoomModal').classList.remove('hidden');
         }
+        function closeNewRoomModal() {
+            document.getElementById('newRoomModal').classList.add('hidden');
+        }
+        // Close on backdrop click
+        document.getElementById('newRoomModal').addEventListener('click', function(e) {
+            if (e.target === this) closeNewRoomModal();
+        });
 
-        // Suggest correct code pattern based on block
+        // ---- Block presets ----
         function applyBlockDefaults() {
             const presets = {
                 Batian: { type: 'Double', capacity: 2, prefix: 'BAT-' },
@@ -438,77 +432,94 @@
             capacityInput.value = preset.capacity;
             roomNumberInput.placeholder = `${preset.prefix}001`;
         }
+        blockSelect.addEventListener('change', applyBlockDefaults);
 
+        // ---- Alert helpers ----
         function showMessage(type, message) {
+            const s = document.getElementById('modalSuccess');
+            const e = document.getElementById('modalError');
             if (type === 'success') {
-                successAlert.textContent = message;
-                successAlert.classList.remove('hidden');
-                errorAlert.classList.add('hidden');
-                setTimeout(() => successAlert.classList.add('hidden'), 4000);
+                s.textContent = message;
+                s.classList.remove('hidden');
+                e.classList.add('hidden');
+                setTimeout(() => s.classList.add('hidden'), 4000);
             } else {
-                errorAlert.textContent = message;
-                errorAlert.classList.remove('hidden');
-                successAlert.classList.add('hidden');
-                setTimeout(() => errorAlert.classList.add('hidden'), 4000);
+                e.textContent = message;
+                e.classList.remove('hidden');
+                s.classList.add('hidden');
+                setTimeout(() => e.classList.add('hidden'), 5000);
             }
         }
 
         function resetForm() {
-            form.reset();
+            document.getElementById('roomForm').reset();
             document.getElementById('status').value = 'available';
-            document.getElementById('current_occupancy').value = '0';
             document.getElementById('floor').value = '1';
             applyBlockDefaults();
+            document.getElementById('modalSuccess').classList.add('hidden');
+            document.getElementById('modalError').classList.add('hidden');
         }
 
-        // Verify session status
+        // ---- Auth check ----
         async function checkAuth() {
             try {
                 const response = await fetch('/api/auth/me');
                 const data = await response.json();
-                
                 if (!data.success || data.user.role !== 'admin') {
                     window.location.href = 'index.html';
                     return;
                 }
-                
                 document.getElementById('profileName').textContent = data.user.fullName;
                 document.getElementById('profileRole').textContent = data.user.role.charAt(0).toUpperCase() + data.user.role.slice(1) + ' Admin';
-                
                 await Promise.all([loadStats(), loadRooms()]);
             } catch (err) {
                 window.location.href = 'index.html';
             }
         }
 
+        // ---- Load stats (block summary cards) ----
         async function loadStats() {
             try {
                 const response = await fetch('/api/reports/dashboard-stats');
                 const data = await response.json();
-                
                 if (data.success && data.blocks_stats) {
                     const batian = data.blocks_stats.Batian || { total: 0, occupied: 0 };
                     const nelion = data.blocks_stats.Nelion || { total: 0, occupied: 0 };
-                    
-                    document.getElementById('batianStats').textContent = `Beds allocated: ${batian.occupied} / ${batian.total}`;
-                    document.getElementById('nelionStats').textContent = `Beds allocated: ${nelion.occupied} / ${nelion.total}`;
+
+                    const bPct = batian.total > 0 ? Math.round((batian.occupied / batian.total) * 100) : 0;
+                    const nPct = nelion.total > 0 ? Math.round((nelion.occupied / nelion.total) * 100) : 0;
+                    const totalAvail = (batian.total - batian.occupied) + (nelion.total - nelion.occupied);
+
+                    document.getElementById('batianOccupancy').textContent = `${batian.occupied}/${batian.total}`;
+                    document.getElementById('batianPct').innerHTML = `<span class="material-symbols-outlined text-sm mr-1">trending_up</span> ${bPct}%`;
+                    document.getElementById('batianBar').style.width = `${bPct}%`;
+
+                    document.getElementById('nelionOccupancy').textContent = `${nelion.occupied}/${nelion.total}`;
+                    document.getElementById('nelionPct').innerHTML = `<span class="material-symbols-outlined text-sm mr-1">trending_flat</span> ${nPct}%`;
+                    document.getElementById('nelionBar').style.width = `${nPct}%`;
+
+                    document.getElementById('summaryAvailable').textContent = totalAvail;
+                    document.getElementById('summaryTotal').textContent = batian.total + nelion.total;
                 }
             } catch (err) {
                 console.error(err);
             }
         }
 
+        // ---- Load rooms ----
         async function loadRooms() {
             try {
                 const response = await fetch('/api/rooms');
                 const data = await response.json();
-                if (!data.success) throw new Error(data.message || 'Failed to load rooms catalog');
+                if (!data.success) throw new Error(data.message || 'Failed to load rooms');
                 allRoomsList = data.data || [];
                 filterRooms();
             } catch (error) {
-                roomsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-red-500 font-semibold">${error.message}</td></tr>`;
+                roomsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-error font-semibold">${error.message}</td></tr>`;
             }
         }
+
+        function syncSearch(val) { filterRooms(val); }
 
         function filterRooms(searchVal = '') {
             const blockVal = document.getElementById('blockFilter').value;
@@ -516,62 +527,63 @@
             const query = (searchVal || document.getElementById('topSearchInput')?.value || '').toLowerCase().trim();
 
             let filtered = allRoomsList;
-
-            if (blockVal) {
-                filtered = filtered.filter(r => r.block_name === blockVal);
-            }
-
-            if (occVal === 'vacant') {
-                filtered = filtered.filter(r => (r.capacity - r.current_occupancy) > 0);
-            } else if (occVal === 'full') {
-                filtered = filtered.filter(r => r.current_occupancy >= r.capacity);
-            }
-
-            if (query) {
-                filtered = filtered.filter(r => (r.room_number || '').toLowerCase().includes(query));
-            }
+            if (blockVal) filtered = filtered.filter(r => r.block_name === blockVal);
+            if (occVal === 'vacant') filtered = filtered.filter(r => (r.capacity - r.current_occupancy) > 0);
+            else if (occVal === 'full') filtered = filtered.filter(r => r.current_occupancy >= r.capacity);
+            if (query) filtered = filtered.filter(r => (r.room_number || '').toLowerCase().includes(query));
 
             renderRoomsTable(filtered);
         }
 
         function renderRoomsTable(rooms) {
             if (!rooms.length) {
-                roomsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-outline">No matching rooms in inventory.</td></tr>`;
+                roomsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-outline font-body-md">No matching rooms in inventory.</td></tr>`;
                 return;
             }
 
             roomsTableBody.innerHTML = rooms.map(room => {
                 const isFull = room.current_occupancy >= room.capacity;
-                const isEmpty = room.current_occupancy === 0;
-                
+                const isMaint = room.status === 'maintenance';
+                const isAvail = !isFull && !isMaint;
+
+                const isMale = room.block_name === 'Batian';
+                const genderDot = isMale ? 'bg-gender-male' : 'bg-gender-female';
+                const genderLabel = isMale ? 'Batian (M)' : 'Nelion (F)';
+
                 let badgeClass = '';
                 let statusText = '';
-                
-                if (isFull) {
-                    badgeClass = 'bg-red-50 text-red-700 border-red-200';
-                    statusText = 'FULL';
-                } else if (isEmpty) {
-                    badgeClass = 'bg-green-50 text-green-700 border-green-200';
-                    statusText = 'VACANT';
-                } else {
-                    badgeClass = 'bg-yellow-50 text-yellow-700 border-yellow-200';
-                    statusText = 'PARTIAL';
-                }
+                if (isMaint) { badgeClass = 'bg-status-maintenance'; statusText = 'Maintenance'; }
+                else if (isFull) { badgeClass = 'bg-status-occupied'; statusText = 'Full'; }
+                else { badgeClass = 'bg-status-available'; statusText = 'Available'; }
+
+                const occBar = room.capacity > 0 ? Math.round((room.current_occupancy / room.capacity) * 100) : 0;
 
                 return `
-                    <tr class="hover:bg-outline-variant/10 transition-colors">
-                        <td class="py-3 px-2 font-bold text-on-surface">${room.room_number || '-'}</td>
-                        <td class="py-3 px-2 text-xs text-outline">${room.room_type || '-'}</td>
-                        <td class="py-3 px-2 text-xs text-outline">${room.capacity || '-'}</td>
-                        <td class="py-3 px-2 font-semibold text-on-surface-variant">${room.current_occupancy || 0}</td>
-                        <td class="py-3 px-2">
-                            <span class="px-2 py-0.5 border rounded-full text-xs font-semibold uppercase tracking-wider ${badgeClass}">
-                                ${statusText}
-                            </span>
+                    <tr class="hover:bg-surface-container transition-colors group">
+                        <td class="px-6 py-4 font-data-mono text-data-mono font-bold">${room.room_number || '-'}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full ${genderDot}"></span>
+                                <span class="text-body-md">${genderLabel}</span>
+                            </div>
                         </td>
-                        <td class="py-3 px-2 text-xs text-outline">${room.floor || '-'}</td>
-                        <td class="py-3 px-2 text-right">
-                            <button class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors active:scale-95 flex items-center justify-center inline-block" onclick="deleteRoom(${room.room_id})">
+                        <td class="px-6 py-4 text-body-md">${room.room_type || 'Double'}</td>
+                        <td class="px-6 py-4 text-body-md text-center">${room.capacity || '-'}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-16 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                                    <div class="h-full ${isFull ? 'bg-status-occupied' : 'bg-status-available'}" style="width:${occBar}%"></div>
+                                </div>
+                                <span class="text-body-sm text-outline">${room.current_occupancy || 0} / ${room.capacity}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 ${badgeClass} text-white text-[10px] font-bold rounded uppercase">${statusText}</span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="deleteRoom(${room.room_id})" 
+                                    class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100"
+                                    title="Delete room">
                                 <span class="material-symbols-outlined text-base">delete</span>
                             </button>
                         </td>
@@ -580,9 +592,10 @@
             }).join('');
         }
 
-        form.addEventListener('submit', async (e) => {
+        // ---- Form submit ----
+        document.getElementById('roomForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(form);
+            const formData = new FormData(e.target);
             const payload = Object.fromEntries(formData.entries());
             try {
                 const response = await fetch('/api/rooms', {
@@ -592,7 +605,7 @@
                 });
                 const data = await response.json();
                 if (!data.success) throw new Error(data.message || 'Room creation failed');
-                showMessage('success', 'Room saved successfully.');
+                showMessage('success', '✓ Room saved successfully.');
                 resetForm();
                 await Promise.all([loadStats(), loadRooms()]);
             } catch (error) {
@@ -600,37 +613,27 @@
             }
         });
 
+        // ---- Delete room ----
         async function deleteRoom(roomId) {
             if (!confirm('Are you sure you want to delete this room?')) return;
             try {
-                const response = await fetch(`/api/rooms?room_id=${roomId}`, {
-                    method: 'DELETE'
-                });
+                const response = await fetch(`/api/rooms?room_id=${roomId}`, { method: 'DELETE' });
                 const data = await response.json();
                 if (!data.success) throw new Error(data.message || 'Delete failed');
-                showMessage('success', 'Room deleted successfully.');
                 await Promise.all([loadStats(), loadRooms()]);
             } catch (error) {
-                showMessage('error', error.message);
+                alert('Error: ' + error.message);
             }
         }
 
-        blockSelect.addEventListener('change', applyBlockDefaults);
-
-        // Profile dropdown toggle
+        // ---- Profile dropdown ----
         document.getElementById('profileBtn').addEventListener('click', function(e) {
             e.stopPropagation();
-            const menu = document.getElementById('profileMenu');
-            menu.classList.toggle('hidden');
+            document.getElementById('profileMenu').classList.toggle('hidden');
         });
+        document.addEventListener('click', () => document.getElementById('profileMenu').classList.add('hidden'));
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function() {
-            const menu = document.getElementById('profileMenu');
-            menu.classList.add('hidden');
-        });
-
-        // Mobile Menu Toggle
+        // ---- Mobile sidebar ----
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const sidebar = document.querySelector('aside');
         if (mobileMenuBtn && sidebar) {
@@ -638,9 +641,7 @@
                 e.stopPropagation();
                 sidebar.classList.toggle('hidden');
                 sidebar.classList.toggle('flex');
-                sidebar.classList.add('shadow-2xl');
             });
-            // Close sidebar on click outside
             document.addEventListener('click', (e) => {
                 if (window.innerWidth < 768 && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
                     sidebar.classList.add('hidden');
@@ -649,21 +650,15 @@
             });
         }
 
-        // Logout function
+        // ---- Logout ----
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                fetch('/api/logout', {
-                    method: 'POST'
-                }).then(() => {
-                    window.location.href = 'index.html';
-                });
+                fetch('/api/logout', { method: 'POST' }).then(() => { window.location.href = 'index.html'; });
             }
         }
 
-        // Apply defaults initially
+        // ---- Init ----
         applyBlockDefaults();
-
-        // Initialize check
         checkAuth();
     </script>
 </body>
