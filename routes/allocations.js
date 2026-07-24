@@ -122,6 +122,15 @@ router.post('/', async (req, res) => {
     // 4. Generate unique Booking Reference Code
     const bookingCode = generateBookingCode();
 
+    // Automatically calculate expected_checkout_date as 1 month from allocation_date if not provided
+    if (!expected_checkout_date && allocation_date) {
+      const allocD = new Date(allocation_date);
+      if (!isNaN(allocD.getTime())) {
+        allocD.setMonth(allocD.getMonth() + 1);
+        expected_checkout_date = allocD.toISOString().split('T')[0];
+      }
+    }
+
     // 5. Create allocation
     const newAlloc = await db.allocations.insert({
       student_id: sId,
