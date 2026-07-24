@@ -233,9 +233,6 @@
     <!-- Main Content Area -->
     <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-6 pb-24 md:pb-8 w-full">
 
-        <!-- Notification Alerts -->
-        <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="message"></div>
-
         <!-- Revenue Summaries -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Batian Block Stats -->
@@ -270,6 +267,9 @@
                     <h3 class="font-bold text-primary text-lg">Record Bed Payment</h3>
                     <button class="text-xs text-secondary hover:underline font-semibold" id="clearBtn" type="button">New Payment</button>
                 </div>
+                
+                <!-- Notification Alerts -->
+                <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="message"></div>
                 
                 <form id="paymentForm" class="space-y-4">
                     <input type="hidden" name="payment_id" id="payment_id">
@@ -882,6 +882,16 @@
         }
 
         checkAuth();
+
+        // Micro-interaction for button feedback
+        document.querySelectorAll('button, .cursor-pointer').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+                el.style.transition = 'transform 0.05s ease';
+            });
+            el.addEventListener('mouseup', () => { el.style.transform = 'scale(1)'; });
+            el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
+        });
     </script>
 </body>
 </html>

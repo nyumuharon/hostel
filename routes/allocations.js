@@ -108,18 +108,10 @@ router.post('/', (req, res) => {
       });
     }
 
-    // 2. Clear any existing active or pending allocations for this student to allow re-allocation
-    const existingAllocations = db.allocations.find(a => a.student_id === sId && (a.status === 'active' || a.status === 'pending_payment'));
-    for (const alloc of existingAllocations) {
-      const oldRoom = db.rooms.findOne(r => r.room_id === alloc.room_id);
-      if (oldRoom) {
-        const newOccupancy = Math.max(0, oldRoom.current_occupancy - 1);
-        db.rooms.update(oldRoom.room_id, {
-          current_occupancy: newOccupancy,
-          status: newOccupancy < oldRoom.capacity ? 'available' : 'occupied'
-        });
-      }
-      db.allocations.delete(alloc.allocation_id);
+    // 2. Check if student already has active allocation
+    const activeAlloc = db.allocations.findOne(a => a.student_id === sId && a.status === 'active');
+    if (activeAlloc) {
+      return res.status(400).json({ success: false, message: 'Student already has an active room allocation/booking.' });
     }
 
     // 3. Check general room capacity (max 2 students)

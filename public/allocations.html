@@ -233,16 +233,16 @@
     <!-- Main Content Area -->
     <main class="flex-grow md:pl-64 pt-20 px-6 max-w-[1600px] mx-auto space-y-6 pb-24 md:pb-8 w-full">
 
-        <!-- Notification Alerts -->
-        <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="successAlert"></div>
-        <div class="hidden p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" id="errorAlert"></div>
-
         <!-- Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Allocation Form Panel -->
             <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm h-fit space-y-4">
                 <h3 class="font-bold text-primary text-lg">Allocate Room</h3>
+                
+                <!-- Notification Alerts -->
+                <div class="hidden p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm" id="successAlert"></div>
+                <div class="hidden p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" id="errorAlert"></div>
                 
                 <form id="allocationForm" class="space-y-4">
                     <div>
@@ -740,6 +740,20 @@
 
         // Initialize check
         checkAuth();
+
+        // Micro-interaction for hover states and button feedback
+        document.querySelectorAll('button, .cursor-pointer').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+                el.style.transition = 'transform 0.05s ease';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
     </script>
 </body>
 </html>
