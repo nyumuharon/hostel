@@ -243,10 +243,11 @@
             <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between">
                 <div>
                     <h3 class="font-bold text-primary text-base">Batian Block (Male)</h3>
-                    <p class="text-xs text-outline mt-1" id="batianDetails">Capacity: 100 beds</p>
+                    <p class="text-xs text-outline mt-1">Capacity: 100 beds</p>
+                    <p id="batianStats" class="text-sm font-semibold text-on-surface-variant mt-2">Beds allocated: Loading...</p>
                 </div>
-                <div class="text-right">
-                    <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full" id="batianBedsLeft">Loading...</span>
+                <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-xl font-bold">
+                    M
                 </div>
             </div>
 
@@ -254,10 +255,11 @@
             <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between">
                 <div>
                     <h3 class="font-bold text-secondary text-base">Nelion Block (Female)</h3>
-                    <p class="text-xs text-outline mt-1" id="nelionDetails">Capacity: 100 beds</p>
+                    <p class="text-xs text-outline mt-1">Capacity: 100 beds</p>
+                    <p id="nelionStats" class="text-sm font-semibold text-on-surface-variant mt-2">Beds allocated: Loading...</p>
                 </div>
-                <div class="text-right">
-                    <span class="px-2.5 py-1 bg-teal-100 text-teal-800 text-xs font-bold rounded-full" id="nelionBedsLeft">Loading...</span>
+                <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center text-xl font-bold">
+                    F
                 </div>
             </div>
         </section>
@@ -334,7 +336,21 @@
 
             <!-- Room Directory Table -->
             <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm lg:col-span-2 space-y-4">
-                <h3 class="font-bold text-primary text-lg">Available Rooms</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-primary text-lg">Available Rooms</h3>
+                    <div class="flex gap-2">
+                        <select id="blockFilter" onchange="filterRooms()" class="px-3 py-1.5 bg-slate-50 border border-outline-variant rounded-lg text-xs font-semibold outline-none">
+                            <option value="">All Blocks</option>
+                            <option value="Batian">Batian Block</option>
+                            <option value="Nelion">Nelion Block</option>
+                        </select>
+                        <select id="occupancyFilter" onchange="filterRooms()" class="px-3 py-1.5 bg-slate-50 border border-outline-variant rounded-lg text-xs font-semibold outline-none">
+                            <option value="">Any Occupancy</option>
+                            <option value="vacant">Has Vacancy</option>
+                            <option value="full">Fully Booked</option>
+                        </select>
+                    </div>
+                </div>
                 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left border-collapse">
@@ -349,7 +365,7 @@
                                 <th class="py-3 px-2 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="roomTableBody" class="divide-y divide-outline-variant/30">
+                        <tbody id="roomsTableBody" class="divide-y divide-outline-variant/30">
                             <tr><td colspan="7" class="text-center py-6 text-outline">Loading rooms...</td></tr>
                         </tbody>
                     </table>
@@ -360,8 +376,8 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+    <!-- Bottom Navigation Bar (Mobile only) -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg md:hidden">
         <!-- Dashboard -->
         <a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:bg-outline-variant/20 rounded-full transition-all duration-150 active:scale-90" href="dashboard.html">
             <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
@@ -402,6 +418,8 @@
 
         const blockSelect = document.getElementById('block_name');
         const roomNumberInput = document.getElementById('room_number');
+        const roomTypeInput = document.getElementById('room_type');
+        const capacityInput = document.getElementById('capacity');
 
         let allRoomsList = [];
 
@@ -411,14 +429,14 @@
 
         // Suggest correct code pattern based on block
         function applyBlockDefaults() {
-            const block = blockSelect.value;
-            if (block === 'Batian') {
-                roomNumberInput.placeholder = 'e.g. BAT-001';
-            } else if (block === 'Nelion') {
-                roomNumberInput.placeholder = 'e.g. NEL-001';
-            } else {
-                roomNumberInput.placeholder = 'e.g. BAT-001';
-            }
+            const presets = {
+                Batian: { type: 'Double', capacity: 2, prefix: 'BAT-' },
+                Nelion: { type: 'Double', capacity: 2, prefix: 'NEL-' }
+            };
+            const preset = presets[blockSelect.value] || presets.Batian;
+            roomTypeInput.value = preset.type;
+            capacityInput.value = preset.capacity;
+            roomNumberInput.placeholder = `${preset.prefix}001`;
         }
 
         function showMessage(type, message) {
@@ -437,6 +455,9 @@
 
         function resetForm() {
             form.reset();
+            document.getElementById('status').value = 'available';
+            document.getElementById('current_occupancy').value = '0';
+            document.getElementById('floor').value = '1';
             applyBlockDefaults();
         }
 
@@ -559,6 +580,41 @@
             }).join('');
         }
 
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+            try {
+                const response = await fetch('/api/rooms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Room creation failed');
+                showMessage('success', 'Room saved successfully.');
+                resetForm();
+                await Promise.all([loadStats(), loadRooms()]);
+            } catch (error) {
+                showMessage('error', error.message);
+            }
+        });
+
+        async function deleteRoom(roomId) {
+            if (!confirm('Are you sure you want to delete this room?')) return;
+            try {
+                const response = await fetch(`/api/rooms?room_id=${roomId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Delete failed');
+                showMessage('success', 'Room deleted successfully.');
+                await Promise.all([loadStats(), loadRooms()]);
+            } catch (error) {
+                showMessage('error', error.message);
+            }
+        }
+
         blockSelect.addEventListener('change', applyBlockDefaults);
 
         // Profile dropdown toggle
@@ -603,6 +659,9 @@
                 });
             }
         }
+
+        // Apply defaults initially
+        applyBlockDefaults();
 
         // Initialize check
         checkAuth();

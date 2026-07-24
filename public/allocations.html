@@ -242,15 +242,15 @@
             
             <!-- Allocation Form Panel -->
             <section class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm h-fit space-y-4">
-                <h3 class="font-bold text-primary text-lg">Allocate Bed Space</h3>
+                <h3 class="font-bold text-primary text-lg">Allocate Room</h3>
                 
                 <form id="allocationForm" class="space-y-4">
                     <div>
-                        <label for="student_id" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Select Student *</label>
-                        <select id="student_id" name="student_id" required onchange="filterRoomsByStudentGender()"
-                                class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
-                            <option value="">Select student</option>
-                        </select>
+                        <label for="student_adm" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1">Student Admission Number *</label>
+                        <input id="student_adm" type="text" required oninput="lookupStudentByAdm()" placeholder="e.g. ADM001"
+                               class="w-full px-3 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm">
+                        <input type="hidden" id="student_id" name="student_id">
+                        <span id="studentDetailsText" class="block text-[11px] text-green-700 font-semibold mt-1 hidden"></span>
                     </div>
 
                     <div>
@@ -364,7 +364,9 @@
         const tableBody = document.getElementById('allocationTableBody');
         const successAlert = document.getElementById('successAlert');
         const errorAlert = document.getElementById('errorAlert');
-        const studentSelect = document.getElementById('student_id');
+        const studentAdmInput = document.getElementById('student_adm');
+        const studentIdHidden = document.getElementById('student_id');
+        const studentSelect = studentIdHidden;
         const roomSelect = document.getElementById('room_id');
         const roomDetails = document.getElementById('roomDetails');
         
@@ -451,8 +453,35 @@
             }
         }
 
+        function lookupStudentByAdm() {
+            const adm = studentAdmInput.value.trim().toLowerCase();
+            const selectedStudent = students.find(s => (s.admission_number || '').toLowerCase() === adm);
+            const detailsSpan = document.getElementById('studentDetailsText');
+
+            if (selectedStudent) {
+                studentIdHidden.value = selectedStudent.student_id;
+                detailsSpan.textContent = `✓ Student Found: ${selectedStudent.full_name} (${selectedStudent.gender.toUpperCase()})`;
+                detailsSpan.classList.remove('hidden', 'text-red-600');
+                detailsSpan.classList.add('text-green-700');
+            } else {
+                studentIdHidden.value = '';
+                detailsSpan.textContent = adm ? '✗ Student not found in directory' : '';
+                if (adm) {
+                    detailsSpan.classList.remove('hidden', 'text-green-700');
+                    detailsSpan.classList.add('text-red-600');
+                } else {
+                    detailsSpan.classList.add('hidden');
+                }
+            }
+
+            filterRoomsByStudentGender();
+        }
+
         function resetForm() {
             form.reset();
+            studentIdHidden.value = '';
+            const detailsSpan = document.getElementById('studentDetailsText');
+            if (detailsSpan) detailsSpan.classList.add('hidden');
             document.getElementById('allocation_date').value = new Date().toISOString().split('T')[0];
             document.getElementById('status').value = 'active';
             updateCheckoutDate();
@@ -460,12 +489,12 @@
         }
 
         function filterRoomsByStudentGender() {
-            const studentId = studentSelect.value;
+            const studentId = studentIdHidden.value;
             const selectedStudent = students.find(s => String(s.student_id) === String(studentId));
 
             if (!selectedStudent) {
-                roomSelect.innerHTML = '<option value="">Select student first</option>';
-                roomDetails.innerHTML = 'Select a student above to view available rooms for their gender.';
+                roomSelect.innerHTML = '<option value="">Enter a valid student admission number first</option>';
+                roomDetails.innerHTML = 'Enter a valid student admission number above to view available rooms for their gender.';
                 document.getElementById('payment_amount').value = '';
                 return;
             }
@@ -504,12 +533,6 @@
 
                 students = studentsData.data || [];
                 rooms = (roomsData.data || []).filter(r => r.status === 'available' && Number(r.current_occupancy) < Number(r.capacity));
-
-                if (!students.length) {
-                    studentSelect.innerHTML = '<option value="">No students available</option>';
-                } else {
-                    studentSelect.innerHTML = '<option value="">Select student</option>' + students.map(s => `<option value="${s.student_id}">${s.full_name} (${s.admission_number}) - ${s.gender.toUpperCase()}</option>`).join('');
-                }
 
                 filterRoomsByStudentGender();
             } catch (error) {
