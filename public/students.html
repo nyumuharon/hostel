@@ -387,6 +387,10 @@
             
             <h2 class="text-xl font-bold text-primary mb-4">Register Student Account</h2>
             
+            <!-- Modal-specific alert messages -->
+            <div id="modalSuccessAlert" class="hidden mb-4 p-4 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm"></div>
+            <div id="modalErrorAlert" class="hidden mb-4 p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm"></div>
+            
             <form id="studentForm" onsubmit="submitRegistration(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- First Name -->
@@ -636,16 +640,20 @@
         }
 
         function showMessage(type, message) {
+            const isModalOpen = !document.getElementById('registerModal').classList.contains('hidden');
+            const targetSuccess = isModalOpen ? document.getElementById('modalSuccessAlert') : successAlert;
+            const targetError = isModalOpen ? document.getElementById('modalErrorAlert') : errorAlert;
+
             if (type === 'success') {
-                successAlert.textContent = message;
-                successAlert.classList.remove('hidden');
-                errorAlert.classList.add('hidden');
-                setTimeout(() => successAlert.classList.add('hidden'), 4000);
+                targetSuccess.textContent = message;
+                targetSuccess.classList.remove('hidden');
+                targetError.classList.add('hidden');
+                setTimeout(() => targetSuccess.classList.add('hidden'), 4000);
             } else {
-                errorAlert.textContent = message;
-                errorAlert.classList.remove('hidden');
-                successAlert.classList.add('hidden');
-                setTimeout(() => errorAlert.classList.add('hidden'), 4000);
+                targetError.textContent = message;
+                targetError.classList.remove('hidden');
+                targetSuccess.classList.add('hidden');
+                setTimeout(() => targetError.classList.add('hidden'), 4000);
             }
         }
 
@@ -655,6 +663,8 @@
 
         function closeRegisterModal() {
             document.getElementById('registerModal').classList.add('hidden');
+            document.getElementById('modalSuccessAlert').classList.add('hidden');
+            document.getElementById('modalErrorAlert').classList.add('hidden');
             form.reset();
         }
 
@@ -995,7 +1005,9 @@
                 }
 
                 showMessage('success', 'Student registered successfully.');
-                closeRegisterModal();
+                setTimeout(() => {
+                    closeRegisterModal();
+                }, 1500);
                 await loadStudents();
             } catch (error) {
                 showMessage('error', error.message);
